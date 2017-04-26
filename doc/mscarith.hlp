@@ -1,0 +1,32 @@
+.help mscarith Oct97 mscred
+.ih
+NAME
+mscarith -- image arithmetic on Mosaic files
+.ih
+SYNOPSIS
+This tasks performs image arithmetic, using \fBimarith\fR, by expanding
+each mosaic file into image extensions and creating an output mosaic file
+from all the results of operating on the extensions.
+.ih
+USAGE	
+mscarith operand1 op operand2 result
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+RESTRICTIONS
+Image sections are not allowed in the mosaic filenames.  When two
+operand images are used the image extensions are not matched by extension
+name but only by order in the file.
+.ih
+REVISIONS
+.ls MSCARITH - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+msccmd, imarith
+.endhelp

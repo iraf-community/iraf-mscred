@@ -1,0 +1,32 @@
+.help mscimatch Dec97 mscred
+.ih
+NAME
+mscimatch -- match intensity scales in reconstructed mosaic images
+.ih
+SYNOPSIS
+A list of celestial coordinates is used to select square regions in images
+to measure.  The mean values in the box and in a larger square region
+around the box are determined.  A linear fit between the values for
+a reference image and a target image is computed.  The zero point
+offset and multiplicative scale factor which match the target image
+intensities to the reference image intensities is recorded in the
+image header for later use by \fBmscstack\fR.  The task can be
+used in various levels interactivity or non-interactively.
+.ih
+USAGE	
+mscimatch input coords
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls MSCIMATCH - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+msczero, mscstack
+.endhelp

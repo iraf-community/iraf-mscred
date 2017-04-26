@@ -1,0 +1,27 @@
+.help mscstat Oct97 mscred
+.ih
+NAME
+mscstat -- image statistics on Mosaic files
+.ih
+SYNOPSIS
+This tasks computes image statistics, using \fBimstat\fR, by expanding
+each mosaic file into image extensions.  Image sections are allowed
+in the mosaic filenames.
+.ih
+USAGE	
+mscstat images
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls MSCSTAT - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+msccmd, imstat
+.endhelp

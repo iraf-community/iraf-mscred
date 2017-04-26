@@ -1,0 +1,2665 @@
+.help mscguide Dec00 mscred
+.sp 3
+.ce
+\fBGuide to the NOAO Mosaic Data Handling Software\fR
+
+.ce
+Francisco Valdes
+.ce
+December 2000
+.ce
+MSCRED Version 4.0
+
+.sh
+Sections
+
+.nf
+1. Introduction
+2. Multiextension FITS Files
+3. Examining Mosaic Data
+    3.1 Displaying the Data
+        2.1.1 On-the-Fly (OTF) Calibration
+        2.1.2 Real-Time Display with the DCA
+    3.2 Examining the Data
+    3.3 Examining the Headers
+    3.4 Determining Best Focus
+4. Data Reductions
+    4.1 Some Preliminaries
+    4.2 Basic CCD Calibration
+        4.2.1  Calibration Data to Obtain At the Telescope
+        4.2.2  Preparing Calibration Data
+        4.2.3 Pupil Image Removal from Flat Fields
+            4.2.3.1 Broadband Data
+            4.2.3.2 Narrowband Data
+        4.2.4 Object Exposure Reductions
+        4.2.5 Pupil Image Removal from Object Data
+            4.2.5.1 Broadband Data
+            4.2.5.2 Narrowband Data
+        4.2.6 Dark Sky or Twilight Sky Flat Fields
+        4.2.7 The Variable Pixel Scale and Zero Point Uniformity
+    4.3 Coordinate Calibration
+        4.3.1 Setting Coordinate Zero Points and Measuring Coordinates
+        4.3.2 Matching Coordinate Systems
+    4.4 Putting the Pieces Together
+        4.4.1 Removing Sky Gradients
+        4.4.2 Constructing Single Images
+        4.4.3 Matching Intensity Scales
+        4.4.4 Making the Final Stack Image
+.fi
+
+.sh
+1. Introduction
+
+This document discusses the handling and reduction of CCD mosaic data.  The
+software and the discussions are applicable to all CCD mosaic data
+which use the multiextension FITS format described below.  This includes
+the NOAO mosaic imagers as well as similar instruments from AAO, CFA, CFHT,
+ESO, INT, and possibly others that I am not aware of.  However, this
+presentation is also intended as a user's guide for the NOAO Mosaic images
+(currently the two 8-CCD mosaics at KPNO and CTIO and the 2-CCD mosaic at
+WIYN).  Therefore some discussion concerns effects which may be (or may
+not be) specific to these systems.
+
+The NOAO Mosaic Data Handling System (MDHS) includes data acquisition,
+real-time, data reduction, pipeline, and archiving software.  While all of
+the components of the MDHS may be used with a variety of instruments this
+document discusses only the telescope and data reduction tools which are
+part of the IRAF \fBmscred\fP package or general IRAF packages.
+
+This guide is not a beginner's guide and assumes some previous experience
+with IRAF and CCD reductions.
+
+The first section discusses the mosaic data format and how to use it with
+IRAF.  This format is more complex than single CCD images because of the
+multiple CCDs and, possibly, multiple amplifiers per CCD.  To keep the data
+from each exposure self-contained the multiple CCD images are stored in a
+single file.  This multiple image per file has many advantages but it does
+mean that some commands for dealing with images behave differently.
+
+The second section describes the tools used to examine the mosaic data.
+These tools are used during observing as well as during data reductions.
+
+The last section describes the reduction of mosaic data.  This includes
+basic CCD instrumental calibration and combining mosaic exposures into
+single images.
+
+.sh
+2. Multiextension FITS Files
+
+The data format used by the NOAO Mosaic Data Handling Software (MDHS) is a
+multiextension FITS (MEF) file.  This format is produced by the the Data
+Capture Agent (DCA) when observing with the NOAO mosaic cameras.  For
+example the MEF file for the NOAO 8K mosaics currently consists of either
+nine or seventeen FITS header and data units (HDU).  The first HDU, called
+the primary or global header unit, contains only header information which
+is common to all the CCD images.  The remaining eight or sixteen HDUs,
+called extensions, contain the images from the eight CCDs using either one
+amplifier per CCD or two amplifiers per CCD.
+
+The fact that the image data is stored as a FITS file is not significant.
+Starting with IRAF V2.11, FITS files consisting of just a single primary
+image may be used in the same way as any other IRAF image format.  The
+significant feature of the mosaic format is its multi-image structure.  For
+a detailed discussion of the IRAF FITS Image Kernel and the syntax it
+supports for multiextension FITS files see
+ftp://iraf.noao.edu/iraf/docs/fits_userguide.ps.Z.
+
+With multiextension FITS files you must either use tasks which are
+specifically designed to operate on these files as a unit or explicitly
+specify the image within the file that is to be operated upon by general
+IRAF image processing tasks.  The tasks in the \fBmscred\fR package are
+designed to operate on the mosaic MEF files and so in most cases you only
+need to specify the filename.  For image tasks outside the \fBmscred\fR
+package you must specify the image in the MEF file using the syntax
+
+.nf
+    filename[extension]
+.fi
+
+where "filename" is the name of the MEF file.  The ".fits" filename
+extension is optional provided there is no confusion with other files with
+the same basename.  The image "extension" is specified either using an
+extension name or the position of the extension in the file (where the
+first extension is 1).  For example, the extension names in the NOAO mosaic
+data are "im1" through "im8" for eight CCDs.  The same format applies for
+the sixteen dual-amplifier readouts and for the four dual-amplifier
+extensions in the WIYN 2-CCD mosaic.  To get a listing of the extension
+names use the following command
+
+.nf
+    ms> msccmd "hselect $input $I,extname yes" [filename]
+.fi
+
+If you forget to specify an extension to a task that expects only
+single images you will get the following error which is your reminder
+to include an extension.
+
+.nf
+    ms> imhead obj012 1
+    ERROR: FXF: must specify which FITS extension (obj012)
+.fi
+
+Two of the most common tasks that require specifying an image extension
+are \fBdisplay\fR to display a single CCD image (the task \fBmscdisplay\fR
+is used to display all the images at once) and \fBimheader\fR to list
+the header of a particular CCD.  So, for example, the following commands
+might be used.
+
+.nf
+    ms> display obj012[im2] 1
+    ms> imhead obj012[3] l+
+.fi
+
+Other tasks you may use this way are \fBimexam\fR and \fBimplot\fR.
+
+A common question is how to specify a list of extensions.  Modification of
+the syntax to allow wildcard templates in the extension specification is
+under study.  Currently you must specify each extension explicitly, though
+the filename itself may be a wildcard; for example the first image in a set
+of files can be collectively specified with
+
+.nf
+    obj*[im1]
+.fi
+
+There are two methods for specifying some or all extensions in tasks that
+operate upon lists of images.  One is to make @files.  This can be done
+explicitly with an editor.  However the \fBproto\fR task \fBimextensions\fR
+can expand MEF files into an @file as in the following example.
+
+.nf
+    ms> imexten obj012,obj13 > list
+    ms> imhead @list
+.fi
+
+Read the help page for further information, additional parameters, and
+examples.
+
+Another method is to use the special \fBmscred\fR task \fBmsccmd\fR.  This
+task can be used on the command line or as a simple interactive command
+interpreter.  The idea is that you use the special designations "$input"
+and "$output" for task parameters which allow lists of images.  Then
+lists of MEF filenames are specified for the input and output which are
+expanded and substituted into the task parameters when it is executed.
+For example,
+
+.nf
+    ms> msccmd "imhead $input l+" input=obj012,obj013
+.fi
+
+For additional information and examples consult the help page for that task.
+
+Note that the tasks \fBimstat\fR and \fBimarith\fR are so useful and common
+that there are specific \fBmscred\fR tasks, \fBmscstat\fR and \fBmscarith\fR,
+that operate on all or a subset of image extensions.  So these tasks need
+not be used with \fBmsccmd\fR or with @files.
+
+We conclude with a discussion of the special operations of copying,
+renaming, deleting, and reading and writing FITS tapes as they apply to the
+mosaic MEF files.  To copy a mosaic file as a unit use \fBcopy\fR, making
+sure to explicitly specify the "fits" extension.  If you use \fBimcopy\fR
+it will expect you to specify a particular extension and will copy only
+that extension.  While \fBimcopy\fR is not the way to copy an complete MEF
+file the tasks \fBimrename\fR and \fBimdelete\fR are the commands for
+renaming and deleting these files; though \fBrename\fR and \fBdelete\fR
+will also work provided you are explicit with the extension.  Finally the
+mosaic data should be kept as a MEF file and so the special mosaic
+tasks \fBmscwfits\fR and \fBmscrfits\fR should be used.  The current
+\fBwfits\fR and \fBrfits\fR are not intended for this type of data.
+
+2.1 Keywords
+
+The discussion above is independent of keywords apart for those required
+by the FITS standard for extensions.  The only explicit keyword needed
+above is the EXTNAME keyword to specify the extension names that can
+be used to refer to the extensions by the IRAF software.
+
+However, the discussion that follows for using the \fBmscred\fR mosaic
+reduction tools requires the MEF files to have certain keywords.  Some
+of the keywords are needed for basic display, some for basic CCD processing,
+and some for astrometric registration.  The NOAO mosaic data includes all
+the necessary keywords.  Other observatories provide some the keywords
+either in a form directly needed by the MSCRED tools or which can be
+converted to the appropriate form.  For a discussion of how to setup
+the basic keywords for data which does not have it see
+http://iraf.noao.edu/projects/ccdmosaic/generic/generic.html.  A complete
+description of the keywords and the mosaic data structure see
+http://iraf.noao.edu/projects/ccdmosaic/imagedef/imagedef.html.
+
+A case where the keyword information is not in the correct format but is
+present in the data is the ESO Wide-Field Imager (ESOWFI).  A special IRAF
+add-on package is available to translate the raw data format into the form
+required by the MSCRED tools.  This package is called ESOWFI and may be
+obtained from extern directory of the various IRAF mirror sites.
+
+.sh
+3. Examining Mosaic Data
+
+During observing a small set of IRAF commands are commonly used to examine
+the data.  This section describes these commands.  While the discussion is
+oriented towards examining the data at the telescope during the course of
+observing, the tools described here are also used when reducing data at a
+later time.
+
+.sh
+3.1 Displaying the Data
+
+The two commands \fBdisplay\fR and \fBmscdisplay\fR are used to display the
+data in a display server window.  The display server is a separate process
+which must be running before displaying the images.  The observing
+environment at the telescope will generally have the XIMTOOL display server
+already running with a window on a separate monitor.  If it is not running
+for some reason it can be started with a menu selection.  Away from the
+telescope you would start XIMTOOL or SAOIMAGE as you do normally.
+
+The display server must be told what size "frame buffer" to allocate for
+holding the display pixels.  This determines how many pixels may be loaded
+at one time.  Note that the display window may be smaller than this size
+and the display server allows you to move the portion viewed and
+zoom/unzoom any region.  If the image size is larger than the frame buffer
+you can display a portion of the image at full resolution or the full image
+at a lower resolution.  The frame buffer size is queried and set with the
+commands:
+
+.nf
+    ms> show stdimage
+    imt4096
+    ms> set stdimage=imt2048
+.fi
+
+There are trade-offs in the frame buffer selection.  A large frame buffer
+allows you to have higher resolution for the large mosaic images but it
+uses more memory and takes longer to load.
+
+The \fBdisplay\fR task is used to display individual images in the display
+server.  This task is a standard IRAF task about which you are assumed to
+have some basic knowledge.  There are many display options which
+are discussed in the help page.  The only special factor in using this
+task with mosaic data is that you must specify which CCD image to display
+using the image extension syntax discussed previously.  As an example,
+to display the central portion of extension im3 in the first frame
+and the whole image in the second frame:
+
+.nf
+    ms> display obj123[im3] 1 fill-
+    ms> display obj123[im3] 2 fill+
+.fi
+
+The \fBmscdisplay\fR task is based on \fBdisplay\fR with a number of
+specialized enhancements for displaying mosaic data.  It displays the
+entire mosaic observation in a single frame by "filling" each image in a
+tiled region of the frame buffer.  The default filling (defined by the
+order parameter) subsamples the image by uniform integer steps to fit the
+tile and then replicates pixels to scale to the full tile size.  The
+resolution is set by the frame buffer size.  As mentioned before, trying to
+increase the resolution with a larger buffer size has the penalty of longer
+display times.  An example display command is:
+
+.nf
+    ms> mscdisplay obj123 1
+.fi
+
+The default parameters for \fBmscdisplay\fR are shown below.  Many of the
+parameters are the same as \fBdisplay\fR but there are also a few that are
+specific to the task of displaying a mosaic of CCD images as indicated with
+an asterisk.
+
+.nf
+			       I R A F  
+	    Image Reduction and Analysis Facility
+    PACKAGE = mscred
+       TASK = mscdisplay
+
+    image   =           root name for image to be displayed
+    frame   =        1  frame to be written into
+*   (mimpars=         ) mosaic image parameters
+*   (check  =       no) check if image is loaded
+*   (onepass=       no) load all extensions in one pass?
+    (bpmask =      BPM) bad pixel mask
+    (bpdispl=     none) bad pixel display (none|overlay|interpolate)
+    (bpcolor=      red) bad pixel colors
+    (overlay=         ) overlay mask
+    (ocolors=    green) overlay colors
+    (erase  =      yes) erase frame
+    (border_=       no) erase unfilled area of window
+    (select_=      yes) display frame being loaded
+    (repeat =       no) repeat previous display parameters
+    (fill   =       no) scale image to fit display window
+    (zscale =      yes) display range of greylevels near median
+    (contras=     0.25) contrast adjustment for zscale algorithm
+    (zrange =      yes) display full image intensity range
+    (zmask  =         ) sample mask
+*   (zcombin=     auto) Algorithm for combining z1 and z2 values...
+    (nsample=     1000) maximum number of sample pixels to use
+    (order  =        0) spatial interpolator order (0=replicate,...
+    (z1     =       0.) minimum greylevel to be displayed
+    (z2     =    1000.) maximum greylevel to be displayed
+    (ztrans =   linear) greylevel transformation (linear|log|none|user)
+    (lutfile=         ) file containing user defined look up table
+.fi
+
+The mapping of the pixel values to grey levels includes the same automatic
+or range scaling algorithms as in \fBdisplay\fR.  This is done for each
+image in the mosaic separately.  The new parameter "zcombine" then selects
+whether to display each image with it's own independent display range
+("none") or to combine the display ranges into a single display range based
+on the minimum and maximum values ("minmax"), the average of the minimum
+and maximum values ("average"), or the median ("median") of the minimum and
+maximum values.  The independent scaling is most appropriate for raw data
+while the "minmax" scaling is recommend for processed data which are gain
+calibrated.  The special value "auto" (the default) checks if the display
+data has been flat fielded, either by separate processing or with
+on-the-fly calibration, and if so it uses "minmax" scaling and if not it
+used independent scaling.
+
+The "mimpars" (mosaic image parameters) parameter is actually a reference
+to another set of parameters.  The default with no value is to use the
+parameters from the parameter task \fBmimpars\fR.  These parameters can
+be examined and set with \fBepar\fR  either by typing ":e" when over this
+parameter in \fBmscdisplay\fR or by running \fBepar\fR directly on this
+task; i.e. epar mimpars.  The parameters for NOAO Mosaic data are shown below.
+
+.nf
+			   I R A F  
+	    Image Reduction and Analysis Facility
+    PACKAGE = mscred
+       TASK = mimpars
+
+    (extname=         ) extension name pattern
+    (exttmpl= _![1-9]![1-9]![1-9].*) extension template
+
+    (xgap   =       72) minimum X gap between images
+    (ygap   =       36) minimum Y gap between images
+
+    (process=       no) do calibration processing?
+    (oversca=      yes) do line-by-line overscan subtraction?
+    (flatfie=      yes) do flat field correction?
+    (caldir = mscdb$noao/kpno/4meter/caldir/) calibration directory
+    (filter =  !filter) filter
+.fi
+
+The "extname" parameter is used to select as subset of the image extensions to
+display.  It is a pattern to match extension image names.  For extensions
+such as im1, im2, etc. the pattern typically uses the character selection
+template such as "[1256]" to select anything with a 1, 2, 5, or 6 in
+the name.  The pattern matching syntax can be found in the help for
+the task \fBmatch\fR.
+
+The "exttmplt" parameter is for use with non-MEF data.  The gap parameters
+define the gap size in the display.  The remaining parameters are for
+the on-the-fly calibration discussed below.
+
+.sh
+3.1.1 On-the-Fly (OTF) Calibration
+
+Raw mosaic data can exhibit significant instrumental artifacts which may
+interfere with inspecting the data prior to reductions.  The most significant
+artifact is gain variations both within each CCD image and between the
+CCDs.  In the simplest case of constant gain variations between the CCDs
+the independent display scaling, "zcombine" of none or auto, may be
+sufficient.  But when there are significant flat field patterns it may
+be desirable to apply a quick, approximate flat field calibration as
+the data are being displayed.
+
+\fBMscdisplay\fR can apply an on-the-fly (OTF) calibration to raw mosaic
+exposures.  This does not change the actual data files and the calibration
+is intended to be quick and approximate.  The calibration steps performed
+are a line-by-line bias subtraction using the overscan region of the data
+and a division by a flat field.  If the data have been overscan corrected
+or flat field corrected by \fBccdproc\fR then the task will automatically
+skip those steps.  The title of the display will indicate if the data have
+been calibrated by adding "[bias]" for bias subtraction and
+"[bias,flat=XXX]" for bias subtraction and flat fielding using an OTF flat
+field called XXX.
+
+The bias subtraction is performed by averaging the overscan pixels in a
+line and subtracting this average from all the pixels in the line.  This
+removes the amplifier bias and line-by-line patterns.
+
+The flat field or response calibration is performed by reading special
+compact flat field calibration data which provides an approximate relative
+response for each pixel in each amplifier readout.  Depending on how the
+calibration file is derived this will approximately correct for pixel
+sensitivity variations, gain variations between the amplifiers, sky
+illumination variations, and any pupil ghost pattern (as occurs with NOAO
+Mosaic data from the Mayall (KPNO 4meter) telescope).
+
+The "process" parameter in the \fBmimpars\fR parameter set shown
+earlier selects whether to turn on or off the OTF processing.  If it is no
+then regardless of the "overscan" or "flatfield" parameter settings
+no calibration is applied.  If it is yes then one or both calibration
+operations can be selected.  Because the \fBmimpars\fR parameters can be
+set on the command line, it is common to leave the "process" parameter set
+one way, say to "no", and then override the value when displaying.  For
+example,
+
+.nf
+    ms> mscdisplay obj023 1 proc+
+    ms> mscdisplay flat022 2 proc+ flatfield-
+.fi
+
+The flat field calibration requires special calibration files.  The
+"caldir" parameter defines a directory containing the calibration
+files.  This can be a standard directory or a user directory.  Note
+that if a directory is specified it must end with $ or /.
+
+Within the calibration directory the calibration file to apply is selected
+by the "filter" parameter.  For automatic selection of calibrations, the
+calibrations can be selected by the filter string in the header (or by
+giving the same filter string in the "filter" parameter).  To use the
+filter string in the header the value of the filter parameter is set to
+"!<keyword>" where <keyword> is the keyword for the filter string.
+
+Creating the a calibration directory and calibration files is done with
+the task \fBmscotfflat\fR.  For the NOAO Mosaic a calibration directory
+is provided.  However you can create your own as described in the help
+for \fBmscotfflat\fR.  The "filter" parameter
+can be set to one of these names.
+
+.sh
+3.1.2 Real-Time Display with the DCA
+
+During data acquisition the \fBmscdisplay\fR task can be used to display mosaic
+data as it is being written to disk by the DCA.  It begins execution
+shortly after the readout begins and displays the portion of the recorded
+image which has been written to disk.  It then continually displays
+new data which has been written by the DCA until the exposure is completely
+written to the display.
+
+The DCA control panel allows you to select whether to display the data
+during readout and how it is to be displayed.  This includes selecting the
+OTF calibration.  One toggle is equivalent to the "process" parameter.
+If the processing is turned on the DCA automatically selects only overscan
+bias subtraction for non-object exposures and selects both bias subtraction
+and flat field division for object exposures.  The "filter" parameter
+is set by passing through the filter string from the data acquisition
+system or by overriding this and using the filter menu to select one of the
+available calibrations.
+
+.sh
+3.2 Examining the Data
+
+The task \fBmscexamine\fR allows interactive examination of mosaic images.
+It is essentially the same as the standard \fBimexamine\fR task except that
+it translates the cursor position in a tiled mosaic display into the image
+coordinates of the appropriate extension image.  Line and column plots also
+piece together the extensions at the particular line or column of the
+mosaic display.  To enter the task after displaying an image the command
+is:
+
+.nf
+    ms> mscexam
+.fi
+
+As with \fBimexamine\fR, one may specify the mosaic MEF filename to be
+examined and if it is not currently displayed it will be displayed using the
+current parameters of \fBmscdisplay\fR.
+
+It is important to realize that this task shares the \fBmimpars\fR parameters
+with \fBmscdisplay\fR.  To get data values back that match what is displayed
+the parameters must agree with those used to display the data.  In particular,
+if the data are display with OTF processing then \fBmscexam\fR must be
+told this either by explicitly setting the process flat in \fBmimpars\fR
+or setting it on the command line,
+
+.nf
+    ms> mscexam proc+
+.fi
+
+.sh
+3.3 Examining the Headers
+
+There was discussion earlier concerning the use of generic image tasks with the
+NOAO Mosaic data.  The tasks \fBimheader\fR and \fBhselect\fR fall into
+this category.  The two important points to keep in mind are that you must
+specify either an extension name or the extension position and that the
+headers of an extension are the combination of the global header and the
+extension headers.
+
+Often one does not need to list all the headers for all the extensions.
+The image title and many keywords of interest are common to all the
+extensions.  Thus one of the following commands will be sufficient
+to get header information about an exposure or set of exposures:
+
+.nf
+    ms> imhead obj*[1] l-                       # Title listing
+    ms> imhead obj123[1] l+ | page              # Paged long listing
+    ms> hselect obj*[1] $I,filter,exptime,obstime yes 
+.fi
+
+If you need to list header information from all the extensions then you
+need to take the additional step of creating an @file or using
+\fBmsccmd\fR.  For example to get the default read noise and gain values
+for each CCD:
+
+.nf
+    ms> imextensions obj123 > list123
+    ms> hselect @list123 $I,rdnoise,gain yes
+	    or
+    ms> msccmd "hselect $input $I,rdnoise,gain yes" input=obj123
+.fi
+
+The \fBccdlist\fR task in the \fBmscred\fR package is specialized for the
+mosaic data.  It provides a compact description of the name, title, pixel
+type, filter, amplifier, and processing flags.  The "extname" parameter may
+be used to select a particular extension, a set of extensions, or all
+extensions.  Because all extensions should generally be at the same state
+of reduction it may be desirable to list only the first extension.  Like
+most of the CCD reduction tasks you can also select only a certain type of
+exposure for listing.  Examples of the two modes are:
+
+.nf
+    # Summary for all exposures
+    ms> ccdlist *.fits extname=im1
+    # Summary for all object exposures
+    ms> ccdlist *.fits extname=im1 ccdtype=object
+    # List of all extensions.
+    ms> ccdlist obj123 extname=""
+.fi
+
+.sh
+3.4 Determining Best Focus
+
+Focus sequence frames can be evaluated for the best focus using \fBmscexam\fR
+and the 'r' or 'a' keys.  However, there is a special task for measuring
+the sequence of focus images called
+\fBmscfocus\fR.  This displays a focus exposure with \fBmscdisplay\fR (if
+needed) and then lets you select one or more bright stars to measure.  This
+task is customized so that all you need do is mark the top image in any
+CCD.  For NOAO Mosaic data, header information tells the task how many
+exposures, the spacings between the exposures, and the focus values.  After
+the measurements are made they are displayed and analyzed graphically and
+written to the terminal and logfile.  This task is the mosaic analog of the
+\fBkpnofocus\fR and \fBstarfocus\fR tasks for single CCD data.
+
+.sh
+4.2.1  Calibration Data to Obtain At the Telescope
+
+Good data reductions begin with obtaining good calibration data at the
+telescope.  This section discusses the NOAO Mosaic but the general
+principles will apply to other detectors, though the relative importance of
+different calibrations will depend on the quality of the CCDs and the
+stability of the camera.
+
+The standard calibration data are sequences of zero exposures and
+sequences of dome flat field exposures.  While dark count exposures,
+matched to the typical object exposure times, were important for the
+first generation (engineering grade) NOAO Mosaic, dark counts are expected
+to be low in the science grade detectors.  Thus dark count exposures are
+probably not necessary.
+
+Dome flat fields (dome flats) provide a fair basic flattening of the data
+to 2% or so, but sky flat fields (sky flats) are required to produce
+dithered data that can be combined without introducing obvious artifacts.
+Good sky flats can flatten the data to 0.1%.  In our experience twilight
+exposures do not work well.  Instead dark sky flat fields are derived from
+unregisted object exposures taken during the night or run.  If your
+observing program consists of only large extended objects or single
+pointings then you should also take some dithered exposures of "blank"
+sky.
+
+At the Mayall telescope there is a pupil image caused by reflections
+off the corrector.  For broadband photometry the effects of the pupil
+image are small but they can be reduced even further by reduction steps
+to remove the image.  One useful calibration for this removal is a
+narrowband dome flat field.  The idea is that the narrowband flat field
+has a more prominent pupil image that can be used as a template for the
+much fainter broadband pupil image.
+
+Lastly, good astrometry is required to register and stack the Mosaic
+images.  The NOAO Mosaic data contains previously determined astrometry
+recorded in the headers of the raw exposures.  This is sufficient for most
+purposes.  However, for cameras without astrometry or to generate your own
+astrometry solutions, fields with a reasonable density of stars with
+cataloged accurate coordinates must be taken.  Note that with the new
+generation of large astrometric catalogs and the large field of view of a
+mosaic, it may be that the object exposures already contain sufficient
+information for deriving new astrometric calibrations or corrections.  Note
+that this guide does not yet discuss how to create the astrometric
+coordinate system solutions.
+
+.sh
+4. Data Reductions
+
+The reduction of CCD mosaic data can be divided into two stages, the
+basic photometric and astrometric calibration of the individual CCDs
+and putting the pieces together into single images.  Another way to think
+of this division is that in the first stage the pixels are not resampled
+or interpolated while in the second stage they are.
+
+The first stage is similar to reducing data from single CCD exposures
+except that the calibration operations are repeated for all the CCDs in the
+mosaic.  Some operations must also be constrained to maintain the
+photometric and astrometric relationships between the CCDs.  The details of
+repeating the calibrations for all CCDs and maintaining the relationships
+are taken care of by the software and the data format so that these
+operations appear similar to reducing single CCD data.
+
+The steps in this stage consists of photometrically calibrating each pixel
+and astrometrically calibrating the coordinate system mapping between pixel
+coordinates and celestial coordinates.  The photometric calibration
+includes flat fielding as well as removal of instrumental artifacts such as
+amplifier crosstalk and reflections.  The astrometric calibration includes
+determination of the basic coordinate system mapping and adjustments
+for telescope pointing errors, instrumental rotation, and atmospheric
+refraction.
+
+The second stage of data reductions is more unique to mosaic data though
+some aspects are similar to combining any set of dithered exposures.  This
+stage consists of combining of the multiple CCD images and multiple
+exposures into a single image.  Since creating a single image from a single
+mosaic exposure is of marginal value, the thrust of this stage of the
+reductions is the combining of multiple exposures which have been spatially
+offset or "dithered" to cover both the gaps between the individual CCDs and
+any defects.
+
+The steps required to produce a single deep integration from dithered
+mosaic exposures consist of accurately registering the exposures, mosaicing
+the multiple CCD images in each mosaic exposure into single images with the
+same spatial sampling, correcting for variable sky gradients, measuring
+changes in the intensity scale due to variations in transparency and sky
+brightness, and combining the individual mosaiced images into a single deep
+image with the gaps between the individual CCDs and any bad pixels
+removed.
+
+Some of the steps described here do not apply to all mosaic data.
+These are removing instrumental artifacts from the controller, the
+camera, and the telescope.  Specifically there is discussion of removing
+amplifier crosstalk, pupil ghost reflections, and variable pixel scale
+photometric effects.  These artifacts occur with the NOAO Mosaics
+and telescopes and the discussion will be somewhat specific to this data,
+though it may apply to other mosaic instruments and telescopes.  If your
+data does not have there artifacts you can skip these steps.
+
+Combine zero exposures
+Combine dark exposures
+Combine dome flat field exposures
+Remove pupil ghost from the combined dome flat field
+Process object exposures
+Remove pupil ghost from object exposures
+Remove fringing from object exposures
+Apply sky flat field
+Calibrate coordinates
+Mask cosmic rays and bleed trails
+Create single images from the mosaic pieces
+Remove sky gradients
+Match flux scales for dithered exposures
+Stack dithered exposures
+Iterate
+
+.sh
+4.1 Some Preliminaries
+
+The command \fBsetinstrument\fR is used to set default parameters for the
+tasks in the \fBmscred\fR package appropriate to a particular instrument.
+Not all instruments will have instrument setup files.  When there are no
+setup files you simply need to review and set the \fBmscred\fR package
+and task parameters manually.  Note that the \fBesowfi\fR add-on package,
+which provides an interface to the more generic \fBmscred\fR package,
+has its own setup command, \fBesosetinst\fR.
+
+Currently there are setup files for the NOAO Mosaics available through the
+NOAO "mscdb" distribution which provides various runtime files such as
+those used by \fBsetinstrument\fR as well as the calibration files for bad
+pixels, crosstalk, and coordinate system, provided by the NOAO support
+staff.
+
+The \fBsetinstrument\fR command shuld only be run the first time you reduce
+data.  Subsequently you should not do this since it will reset parameters
+you may have later changed.
+
+To set the parameters for reducing the NOAO Mosaic data type one of
+the following command
+
+nf
+    ms> setinstrument ctio 4meter Mosaic2 review-
+    ms> setinstrument kpno 4meter CCDMosaThin1 review-
+    ms> setinstrument kpno 36inch CCDMosaThin1 review-
+    ms> setinstrument kpno wiyn minimosaic review-
+.fi
+
+where the first argument is the observatory, the second is the telescope,
+and the third is a camera name.  If the task is run without arguments
+then you will be queried for each argument and a '?' may be entered to
+get a list of available sites, telescopes, and instruments.
+
+For some of the operations it is useful to specify lists of exposures
+corresponding to a dither set.  The examples in this guide show using
+@files for dither sets.  An @file is simply a list of filenames.  These can
+be created in several ways including using a text editor.  One way is with
+the \fBfiles\fR command to expand a file template.  For example,
+
+.nf
+    ms> files obj021,obj022,obj023,obj024,obj025 > field1
+    ms> dir @field1
+    obj021  obj002  obj003  obj004 obj005
+.fi
+
+.sh
+4.2 Basic CCD Calibration
+
+Basic CCD instrumental calibrations consist of correcting each CCD for
+amplifier crosstalk, electronic bias levels, zero length exposure patterns,
+dark counts, and pixel sensitivities.  A cosmetic replacement of bad pixels
+may also be performed and saturated or non-linear pixels (determined from
+the original pixel values before any corrections are applied) may be added
+to a bad pixel mask.  When multiple amplifiers are used for each CCD the
+extensions for amplifiers from the same CCD may be consolidated into a
+single extension after the basic overscan bias correction is completed.
+
+The task which provides all these operations is \fBccdproc\fR.  The
+parameters of this task are shown below.
+
+.nf
+			       I R A F  
+		Image Reduction and Analysis Facility
+    PACKAGE = mscred
+       TASK = ccdproc
+
+    images  =               List of Mosaic CCD images to process
+    (output =             ) List of output processed images
+    (bpmasks=             ) List of output bad pixel masks
+    (ccdtype=       object) CCD image type to process
+    (noproc =           no) List processing steps only?
+
+    (xtalkco=          yes) Apply crosstalk correction?
+    (oversca=          yes) Apply overscan strip correction?
+    (trim   =          yes) Trim the image?
+    (fixpix =          yes) Apply bad pixel mask correction?
+    (zerocor=          yes) Apply zero level correction?
+    (darkcor=           no) Apply dark count correction?
+    (flatcor=          yes) Apply flat field correction?
+    (sflatco=           no) Apply sky flat field correction?
+    (merge  =          yes) Merge amplifiers from same CCD?
+
+    (saturat=        INDEF) Saturation
+    (xtalkfi=    !xtalkfil) Crosstalk file
+    (biassec=     !biassec) Overscan strip image section
+    (trimsec=     !trimsec) Trim data section
+    (fixfile=          BPM) List of bad pixel masks
+    (zero   =         Zero) List of zero level calibration images
+    (dark   =         Dark) List of dark count calibration images
+    (flat   =        Flat*) List of flat field images
+    (sflat  =       Sflat*) List of secondary flat field images
+    (minrepl=           1.) Minimum flat field value
+
+    (interac=           no) Fit overscan interactively?
+    (functio=     legendre) Fitting function
+    (order  =            1) Number of polynomial terms or spline pieces
+    (sample =            *) Sample points to fit
+    (naverag=            1) Number of sample points to combine
+    (niterat=            1) Number of rejection iterations
+    (low_rej=           3.) Low sigma rejection factor
+    (high_re=           3.) High sigma rejection factor
+    (grow   =           0.) Rejection growing radius
+.fi
+
+The parameter values are those set by \fBsetinstrument\fR for the NOAO
+8K Mosaics.  The parameters for \fBccdproc\fR must be set before any
+processing of the data takes place.  This is because the first actual
+processing is the preparation of the calibration data using tasks that
+combine sequences of zero level, dark count, and dome flat field
+exposures.  The tasks that do these operations use \fBccdproc\fR.
+
+The remainder of this sections briefly describes each of the operations
+performed by \fBccdproc\fR in the order in which they occur.
+
+The next section begins
+Before describing the preparation of the calibration data in the
+following section this section
+o
+
+
+This is recommended and is currently required to avoid problems at the
+boundaries between the different amplifier images with the task that
+resamples the mosaic data into a single image.
+
+The location of bad pixels continues to be maintained in
+the bad pixel masks and so this step is useful for display and to avoid
+problems with tasks that don't use the bad pixel masks and may misbehave
+unless the pixel values are reasonable.
+
+.sh
+Amplifier Crosstalk Removal
+
+The CCD amplifiers in mosaic cameras are typically readout in
+parallel.  It is possible that coupling in the controller electronics will
+introduce crosstalk resulting in the pixel values produced by one amplifier
+being affected by the signal in another amplifier.  There are many ways
+this crosstalk may affect the data.  The mosaic reduction software
+currently includes a way to correct or flag pixels based on a simple
+crosstalk model.
+
+In this model the signal for a pixel in one amplifier, which we
+call the "source", adds or subtracts a small amount to the pixel value
+read at the same time in another amplifier, called the "victim".  The
+amount is either proportional to the source signal level or has a
+threshold effect.  In the first case a correction can be obtained by
+multiplying the pixel value of the source image by a crosstalk
+coefficient and adding or subtracting from the matching pixel in the
+victim image.  In the second case a source pixel value which is above
+some level affects the victim pixel in some indeterminate way and
+all that can be done is flag the pixel.  In this case it is assumed
+that lower pixel values in the source do not affect the victim.
+
+Note that it is possible that a source may also be a victim and that
+a victim may be affected by multiple sources.  In this simple model
+each pair of source and victim are treated independently and the source
+pixel values used to correct a victim are treated as unaffected by
+other amplifiers.  For small crosstalk coefficients this is may be
+an acceptible approximation.
+
+The crosstalk coefficients may be estimated using the task \fBxtcoeff\fR.
+This requires having data with many stars per amplifier and levels up to
+saturation.  There is a balance between having many bright stars but not so
+many that most victim pixels matching bright stars in one amplifier will
+also have stars affecting the pixel value.  In order to estimate the
+crosstalk the ghosts of the bright stars should fall on pure sky.
+Currently this task only works when the victim and source images have the
+same readout order when match in image pixel coordinates.  This means that
+if the data acquisition system flips different amplifiers into a standard
+orientation on the sky when writing the values to the image extensions then
+the victim and source images must come from the same CCD amplifiers.  This
+means the task currently only works for the NOAO 8K mosaics read with one
+amplifier per CCD.
+
+The NOAO 8K mosaics have crosstalk that is clearly visible as ghosts
+of bright stars from one amplifier appearing in one or more other
+amplifiers.  The electronic basis of this crosstalk is not currently
+understood.  The simple model described above removes the ghosts
+and appears to be a satisfactory solution.  The instrument support
+scientists recommend using this crosstalk removal method with crosstalk
+coefficient files they supply.  While the crosstalk correction software
+has recently incorporated the possiblity of flagging the pixels this
+has not yet been added to the data reduction path described here.
+
+The WIYN MiniMosaic uses modified versions of the same controllers as
+the 8K mosaics.  However, at this time it appears the nature of the
+crosstalk is more in the second case of a threshold effect.  This is
+compounded by the fact that the gain is such that high signal levels
+are lost in digital saturation.
+
+The crosstalk model described here is implemented by the \fBmscred\fR
+task \fBxtalkcor\fR.  It may be used directly before running \fBccdproc\fR or
+by setting the "xtalkcor" parameter in \fBccdproc\fR to yes.  The
+crosstalk coefficient file is specified by the "xtalkfile" parameter.
+The NOAO mosaic data acquisition systems include the keyword XTALKFIL
+in the data headers with the recommended crosstalk calibration file
+from the mscdb calibration directory.  So to use the recommended
+file set the "xtalkfile" parameter to "!xtalkfil" which references
+the file given by the keyword.
+
+If you have some data with bright stars in each amplifier you can try
+and measure the crosstalk coefficients yourself with the task \fBxtcoeff\fR.
+For NOAO 8-channel and 16-channel data use
+
+.nf
+ms> xtcoeff [images] myxtalkfile @vnoao8 @snoao8 interactive+
+ms> xtcoeff [images] myxtalkfile @vnoao16 @snoao16 interactive+
+.fi
+
+respectively.  The @files include all the pairs of amplifiers which
+affect each other.  In the interactive mode for each pair of amplifiers
+graphs of coefficient estimates for pairs of pixels in which the source
+is greater than 20000 ADU are plotted as a function of source ADU.
+The constant fit is the crosstalk coefficient estimate.  In the interactive
+plots use the 's' key to set regions to include in the fit and the
+'t' key is used to clear the sample.  The purpose of this is to avoid
+source pixels which contaminate victim pixels that already have an object
+leading.  For more information read the help for the task.
+
+.sh
+Bad Pixel Interpolation and Saturation Flagging
+
+Bad pixels are identified by non-zero integer values in a bad pixel mask.
+There is a separate bad pixel mask for each CCD.  When there are multiple
+amplifiers per CCD there need only be one mask covering the whole CCD
+since the portion of the mask covering each amplifier image can be
+determined from coordinate information in the headers.  The mask for
+each extension is specified through the BPM keyword in the header.
+
+Because the bad pixel masks provide a record of where the bad pixels
+are and the values of the pixels are not scientifically useful, the values
+of those pixels can be changed for cosmetic purposes and to provide
+benign values for tasks which don't use the masks and might otherwise
+misbehave.  
+
+The "fixpix" option in \fBccdproc\fR replaces the bad pixels, where
+the bad pixel masks are specified by the "fixfile" parameter with
+the value "BPM", by interpolation.  Note that this is done on the
+input pixel values and not the output.  Typically the bad pixel
+masks applied at this point are maps of the non-linear pixels in
+the CCDs.  These are the same for all exposures.  For the NOAO
+mosaics BPM keywords point to standard calibration masks.
+
+The fixpix/fixfile parameters define input masks.  \fBCcdproc\fR can also
+produce output pixel masks which merge the input masks with saturated
+pixels added.  Obviously each exposure will produce its own masks.  The
+masks are produced if a bad pixel mask name for each processed exposure is
+specified with the "bpmasks" parameter.  Currently subdirectories with the
+specified name are created into which the individual masks for each
+extension are written.  The BPM keyword in the processed data are
+reset to the new masks.
+
+Saturated pixels must be identified in the raw counts before any
+other calibration, though the crosstalk correction may occur first
+but this only makes small changes to the values.  .......
+
+with unrealistic values.
+
+scientific data.
+
+The bad pixel are initially the non-linear pixels in the CCDs which are the
+same for all exposures.  
+
+by The mask is specified
+in the BPM keyword in each image extension.
+
+Initiall
+image
+in pixel list format.  Pixel list format is a special format that is
+well suited to 
+
+
+.sh
+Electronic Bias Removal and Overscan Trimming
+
+Electronic bias removal is a standard CCD reduction step where overscan
+data is used to estimate the electron bias level.  To include this step set
+the "overscan" parameter to yes and define the overscan bias region with
+the "biassec" parameter.  NOAO mosaic data includes the bias region
+appropriate for each amplifier image in the header keyword BIASSEC.  To
+reference this keyword value  set the parameter to  "!biassec".
+
+The set of parameters from "interactive" to "grow" define how the
+overscan region is used to estimate the bias level at each line.  This
+is described in the help for this task.
+
+After the bias is estimated and removed the overscan region is no longer
+needed and it is removed by trimming the image to only the actual CCD
+data.  The trimming can also be used to remove border pixels which might
+be bad.  The region to be kept after trimming is specified with the
+"trimsec" parameter.  NOAO mosaic data also includes the trim region
+in a keyword called TRIMSEC.  To reference this keyword value set
+the parameter to "!trimsec".
+
+Note that in order to merge multiple amplifier readouts from the same
+CCD the data must be trimmed.
+
+.sh
+4.2.2  Preparing Calibration Data
+
+This section describes how to prepare the basic calibration data.  The
+steps are virtually the same as with the \fBccdred\fR package and, in fact,
+the command names and parameters are the same.  The basic calibration data
+of zero level, dark count, and dome flat fields are generally taken as a
+sequence of identical exposures which are combined to minimize the noise.
+Later sections discuss correcting the flat fields for pupil ghost reflections
+and preparing a sky flat field calibration using the
+object exposures.
+
+The calibration exposures are individually reduced by \fBccdproc\fR and
+then combined.  Thus, it is necessary to first set the \fBccdproc\fR
+parameters.  Because this task knows which operations are appropriate for
+particular types of calibration exposures you can set all the parameters
+for object exposures.  Below is a typical set of parameters.  The main
+optional setting is whether or not to replace bad pixels by interpolation,
+which is purely a cosmetic correction.  However, it is recommended that
+this be done to avoid possible arithmetic problems in the processing.
+
+The overscan correction has two methods as selected by the fitting function.
+A value of "legendre" (or "chebyshev" or "spline3") take all the overscan data
+and fit a smooth function along the column direction.  The "order" value
+of 1 shown above fits a single constant value.  This leaves to the zero
+level calibration to subtract any details of line-by-line structure.  A value
+of "mean", "median", or "minmax" take the mean, median, or mean excluding
+the minimum and maximum values, of the overscan at each line and subtract
+that value from that line.  The other fitting parameters are ignored.
+The advantage of this is that systematic line-by-line patterns are
+subtracted.  The disadvantage is, since the sample of overscan pixels
+is small at each line, that this can also introduce a statistical line-by-line
+pattern.  There is currently no recommendation for the NOAO Mosaic.
+
+The first step is generally to process and combine sequences of zero, dark,
+and dome flat exposures.  This is done using the tasks \fBzerocombine\fR,
+\fBdarkcombine\fR, and \fBflatcombine\fR.  The combining must be done in
+the following order since the processing of later calibration data requires
+the preceding calibration data.
+
+.nf
+    ms> zerocombine *.fits
+    ms> darkcombine *.fits
+    ms> flatcombine *.fits
+.fi
+
+Each of these tasks search all the exposures for a particular type so it is
+fine to specify all files, though if the file names code the type, such as
+"dflatNNN", then one can use that as the wildcard to shorten the search of
+all the data.  Also \fBflatcombine\fR has the feature that it will combine
+the data separately for each filter.  However, you can use explicit file
+lists, templates, or @files to limit the input files.  The output combined
+names have standard default values which the above settings for
+\fBccdproc\fR use.
+
+It is a good idea to first check that the different calibration types
+and filters are correctly identified by the software.  This is done
+using the \fBccdlist\fR command
+
+.nf
+    ms> ccdlist *.fits
+.fi
+
+Unless you change the parameters "mscred.backup" and
+"mscred.bkuproot" the original raw files will be saved in the
+subdirectory "Raw/".  If you want to start over, delete the processed files
+and copy the raw files back to the working directory.  If disk space is a
+concern and you are satisfied with the combined calibration files you can
+delete the individual processed calibration files.  There is a parameter in
+the combining tasks that will delete the individual files automatically
+after processing and combining.
+
+.sh
+4.2.3 Pupil Image Removal from Flat Fields
+
+----
+At the Mayall telescope there are reflections off the corrector that
+produce a visible image of the pupil.  Coating of the corrector minimizes
+this image but it may be desirable to remove this instrumental signature
+which would otherwise cause a small variation of the photometric zero
+point as well as an unwanted visible feature.  There are two sections
+discussing removal of this feature from the flat field data and from
+the object exposures.  If your data is from the KPNO 0.9 meter telescope
+or the image is faint enough that it is not of concern then you can
+skip the extended discussion.
+----
+
+----
+For the Mayall telescope the pupil image due to reflections off the
+corrector must be removed from the flat field and object exposures.
+An additional calibration is required to correct for the variable pixel
+scale across the field of view if you intend to do photometry on the
+individual CCD images.
+----
+
+NOAO Mosaic data taken at the Mayall (4meter) telescope include a pupil
+image caused by reflections off the corrector.  The magnitude of this image
+is a function of the filter and the state of the anti-reflection coatings
+on the corrector.  It is also a function of the total light, including
+from outside the field of view, and somewhat on the location of bright
+stars.
+
+It might appear at first that one simply divides the object exposures by
+the flat field as is done for the OTF display calibration.  However this is
+not photometrically correct because the pupil image is an additive light
+effect and not a detector response.  Instead the pupil image must first
+be removed from the flat field before applying it to the object data.
+The object data is then corrected after flat fielding by subtracting the
+extra light from the pupil image.
+
+The pupil image is removed from the flat field by dividing by an estimate
+of the pupil image pattern.  The challenge is to determine the pupil image
+contribution in the presence of other flat field structure.
+
+There are two current approaches to obtaining the pupil image pattern for
+removal from the data.  One is to use data from another source where the
+pupil pattern is more easily separated from the flat field pattern.  The
+second is to derive the pattern from the data assuming something about the
+form of the pattern.  In particular, to use the difference in scales
+between the larger pupil pattern and the smaller flat field pattern.
+The first approach is preferable since it better preserves fine structure
+in the pupil image but the second is needed when no other data is available.
+
+.sh
+4.2.3.1 Broadband Data
+
+For broadband data the recommended procedure is to obtain a narrowband
+flat field exposure.  This narrowband exposure will have a stronger pupil
+image relative to the flat field pattern and, when the pupil image
+is scaled down to match the broadband image flat field, the errors from
+the flat field response will be diminished.
+
+The pupil image is extracted from the narrowband flat field using the task
+\fBmscpupil\fR.  This task determines the background levels in a ring
+inside and outside the main pupil image and subtracts this background to
+produced the pupil image template.  Outside the outer background ring the
+template is set to zero.  In effect this is like "scrapping off" the pupil
+image from the exposure.
+
+The relevant parameters are
+
+.nf
+			   I R A F  
+	    Image Reduction and Analysis Facility
+    PACKAGE = mscred
+       TASK = mscpupil
+
+    input   =           List of input images
+    output  =           List of output images
+    (masks  =      BPM) List of masks
+    (type   =     data) Output type
+    (xc     =      27.) Pattern center offset (pixels)
+    (yc     =       9.) Pattern center offset (pixels)
+    (rin    =     300.) Radius of inner background ring (pixels)
+    (drin   =      20.) Width of inner background ring (pixels)
+    (rout   =    1500.) Radius of outer background ring (pixels)
+    (drout  =      20.) Width of outer background ring (pixels)
+    (funcin =chebyshev) Inner azimuthal background fitting function
+    (orderin=        2) Inner azimuthal background fitting order
+    (funcout=  spline3) Outer azimuthal background fitting function
+    (orderou=        2) Outer azimuthal background fitting order
+*   (rfuncti=  spline3) Radial profile fitting function
+*   (rorder =       40) Radial profile fitting order
+*   (abin   =       0.) Azimuthal bin (deg)
+*   (astep  =       0.) Azimuthal step (deg)
+    (niterat=        3) Number of rejection iterations
+    (lreject=       3.) Low rejection rms factor
+    (hreject=       3.) High rejection rms factor
+    (datamin=    INDEF) Minimum good data value
+    (datamax=    INDEF) Maximum good data value
+    (verbose=      yes) Print information?
+.fi
+
+The output type is set to "data" to extract the pupil image after
+background subtraction.  The pattern center parameters are offsets from the
+astrometric center and the inner and outer radii are measured from the
+pattern center.  The default values are for the last measured Mayall
+pupil image.  The fitting parameters marked with an asterisk are not
+used when extracting the pupil image directly.
+
+The pupil image template is scaled and removed from the flat field using the
+task \fBrmpupil\fR.  The removal is done with the arithmetic
+operation
+
+.nf
+	I(out) = I(in) / (scale * I(template) + 1)
+.fi
+
+where I(out) are the output corrected pixel values, I(in) are the input
+pixel values, I(template) are the pupil image template pixel values, and
+scale is the relative scale factor to be applied.  The parameters for the
+pupil image removal task are
+
+.nf
+                       I R A F  
+        Image Reduction and Analysis Facility
+PACKAGE = mscred
+   TASK = rmpupil
+
+input   =           Input mosaic exposure
+output  =           Output mosaic exposure
+template=           Template mosaic exposure
+(type   =    ratio) Type of removal
+(extname=   [2367]) Extensions for fit
+(blkavg =        8) Block average factor
+(fudge  =      1.6) Fudge factor
+(interac=      yes) Interactive?
+(mscexam=       no) Examine corrections with MSCEXAM?
+.fi
+
+The "input" is the broadband flat field, the "output" is the corrected flat
+field, and the "template" is the narrowband pupil image produced by
+\fBmscpupil\fR.  The type of removal for a flat field is "ratio" as given
+by the equation above.
+
+Determining the optimal scaling of the template pupil image to the input
+pupil image is normally done interactively.  The task makes a guess at
+scaling.  If this task is used non-interactively this will be the scale
+used.  When the task is used interactively the input and corrected mosaic
+exposures are displayed and then a query for a new scale is given.  By
+repeatedly adjusting the scale factor the best visual removal can be
+obtained.  When done the output corrected flat field is created using the
+last specified scale factor.  Note that to quit requires entering dummy
+special values for the scale factor.  A value of zero means to create the
+final output exposure with the last scale factor and a value of -1 means to
+quit without producing any output.
+
+Because this operation is fairly slow and iterative there are some steps
+that can be taken to it speed up.  The "extname" parameter selects just
+those extensions to look at.  For NOAO Mosaic data the default selects the
+central four extensions covered by the pupil image.  The "blkavg" parameter
+applies a block average to the input exposure and template.  This makes the
+display and iterative corrections faster.  When the best scale factor has
+been determined the entire input image at full resolution is corrected by
+the full resolution template to create the output flat field.  If one wants
+to use the facilities of \fBmscexam\fR to evaluate each iterative
+correction then the "mscexam" parameter can be set.  However, the most
+powerful estimate for the optimal scale factor is viewing the display and
+possibly blinking between the uncorrected and corrected frames.
+
+.sh
+4.2.3.2 Narrowband Data
+
+For narrowband data the pupil image template must be derived from the data
+itself.  This is done by fitting the data with an axially symmetric
+pattern.  The fitting is performed by \fBmscpupil\fR with the parameters
+
+.nf
+			   I R A F  
+	    Image Reduction and Analysis Facility
+    PACKAGE = mscred
+       TASK = mscpupil
+
+    input   =           List of input images
+    output  =           List of output images
+    (masks  =      BPM) List of masks
+    (type   =    ratio) Output type
+    (xc     =      27.) Pattern center offset (pixels)
+    (yc     =       9.) Pattern center offset (pixels)
+    (rin    =     300.) Radius of inner background ring (pixels)
+    (drin   =      20.) Width of inner background ring (pixels)
+    (rout   =    1500.) Radius of outer background ring (pixels)
+    (drout  =      20.) Width of outer background ring (pixels)
+    (funcin =chebyshev) Inner azimuthal background fitting function
+    (orderin=        2) Inner azimuthal background fitting order
+    (funcout=  spline3) Outer azimuthal background fitting function
+    (orderou=        2) Outer azimuthal background fitting order
+    (rfuncti=  spline3) Radial profile fitting function
+    (rorder =       40) Radial profile fitting order
+    (abin   =       0.) Azimuthal bin (deg)
+    (astep  =       0.) Azimuthal step (deg)
+    (niterat=        3) Number of rejection iterations
+    (lreject=       3.) Low rejection rms factor
+    (hreject=       3.) High rejection rms factor
+    (datamin=    INDEF) Minimum good data value
+    (datamax=    INDEF) Maximum good data value
+    (verbose=      yes) Print information?
+.fi
+
+Note that this only differs from the previously shown parameters by
+setting the "type" parameter to ratio.  Because the template is
+derived from the data itself there is no need to use \fBrmpupil\fR
+to iteratively determine a scale factor.  The "output" parameter is
+the corrected flat field.
+
+The corrected narrowband flat field will show some artifacts from fine
+structure in the pupil image.  However, a large fraction of the pupil image
+will be removed.  Later reduction steps of applying a sky flat field and
+combining with dithering further eliminate effects of this approximate
+solution to the pupil image.
+
+.sh
+4.2.4 Object Exposure Reductions
+
+At this point you will have some subset of combined zero level, dark count,
+and flat field calibration data.  The calibration data is applied to
+the object exposures, either in bulk or as observations are completed,
+using the task \fBccdproc\fR.  The command is simply
+
+.nf
+    ms> ccdproc <files>
+.fi
+
+.sh
+4.2.5 Pupil Image Removal from Object Data
+
+The pupil ring image in the object exposures is removed by subtraction
+since this is excess light.   Again this is only required for data where
+the pupil image occurs, such as from the Mayall telescope.  The tasks for
+modeling and removing the image are the same as for removal from the flat
+field except that the "type" parameter is set to "difference".
+
+.sh
+4.2.5.1 Broadband Data
+
+Probably the best subtraction will be obtained by using the pupil image
+template from a narrowband flat field.  This would be the same as used
+for the flat field and extracted from the narrowband flat field using
+\fBmscpupil\fR with "type = data".  The subtraction is carried out using
+\fBrmpupil\fR with "type = difference".
+
+An alternative, since the pupil image is weak and the fine structure is
+unimportant, is to use \fBmscpupil\fR with "type = difference" to determine
+a smooth large scale ring pattern and subtract it from the data.  The
+iterative sigma rejection and the "datamin" and "datamax" parameters are
+used to eliminate smaller scale astronomical objects in the field from
+affecting the background fits and the ring profile fits.  For this
+application the "abin" parameter should be set to a value such as 30
+degrees and the "astep" parameter to a smaller value such as 5 degrees.
+
+The main advantage of this method is that no iterative scaling is required
+since the fit is done directly to the data.  The difficulty, though,
+is if there is a bright star or fairly extended object, particularly
+in the inner background ring, then the fit will be poor and the subtraction
+will show gross artifacts.
+
+The last alternative, and the one to use if there is no narrowband flat
+field for the template and the field has bright stars which affect fitting
+directly to the data, is to make a "sky flat" to generate the pupil image
+template.  This is done as described in the section for creating a sky
+flat.  Once the sky flat is created with the pupil image then
+\fBmscpupil\fR is used to separate the pupil image from the background and
+\fBrmpupil\fR is used to scale and subtract the image from the object
+exposures.  Note that after the pupil image is subtracted then a new
+sky flat should be created.
+
+.sh
+4.2.5.2 Narrowband Data
+
+For narrowband data the two alternatives described for the broadband data
+are used.  The first is to fit and subtract a smooth ring model from each
+object exposure using \fBmscpupil\fR.  This is the same as described
+for removing the pupil image from the flat field except the "type"
+parameter is set to difference.  The second is to create a sky flat
+from disregistered exposures, extract the pupil pattern with
+\fBmscpupil\fR, and then subtract it from each object exposure using
+\fBrmpupil\fR.
+
+.sh
+4.2.6 Dark Sky or Twilight Sky Flat Fields
+
+You will notice that there are two flat field corrections which can be
+performed by \fBccdproc\fR.  The first one is for an initial flat field
+such as the dome flat obtained at the beginning of the night, a standard
+flat field from a previous night or run, or a final combined dome flat and
+sky flat from some other night or run.  The second is for a dark sky or
+twilight sky flat field prepared from the object exposures after they have
+been calibrated with the first flat field.
+
+Sky flat fields are created by combining object exposures with objects
+removed by using data in each pixel that is only sky.  In principle one
+could use exposures of the twilight sky but our experience is that these do
+not work well.  You are welcome to take some exposures and try using them.
+We have found that dark sky flat fields derived from the object exposures
+do work quite well.
+
+Mosaic observations already typically dither a field.  One will do even
+better by combining observations from other fields.  The more data used the
+better the resulting sky flat will be. The main criterion for including
+data is to avoid observations contaminated by varying background light from
+the moon or scattered light from bright stars off the field.  Of course,
+another factor that has to be considered is whether a field has a very
+large extended object which appears in many of the observations.  These
+will not be useful.
+
+The sky flat field is created using the task \fBsflatcombine\fR with
+parameters selected to reject objects appearing above a median.  We don't
+have much experience with creating sky flats currently so some
+experimentation with parameters may be required.  Below is one possibly
+set of parameters.
+
+.nf
+			     I R A F  
+	      Image Reduction and Analysis Facility
+    PACKAGE = mscred
+       TASK = sflatcombine
+
+    input   =             List of images to combine
+    (output =      Sflat) Output sky flat field root name
+    (combine=    average) Type of combine operation
+    (reject =  avsigclip) Type of rejection
+    (ccdtype=     object) CCD image type to combine
+    (subsets=        yes) Combine images by subset parameter?
+    (scale  =       mode) Image scaling
+    (statsec=           ) Image section for computing statistics
+    (nkeep  =          1) Minimum to keep (pos) or maximum to reject (neg)
+    (nlow   =          1) minmax: Number of low pixels to reject
+    (nhigh  =          1) minmax: Number of high pixels to reject
+    (mclip  =        yes) Use median in sigma clipping algorithms?
+    (lsigma =         6.) Lower sigma clipping factor
+    (hsigma =         3.) Upper sigma clipping factor
+    (rdnoise=    rdnoise) ccdclip: CCD readout noise (electrons)
+    (gain   =       gain) ccdclip: CCD gain (electrons/DN)
+    (snoise =         0.) ccdclip: Sensitivity noise (fraction)
+    (pclip  =       -0.5) pclip: Percentile clipping parameter
+    (blank  =         1.) Value if there are no pixels
+    (grow   =         3.) Radius (pixels) for neighbor rejection
+.fi
+
+This task is a combination of \fBccdproc\fR to first process the images, if
+they have not previously been processed, and \fBcombine\fR to combine the
+offset images with rejection of object pixels.  A new feature of this
+task is the "grow" parameter which now provides a two dimensional
+circular rejection of pixels around pixels rejected by the rejection
+algorithm.  Whatever rejection algorithm is used it is likely that
+the best results will be when the clipping sigmas are non-symmetric as
+shown above.  Note that a very low rejection threshold or very large grow
+radius will make the task quite slow.
+
+After producing a good sky flat that has no evidence of objects it may
+be applied directly to the data by using it as the second flat field
+correction.
+
+.nf
+    ms> ccdproc <files> sflatcor=yes sflat=Sflat*
+.fi
+
+Note that the object exposures used in creating the sky flat will already
+have been processed except for the application of the sky flat so
+\fBccdproc\fR will only apply the sky flat field calibration.
+
+The sky flat field includes corrections at all scales from pixel-to-pixel
+sensitivity variations to large scale illumination differences.  If the
+signal-to-noise is poorer than the dome flat field you might wish to apply
+a filtering/smoothing operation to the sky flat data thus relying on the
+dome flat field for the pixel-to-pixel sensitivity calibration and the sky
+flat field for larger scale illumination corrections.  There are a number
+of filtering tasks in IRAF.  A median is a good filter and there is the
+choice of a ring median or box median.  To apply one of these general
+filtering tasks you would use \fBmsccmd\fR to run it on all the CCDs
+
+.nf
+    ms> msccmd
+    msccmd: median $input $output 10 10
+    Input files: SflatV
+    Output files: SflatMedV
+    msccmd: q
+.fi
+
+Because the object exposures are first processed with the dome flat (or
+other flat field) you would normally run \fBccdproc\fR again on the data
+using the sky flat and any observations that have not been processed at all
+will use both the dome flat and the sky flat.  However, if you want to make
+a single flat field to apply to raw data, say if starting over or using it
+for a second night, you can combine the two flat field corrections into a
+single flat field to be used as the only flat field correction.  This is
+done by multiplying the two flat fields using \fBmscarith\fR
+
+.nf
+    ms> mscarith FlatV * SflatV FinalflatV
+.fi
+
+.sh
+4.2.7 The Variable Pixel Scale and Zero Point Uniformity
+
+----
+Another step of the basic CCD calibration stage which has generally been
+ignored or forgotten with smaller single CCD formats is the variable pixel
+scale.  The large field of view provided by a mosaic and the optics
+required to provide it can lead to a significant variation in the pixel
+scale.  This effect is important with the Mayall telescope and is also
+present in the NOAO 0.9 meter data to a smaller degree.  It is likely to be
+present in other telescopes as well.
+
+When the pixel scale varies significantly the standard flat field
+calibration operation will cause the photometric zero point to vary.  A
+simple calibration step can be performed to remove this effect.  However,
+if you intend to produce single images from the mosaic of CCDs this step is
+not necessary since the resampling operation naturally accounts for this
+effect.
+----
+
+A key assumption in the traditional reduction of CCD images is that the
+pixel scale is uniform and that a properly reduced blank sky image will
+have a uniform and flat appearance.  Unfortunately, this is not correct
+when the pixel scale varies over the field.  In the case of the NOAO Mosaic
+at the Mayall telescope, the pixel scale decreases approximately
+quadratically from the field center, with the pixels in the field corners
+being 6% smaller in the radial direction, and 8% smaller in area.  Pixels
+in field corners thus would properly detect only 92% of the sky level seen
+in the field center, even with uniform sensitivity.  At the same time the
+same number of \fItotal\fR photons would be detected from a star regardless
+of how many pixels the PSF would be distributed over.  Forcing the sky to
+be uniform over the image has the deleterious effect of causing the
+photometric zeropoint to vary from center to field corners by 8%.  Note
+that this effect is different from vignetting where the flux actually
+delivered to the image margins is less than that at the center, an effect
+that \fIis\fR corrected by the flat field.
+
+In practice, the photometric effect of the variable pixel scale can be
+ignored provided that the reduced images will be part of a dither-sequence
+to be stacked later on.  As discussed below, prior to stacking the images
+they first must be re-gridded, which produces pixels of essentially
+constant angular scale.  This is done with the \fBmscimage\fR task, which
+re-grids the pixels and has a "flux conservation" option that can scale the
+pixels photometrically by the associated area change.  If this function is
+disabled, then "improperly" flattened images will have a uniform zero point
+restored.  In short, the flat field adjusted (if inappropriately) for the
+different pixel sizes, so \fBmscimage\fR would then do no further
+adjustment.  Stars would be too bright in the corners of the flattened
+images, but after re-gridding, their total fluxes would be seen to be
+scaled down to the appropriate values.
+
+If the mosaic CCD images are to be analyzed individually, as might be done
+for standard star fields, then after the flat field reductions are complete
+the differential scale effects must be restored.  At present we are
+developing a routine in the \fBmscred\fR package to do this, without
+actually re-gridding the image.  The correction process is simple; the
+scale at any point in the Mosaic field is already known from the astrometry
+so one just calculates and multiplies by the correction.  The final image
+would appear to have a variable sky level, but would be photometrically
+uniform.
+
+.sh
+4.3 Coordinate Calibration
+
+For some projects the basic flux calibrated CCD exposures may be all that
+is required.  However, if you want to obtain coordinate information or
+combine multiple exposures which are dithered on the sky or taken with
+different filters, you must calibrate the celestial world coordinate
+system (WCS) of the data.  This may be done in an absolute or relative
+sense; an absolute calibration ties the data coordinates to catalog
+coordinates while a relative calibration ties multiple exposures to the
+same coordinates.
+
+Determining the WCS from scratch is a complicated business and requires
+special observations of astrometry fields.  However, for NOAO Mosaic data a
+standard coordinate calibration determined earlier is automatically
+inserted into your data by the data capture agent.  The default coordinate
+system is sufficiently accurate for most purposes and just requires some
+small adjustments as described below.  To piece a single exposure into a
+single image that does not require registration to any other data you may
+use the default WCS and skip the WCS calibration steps.
+
+[Need discussion of using MSCSETWCS to set WCS from a database]
+
+.sh
+4.3.1 Creating or Updating a Mosaic World Coordinate System 
+
+This section describe how to create or update a world coordinate system
+(WCS) for mosaic data using IRAF and \fBmscred\fR tools.  A version of this
+discussion which includes example pictures may be found at
+http://iraf.noao.edu/projects/ccdmosaic/astrometry/astrom.html.
+
+A WCS is
+the header description that relates the image pixels to equatorial
+celestial coordinates.  For a mosaic each extension requires its own WCS to
+account for the relative orientations of the CCDs as well as for the
+optical distortions from the focal plane to the sky.  The unifying aspect
+of a mosaic WCS is that in all extensions the WCS uses the same reference
+point on the sky.  This is normally the optical axis of the telescope and
+also the approximate center of the mosaic detector.
+The WCS for different exposures are
+generally the same (excluding binning and subraster readouts) except for
+the celestial coordinate tied to the reference point.
+
+While it is possible to derive the WCS without having any
+header information it helps considerably to be able to use \fBmscdisplay\fR
+and \fBccdproc\fR.  In this discussion we assume that the headers
+contain the information needed to display and process the mosaic
+exposures.  A description of how to set up this information is given
+in http://iraf.noao.edu/projects/ccdmosaic/generic/generic.html.
+
+In principle one would want to derive WCS for each filter.
+This has been done to some extent for the NOAO mosaic imagers.
+The data acquisition system then adds the WCS for the appropriate
+filter and telescope.
+However, there is a stage in the mosaic data reduction where the WCS
+is adjusted to account for zeropoint offsets, small rotations, and
+refraction effects and scale changes.  This is done by
+registering the WCS to a set of coordinates, either relative to one
+exposure or from a catalog of star coordinates.  This registration
+provides the small adjustments to match filters to the same coordinate
+system.
+
+.sh
+4.3.1.1 Input Data
+
+To begin you need a calibration exposure of a field with many astrometric
+stars per CCD.  Astrometric stars are those for which you can obtain
+accurate right ascension and declination in J2000 coordinates and epoch of
+observation (i.e. proper motion corrected coordinates).  Of course you can
+use less accurate coordinates and then the WCS will be less accurate.  In
+the example the calibration exposure is of USNO standard field K.  The
+coordinates from the USNO-A2 catalog were obtain from
+http://www.noao.edu/gateway/catalogs/usno.html.  Another source of USNO
+coordinates is http://cadcwww.dao.nrc.ca/cadcbin/getusno2.  For the KPNO
+Mosaic star clusters with published astrometric coordinates were used.
+[Refer to MSCGETCATALOG]
+
+The required coordinate list is a simple text file of RA in hours and
+Dec in degrees.  The IRAF routines allow values to be input in sexigesimal
+notation as well as in decimal format.  Only the first two columns are
+required but the remaining columns, for USNO coordinates the red and blue
+magnitudes, are useful for creating subsets of stars such as by magnitude
+and for identification.
+
+To prepare the astrometric calibration data process it to subtract bias and
+trim to just the CCD data, that is trim away any prescan and overscan.
+Zero level, dark count, and flat fielding are generally not necssary for
+fields which have relatively bright stars.
+
+.sh
+4.3.1.2 Creating a WCS From Scratch
+
+This section describes creating an initial, rough, WCS for data which
+does not have a starting one.  It is much easier to update a prior
+WCS than it is to begin without one.  If your data has even a crude
+WCS or one that needs to be updated, either because the mosaic
+detector was worked on in a way that might have moved the CCDs or because
+you want to redo and possibly improve the current WCS, then you can
+skip this section and go to section "4.3.1.3 Updating the WCS".
+
+To get an initial WCS requires you to create a text file for each CCD
+having lines with pixel coordinates (X and Y) and matching celestial
+coordinates (RA and Dec).  There must be at least three coordinate pairs,
+usually the pixel position and celestial coordinates of stars, in the
+image.  A finder chart is clearly useful for this.  Making the text file
+can be accomplished in various ways including just using a text file
+editor.
+
+The tools you need are an image display, such as XIMTOOL, and some way
+to get the image pixel coordinates using the cursor.  This might be as
+simple as looking at the coordinate readout box in the display, or use
+tasks such as RIMCURSOR or IMEXAMINE.  While centroided positions can be
+used it is not really necessary for the determining an initial WCS.  The
+initial WCS will be refined later using centroiding and more coordinates.
+The pixel coordinates can be recorded directly to a file or edited by
+hand.  Similarly the celestial coordinates can be added after the pixel
+coordinates are determined or as the pixel coordinates are measured.
+
+Here we illustrate using \fBrimcursor\fR.  This task is simply a cursor
+reading loop that writes the keystrokes typed in the display to the
+standard output, which can be redirected to a file.  First display a
+particular CCD (or single amplifier readout) with \fBdisplay\fR (not
+\fBmscdisplay\fR which is for displaying all the CCDs) using the "fill"
+option.  Remember to specify the image extension. Then run \fBrimcursor\fR
+with the output directed to a file.  When you have matched an object in the
+image with an RA and Dec in your finding chart and list, position the
+cursor on the object and type colon followed by the RA and Dec.
+
+Below is an example of the output generated in this way.
+One could edit the file
+to remove the "101 :" but in the next step we have the option of specifying
+which columns are used.
+
+.nf
+    ms> type example1.dat
+    300.412 1156.412 101 : 15:23:32 -0:19:07
+    980.436 1668.428 101 : 15:23:41 -0:16:13
+    1188.444 2412.452 101 : 15:23:54 -0:15:22
+.fi
+
+The task that computes a WCS is \fBccmap\fR.  This task is basically a
+fitting task that fits a transformation between pixel coordinates and
+celestial coordinates and records the result in both a database file and in
+the image header as a WCS.  This task could be used directly to make a
+final WCS if the the input is generated with many centroided stars and
+celestial coordinates.  This is discussed further in "4.1.3.5 CCMAP Verses
+MSCTPEAK and Logical Verses Physical Coordinates".
+
+Below shows the result of using this task with the example of three
+stars.  Note that we need to change the "lngcol" and "latcol" parameters.
+We use an output database of "dev$null" since for now we only want to
+update the header.  In the interactive fitting you just need to type 'q'.
+Later you will do more with this interactive fitting mode.  You could also
+turn off the interactive fitting if desired.  Another possiblity for doing
+multiple fitts in one step is to use a list of images (again given with the
+extension syntax) and a matching list of files with the coordinates.
+
+.nf
+ms> ccmap example1.dat dev$null image=example[im1] lngcol=5 latcol=6 update+
+
+Coords File: example1.dat  Image: example[im1]
+    Database: dev$null  Solution: example[im1]
+Refsystem: j2000  Coordinates: equatorial FK5
+    Equinox: J2000.000 Epoch: J2000.00000000 MJD: 51544.50000
+Insystem: j2000  Coordinates: equatorial FK5
+    Equinox: J2000.000 Epoch: J2000.00000000 MJD: 51544.50000
+Coordinate mapping status
+    Ra/Dec or Long/Lat fit rms: 1.06E-12  6.32E-13   (arcsec  arcsec)
+Coordinate mapping parameters
+    Sky projection geometry: tan
+    Reference point: 15:23:42.333  -0:16:54.00  (hours  degrees)
+    Reference point: 823.098  1745.763  (pixels  pixels)
+    X and Y scale: 0.259  0.262  (arcsec/pixel  arcsec/pixel)
+    X and Y axis rotation: 270.332  90.829  (degrees  degrees)
+Wcs mapping status
+    Ra/Dec or Long/Lat wcs rms: 1.06E-12  6.32E-13   (arcsec  arcsec)
+Updating image header wcs
+.fi
+
+.sh
+4.3.1.3 Updating the WCS
+
+Starting with an approximately correct WCS what is done is to register
+a list of celestial coordinates to the objects in the image, fit a WCS of
+an appropriate order to describe the optical distortions, and update the
+header and write a WCS database file to be used to apply the WCS to other
+images.  This is done separately for each CCD though the WCS are
+constrained to have the same celestial reference point as noted earlier.
+This requires that there are RA and Dec keywords in the header (in hours
+and degrees respectively) for each extension which are the same and which
+point to the optical center of the exposure.  The keywords may be added if
+not present with
+\fBhedit\fR.
+
+The task we will use is MSCTPEAK in the MSCFINDER subpackage of
+MSCRED.  This task was derived from an older program,
+TFINDER, for
+making plate solutions using the Guide Star Catalog.  The MSCFINDER version
+instead accepts any simple text file of RA and Dec coordinates, understands
+the multiextension format, and produces a database appropriate for
+application to other mosaic exposures.  There is currently no specific help
+for this task but it is fairly self-guiding and the help for TFINDER can be
+used as a reference.
+
+The single list of coordinates includes all objects within the field of the
+entire mosaic and may contain objects outside the field.  The task will use
+the starting WCS to select those stars in or near each element of the mosaic
+for display and for you to register to the image.  The example list, part
+of which is shown below, is taken from the USNO catalog.  As before only the
+first two columns are used and other columns may be present for other
+purposes.  In this case the list has been previously sorted by red
+magnitude though the order does not matter for MSCTPEAK.
+
+.nf
+    ms> head usnoextract
+    15:23:41.251 -0:16:17.79 8.6 11.6
+    15:26:00.732 0:17:46.26 8.6 9.4
+    15:22:58.946 0:05:55.95 10.4 13.9
+    15:25:54.554 -0:17:02.79 10.4 11.8
+    15:23:19.939 -0:08:41.78 10.6 12.2
+    15:25:34.787 -0:01:02.79 10.6 12.3
+    15:25:40.378 -0:01:11.50 10.6 11.5
+    15:24:57.694 -0:06:16.80 10.9 12.1
+    15:23:05.066 0:04:17.01 11.0 12.1
+    15:24:09.960 0:03:04.16 11.0 11.9
+    15:24:23.282 0:03:03.20 11.1 12.7
+    15:22:57.130 -0:20:26.01 11.3 12.8
+.fi
+
+Now we look at the parameters for MSCTPEAK that will update the WCS for
+our example.  The "extname" parameter can be used to work only on one or a
+subset of extensions.  Otherwise if you abort the task or the task crashes
+you would need to go through all the extensions again.  The "projection" in
+the example is "tnx" which is a tangent plane projection with distortion
+polynomials that is understood by IRAF tasks.  The orders are for terms up
+to a power of three.  This is needed for the NOAO 4meter telescopes.  You
+should use "tan" if that is sufficient for your telescope distortions
+otherwise use the lowest representation you can.  In future other functions
+might be used and will incorporate the developing FITS WCS standards.  You
+will notice that there are some parameters you saw with CCMAP.  That is
+because the fitting engine in this task is also CCMAP.
+
+.nf
+    ms> epar msctpeak
+			      I R A F  
+	       Image Reduction and Analysis Facility
+    PACKAGE = mscfinder
+       TASK = msctpeak
+
+    images  =     example  List of WCS calibrated Mosaic images
+    coordina= usnoextract  List of ra(hr), dec(deg), optional id
+    database=  example.db  Database for astrometric fit
+    (extname=            ) Extensions
+    (epoch  =       2000.) Coordinate epoch
+    (update =         yes) Update image header WCS following fit?
+    (autocen=          no) Center catalog coords when entering task?
+    (boxsize=           9) Centering box fullwidth
+
+    (project=         tnx) Sky projection geometry
+    (fitgeom=     general) Fitting geometry
+    (functio=  polynomial) Surface type
+    (xxorder=           4) Order of xi fit in x
+    (xyorder=           4) Order of xi fit in y
+    (xxterms=        half) Xi fit cross terms type
+
+    (yxorder=           4) Order of eta fit in x
+    (yyorder=           4) Order of eta fit in y
+    (yxterms=        half) Eta fit cross terms type?
+
+    (reject =       INDEF) Rejection limit in sigma units
+
+    (interac=         yes) Enter interactive image cursor loop?
+    (frame  =           1) Display frame number
+    (marker =      circle) Marker type
+    (omarker=        plus) Overlay marker type
+    (goodcol=        blue) Color of good marker
+    (badcolo=         red) Color of bad marker
+    (fdimage=            )
+    (fdcoord=            )
+    (mode   =           q)
+.fi
+
+Now run the task.  You must have an image display tool running.  The
+task will display, with the "fill" option, each image extension in turn.
+We will only look at the first extension in this example.  It will draw
+circles where the current WCS predicts the objects to be.  If you see no
+circles when you expect to then there is a problem with the WCS.  This
+might be due to not having the CRVALn keywords correct for the field or the
+initial WCS is not correct.  The example below shows the first part of running
+the example.  Figure 8 shows the cursor help and figure 9 shows a
+zoomed portion of the display.
+
+You will be prompted with the image cursor for input of various
+commands.  The '?' command will page a list of the commands.
+
+The important keys are 'a', 'f', 'k', 'l', and 'r'.  We could attempt
+to center all objects using one object with the 'a'+'k' command.  But
+because of the rotation and rough nature of the initial WCS only
+stars in the vicinity of the reference object would be correctly centered.
+Instead we move around the field typing 'k' on the image of some of the
+stars from which we will do a first WCS fit.  Note that the 'k' key
+will center the nearest red circle.  If there is a possiblity of confusion
+the 'l' key is used by typing 'l' on the red circle and then 'l' again
+on the object to be centered.
+
+When moving around the field feel free to zoom the display.
+You should center a few stars in the corners and the edge, roughly
+12 stars.  The centered stars are shown in blue.  Because the circles
+can't be erased except by reloading the image the red circles for the
+centered objects are still visible.
+
+Once some stars have been centered type 'f' to fit a new WCS.
+This will bring up the interactive graphical fitting of CCMAP.  You can type
+'?' to get a reminder of the keys that can be used.  The initial
+figure is something like an x,y plot of the positions to show the
+distribution of the objects to be fit.  Most of the work is done by
+using the 'x', 'y', 'r', and 's' to display residuals as a function of
+x and y.  In these plots you might use 'd' to delete misidentified,
+miscentered, or stars with large and uncorrected proper motions.
+After deleting stars type 'f' to redo the fit.  For the first
+pass don't worry too much about the details.  We will come back to
+the fit after adding in the rest of the objects.  Type 'q' to go
+back to the image.
+
+Type 'r' to redisplay the image with the circles now at the position
+of the new WCS.  You can now center all the objects quickly
+with 'a'+'k' on a star which has a blue circle, this centers without any
+initial offset.  After this you will find most of the red cicles are
+blue and correctly centered on an object.  In some cases the centering
+may fail and the circle remains red.  Also if you have wrong centering
+you can delete a source with 'd'.  Once most of the stars have been
+recentered you are ready to get the final WCS solution.  Type 'f' again.
+
+After quitting the final fit and returning to the image displays type
+'q' to quit the current extension and go on to the next one.  When this is
+done the image header is updated and a database record is written.
+
+The final database record will look something like what is shown below.
+The database record name will be the same as the extension
+name.
+
+.nf
+ms> page example.db
+# Mon 12:25:01 02-Aug-99
+begin   im1
+        xrefmean        1044.292343750001
+        yrefmean        2156.800455357142
+        lngmean         15.39719017981151
+        latmean         -0.2653082589285715
+        pixsystem       physical
+        coosystem       j2000
+        projection      tnx
+        lngref          15.407730555556
+        latref          -0.03330555555555601
+        lngunits        hours
+        latunits        degrees
+        xpixref         4244.325766925275
+        ypixref         4304.248081888623
+        geometry        general
+        function        polynomial
+        xishift         -1141.614713161611
+        etashift        -1101.716071777617
+        xmag            0.2639284056373001
+        ymag            0.2655069305191946
+        xrotation       269.9466255882454
+        yrotation       90.92663219116762
+        wcsxirms        0.1472868023213945
+        wcsetarms       0.160997703816063
+        xirms           0.1472868023213879
+        etarms          0.1609977038160636
+        surface1        11
+                        3.      3.
+                        2.      2.
+                        2.      2.
+                        0.      0.
+                        -23.    -23.
+                        2112.   2112.
+                        1.      1.
+                        4096.   4096.
+                        -1141.614713161611      -1101.716071777617
+                        -2.458649045090564E-4   0.2639282911184323
+                        0.2654722084256873      -0.004293798704277087
+        surface2        18
+                        3.      3.
+                        4.      4.
+                        4.      4.
+                        2.      2.
+                        -23.    -23.
+                        2112.   2112.
+                        1.      1.
+                        4096.   4096.
+                        6.977981629782491       4.83341022221393
+                        -0.004048419139473676   -0.005838836166964449
+                        9.986220347252658E-7    2.009699573532316E-6
+                        -9.720500785419318E-11  -1.103085078407953E-10
+                        -0.00780283211407008    -0.003276602257239252
+                        1.364528047712044E-6    1.287934476820951E-6
+                        -1.462311976812420E-10  3.907533256511147E-11
+                        2.333215504725742E-6    5.414511921261557E-7
+                        9.518409839069242E-12   -1.571748447126591E-10
+                        -2.004754169679203E-10  2.479352519503381E-11
+.fi
+
+.sh
+4.3.1.4 Applying a WCS Database to Other Exposures
+
+The end result of creating and updating a WCS is that the calibration
+image will have the right WCS in its header and a database file will be
+produced.  To apply the WCS database to other images requires two things.
+First the WCS keywords must be added to the image extensions based on the
+extension names.  Second the position of the reference point in the WCS,
+the CRVALn keywords, must be set to the right point on the sky.  The task
+MSCSETWCS, whose parameters are shown in figure 14,  does this.
+
+.nf
+                           I R A F  
+            Image Reduction and Analysis Facility
+PACKAGE = mscred
+   TASK = mscsetwcs
+
+images  =     newimage  Mosaic images
+database=   example.db  WCS database
+(ra     =           ra) Right ascension keyword (hours)
+(dec    =          dec) Declination keyword (degrees)
+(equinox=      equinox) Epoch keyword (years)
+(ra_offs=           0.) RA offset (arcsec)
+(dec_off=           0.) Dec offset (arcsec)
+(extlist=             )
+.fi
+
+The first thing the task does is apply the WCS database specified by
+the "database" parameter.  If no database is specified then this task can
+be used only for the second step of updating the WCS reference coordinate
+based on the coordinate keywords in the header.  This step consists of
+transforming the keywords specified by the "ra" and "dec" parameters,
+presumably set by the data acquisition system, to the WCS keywords "crval1"
+and "crval2".  The keywords give the RA and Dec of the observation in hours
+and degrees.  Ideally these fairly obvious keywords will be a pointing put
+into the data by the data acquisition system based on the telescope
+pointing.  The "equinox" keyword, if specified and found in the header,
+will precess the header coordinates to the equinox of the J2000 equinox of
+the WCS.  The offset parameters may be used if there is always a known
+offset between the RA and Dec values in the header and the WCS reference
+point.
+
+Currently this task and the method of updating the WCS from a database
+assumes that there is no rotation or only a small
+rotation between the WCS calibration and later observations.  The
+small rotations, as well as scale and atmospheric refraction effects
+are removed later as a global adjustment to the WCS using the task
+MSCCMATCH.
+
+.sh
+4.3.1.5 CCMAP Verses MSCTPEAK and Logical Verses Physical Coordinates
+
+MSCTPEAK is a convenient routine.  However you can also do everything
+with other tools which produce the input to CCMAP, the list of accurate
+pixel and celestial coordinates, and then use CCDMAP directly.  The
+important points to note in the context of a mosaic and  MSCRED is that the
+"pixsystem" should be specified as "physical" and the database WCS names
+should be just the image extension names.  This is needed to allow
+MSCSETWCS, see "4.3.1.4 Applying a WCS Database to Other
+Exposures", to update the headers of mosaic exposures which have a
+different pointing and possibly are untrimmed (have overscan and prescan
+regions), trimmed to a smaller region, binned, or the result of a subregion
+readout.
+
+The idea is that the WCS database describes a transformation between
+"physical" coordinates and celestial coordinates.  Physical coordinates are
+coordinates tied to some fundamental system.  For mosaic data this should
+be the unbinned CCD coordinates.  The "logical" coordinate system is the
+pixel coordinates of the actual image raster.  By determining the WCS and
+specifying the database WCS in physical coordinates, then when the WCS is
+applied to other exposures first the logical pixels of the exposure are
+transformed to the same physical system (unbinned CCD pixels) regardless of
+overscan/prescan regions, binning, and subraster readouts.  Another way to
+think of this is that the WCS database in physical coordinates is a WCS
+tied to the CCD pixels.  The transformation between logical and physical
+coordinates is specified by the LTV and LTM keywords found in the image
+headers.
+
+Earlier we recommended that that the calibration exposure be trimmed to
+the full unbinned CCD data.  This means that the headers should all have
+LTM1_1/LTM2_2 = 1 and LTV1/LTV2 missing or zero.  CCDPROC will update or
+create  these keywords based on the CCDSEC and NSUM keywords.  However, the
+database WCS is best applied as early as possible in the raw data.  If
+the data have been binned then LTM1_1/LTM2_2 will be different than one and
+if there is an overscan on the left of the image, say 64 pixels of
+overscan, then the raw data should have LTV1=-64.  MSCSETWCS will then
+apply the WCS correctly in this case.
+
+.sh
+4.3.1.6 Verifying a WCS
+
+During any operation involving the WCS it is useful to be able to
+see if the coordinate system is correct.  A picture is worth a thosand
+words and can help you diagnose problems.  The tasks MSCZERO and MSCTVMARK
+are useful for this.  You need to have a list of coordinates that you
+expect to overlay on your field.  This might be easily obtained from
+some catalog such as the USNO-A.  Then you display the image either
+with MSCDISPLAY or MSCZERO.  The latter does MSCDISPLAY if the image
+is not already loaded and enters an interactive cursor loop.  Then
+you would use MSCTVMARK or the 'm' key in MSCZERO which excutes this
+task.  This takes the celestial coordinates, determines in which, if any,
+of the extensions the star falls based on the WCS and draws marks
+at the appropriate logical pixel coordinate.
+
+.sh
+4.3.2 Global adjustments to an exisiting Mosaic World Coordinate System
+
+The WCS is a mapping from pixels in the mosaic data to celestial
+coordinates relative to a reference point on the sky.  The reference point,
+or zero point, is set using the telescope pointing coordinate.  The
+telescope pointing is generally off by a small amount, though it could be
+completely wrong in some hardware/software error situations.  In addition,
+differential atmospheric refraction introduces small axis scale changes and
+rotations, which are significant due to the large field of view of the
+mosaic even during the course of single set of dithered exposured.
+Putting observations from different filters onto the same coordinate system
+also requires mapping small scale changes, since currently there is only a
+single standard WCS solution derived through one filter.  [In the future
+filter dependent solutions will be made available.]
+
+The WCS calibration operations consist of adjusting the standard coordinate
+system calibration to a desired zero point and applying small axis
+scale changes and rotations.  This is done using objects (usually stars) in
+the exposures.  Unlike a full WCS calibration, which requires a high
+density of stars with accurate catalog coordinates, the adjustments to the
+default WCS calibration require only a few objects; only one objects is
+needed to provide a zero point correction.
+
+The WCS adjustments are determined by specifying coordinates for one or
+more objects in the data.  The coordinates can be obtained from a reference
+catalog or, more commonly, by measuring coordinates from one reference
+exposure to which other exposures are to be "registered".  A combination of
+using a catalog coordinate for one object in the field to set the zero
+point in a reference exposure and then measuring the positions of other
+stars in the reference image based on that zero point calibration may also
+be done.
+
+The two tasks you will use are \fBmsczero\fR and \fBmsccmatch\fR.
+\fBMsczero\fR is used to interactively set the zero point of the
+coordinates, register multiple exposures closely, and generate a list of
+coordinates in a reference exposure to which other exposures in a dither
+set are registered.  \fBMsccmatch\fR finds objects at the positions
+specified by a list of coordinates and determines corrections for the zero
+point, axis scale change, and axis rotation.
+
+.sh
+4.3.1 Setting Coordinate Zero Points and Measuring Coordinates
+
+\fBMsczero\fR is an interactive display task for mosaic exposures that
+allows measuring coordinates and adjusting the WCS zero point.  The task
+parameters are shown below.  The last set of parameters (starting with
+"ra") are for the task to query and maintain lists.
+
+.nf
+			     I R A F  
+	      Image Reduction and Analysis Facility
+    PACKAGE = mscred
+       TASK = msczero
+
+    images  =             List of mosaic exposures
+    (nframes=          2) Number of frames to use
+    (logfile=    default) Log file for measurements
+
+    ra      =             RA (hours)
+    dec     =             DEC (degrees)
+    update  =        yes  Update WCS zero point?
+    (fd1    =           )
+    (fd2    =           )
+.fi
+
+The task displays each exposure in the list, in turn, and responds to
+cursor key commands.  You can go forward and backward through the input
+list or quit at any point.  The exposures are displayed by cycling through
+the specified number of frames starting with the first frame.  As an aid to
+efficiency, if the exposure is already loaded in the appropriate frame then
+the display step is skipped.
+
+This task has several uses (type '?' to get the list of command options):
+
+.nf
+    1. Set the WCS zero point by specifying the coordinate of a star.
+    2. Create a list of coordinates for use with \fBmsccmatch\fR and \fBmscimatch\fR.
+    3. Report coordinates at the cursor position.
+.fi
+
+It may be that the WCS zero points, based on the telescope
+pointing coordinates, are accurate enough that you can use this task on
+only a reference exposure to generate a list of coordinates for use with
+\fBmsccmatch\fR and \fBmscimatch\fR.  However, because it is fairly quick
+to explicitly check and set the zero point of all the exposures in a dither
+set to the same coordinate for a common reference star, it is recommended
+you do this first.
+
+To check and set the zero points for a set of dithered exposures run
+\fBmsczero\fR with a list of the exposures
+
+.nf
+    ms> msczero @field1
+.fi
+
+After the first exposure is displayed either find a reasonably bright
+unsaturated star which will be in all the exposures or find a star whose
+coordinate is known from a catalog such as the HST Guide Star Catalog.
+Move the cursor to the star and type 'z' (zero) to invoke a centering algorithm.
+Note that even though the exposure may be displayed at lower resolution the
+centering is done with the full resolution data.  The task will then tell
+you what it thinks the coordinate is and ask you for a new coordinate.  The
+first time 'z' is typed it will prompt with the measured coordinate and
+thereafter it will prompt with the last entered value.  If you are
+referencing all the exposures to the first exposure in the list accept the
+measured coordinate (and write the value down in case you need it later)
+otherwise enter the desired coordinate.
+
+Note that all further measurements of the image will automatically
+apply the measured zero point correction but the exposure WCS is not
+actually updated until you type 'n' (next) or 'q' (quit).  If you want to print
+coordinates without changing the zero point correction use the space bar
+or 'c' (center) to center on an object and print the centered coordinate.
+
+If you changed the WCS zero point you will be shown the zero point offsets and
+given the option to update the WCS in the data file when you type 'n'.
+Then the next exposure in the list will be displayed.  Find the same star
+and type 'z' again.  Since it will retain the last entered coordinate you
+should only need to accept the prompted coordinates.  When you have done
+this for all the exposures their coordinate systems will be registered at
+least at that point.
+
+The WCS in the dither set may still not be registered over all the field due
+to refraction effects.  Also the intensity scales of the dithered exposures
+may not be the same due to changes in transparency and sky brightness.
+These effects are calibrated by matching objects throughout the
+field in position and brightness.  This requires a list of coordinates
+tied to one of the dithered exposures as a reference.  Usually the
+first exposure in the set is used as the reference.  \fBMsczero\fR
+is used to create a list from objects in the reference exposure.
+
+.nf
+    ms> msczero obj021
+.fi
+
+Select objects, usually stars, throughout the field and type 'x' for each
+one.  This will center on the object and and record the coordinate in a
+logfile.  The default logfile name "default" creates a log file
+beginning with "Coords." and followed by the name of the exposure.
+In the example this will be "Coords.obj021".
+
+To be useful for coordinate matching this list should have a good
+number of stars, say three or four from each CCD, with emphasis on the
+field edges but allowing for the dithering.  For the intensity matching you
+want to have stars with a range of brightness (though not saturated or
+extremely faint) and which are mostly isolated so that a region around them
+may be used for sky.  The lists for the coordinate and intensity matching
+do not have to be the same but it is reasonable to just create one
+list.
+
+.sh
+4.3.2 Matching Coordinate Systems
+
+The task \fBmsccmatch\fR determines and applies a linear correction to the
+WCS to match objects, generally stars, in an exposure
+to a set of reference celestial coordinates.  This correction maintains the
+detector geometry and optical distortions while adjusting for changes in
+apparent sky position such as produced by atmospheric refraction and
+telescope pointing errors.  The linear correction consists of a zero point
+shift, scale changes in the right ascension and declination axes, and
+rotations of the axes.
+
+To use this task you need a list of reference celestial coordinates, right
+ascension in hours and declination in degrees, and the mosaic exposure
+coordinate system must be relatively close to the reference coordinate
+system.  The default WCS plus telescope pointing may be close enough, but if
+not you would use \fBmsczero\fR to register the zero points at some point
+in the exposures.  Since it is relatively simple to register a set of
+dithered exposures to a common star with \fBmsczero\fR this is
+recommended procedure before using \fBmsccmatch\fR.
+
+The reference coordinates should cover all of the mosaic field of
+view to be sensitive to the small rotation and scale effects.  The
+coordinate list might be obtained from a catalog or measured from one of the
+exposures to which other overlapping exposures will be matched.
+For the purposes of making a well aligned stacked image from a set of
+dithered exposures one generally uses one of the exposures as the
+source of the reference coordinates.
+
+\fBMsccmatch\fR operates on a set of input mosaic exposures; each in turn.
+For an exposure it converts each input celestial coordinate to a pixel
+coordinate in one of the extensions using the current WCS.  If the
+coordinate does not fall in any extension the coordinate is not used.  The
+pixel coordinate is used as a starting point for the \fBapphot.center\fR
+task.  If the centering fails for some reason, such as the object being too
+near the edge or the final position being too far from the initial
+position, the coordinate is not used.  For those objects successfully found
+a fit is made between the original celestial coordinates and the measured
+coordinates expressed as arc seconds from the exposure tangent point.  The
+fit is constrained to yield some combination of shift, scale change, and
+rotation for each of the celestial coordinate axes.  These parameters are
+then used to update the exposure WCS so that the adjusted measured
+coordinates best agrees with the reference coordinates.
+
+The task parameters are shown below.
+
+.nf
+                               I R A F  
+                Image Reduction and Analysis Facility
+    PACKAGE = mscred
+        TASK = msccmatch
+
+    input   =               List of input mosaic exposures
+    coords  =               Coordinate file (ra/dec)
+    (nfit   =            4) Min for fit (>0) or max not found (<=0)
+    (rms    =           2.) Maximum fit RMS to accept (arcsec)
+    (maxshif=           5.) Maximum centering shift (arcsec)
+    (fitgeom=     rxyscale) Fitting geometry
+    (update =          yes) Update coordinate systems?
+    (interac=          yes) Interactive?
+    (fit    =          yes) Interactive fitting?
+    (verbose=          yes) Verbose?
+    accept  =          yes  Accept solution?
+.fi
+
+The input is a list of mosaic exposures and a file of reference
+celestial coordinates.  The exposures should all include a significant
+number of objects from the list of coordinates.
+
+The task can be run interactively or non-interactively based on the
+"interactive" parameter.  In interactive mode you can graphically
+interact with the fitting (selected with the "fit" parameter) and
+accept or reject a fit based on the printed fit parameters.  The fitting is
+done using the task \fBgeomap\fR and the interactive mode allows you to
+view the distribution of coordinates, residuals verses the input
+coordinates, delete bad values, and possibly change the fitting constraints
+(see the help for \fBgeomap\fR for more information).
+
+The linear transformation may be constrained by the "fitgeometry"
+parameter as described in the help for \fBgeomap\fR.  This may be
+desirable if there are only a few coordinates or if you want to impose
+some physical assumption.  Note that the effects of atmospheric refraction
+actually do cause independent scale changes and rotations in the
+two axes so the default "rxyscale" should be used.
+
+There are some constraints which are placed on the task.  The
+"maxscale" parameter limits how far the objects may be found from the
+initial coordinates.  This constraint protects against incorrect
+identifications and tells the centering routine how much of the image to
+look at.  This parameter should be as small as possible consistent with the
+errors in the WCS.  If you first zero the coordinates then the objects
+should be found quite close to the initial coordinates.  When the
+"verbose" parameter is set the results of the centering will be printed
+consisting of the image extension name, the final pixel coordinates, the
+shift in pixel coordinates from the initial value, and the formal
+uncertainties in the pixel coordinates.  If an error occurs one of the
+error codes from \fBapphot.center\fR will be reported such as "BigShift"
+for objects with too big a shift from the initial position and "EdgeImage"
+for objects to near the edge of the image.
+
+The "nfit" parameter requires a certain number of coordinates to
+be included in the fit.  If specified as a negative number the parameter
+is interpreted as a maximum number that may be lost from the input
+list due to being off the exposure or failing to be centered.  The
+"rms" parameter requires that the final RMS of the residuals about
+the fit for each axis be less than a certain value.
+
+.sh
+4.4 Putting the Pieces Together
+
+This section tells you how to make single images from each multiextension
+exposure and how to combine sets of dithered images into a final deep image
+free from gaps and artifacts.  Obtaining good results depends on having
+well-flattened data, a uniform sky, a dither pattern that samples the gaps
+and bad regions of the detectors, and accurately registered world
+coordinates.  Most difficulties are caused by variable sky conditions or
+scattered light within a dither sequence or the data used to create a sky
+flat.
+
+.sh
+4.4.1 Removing Sky Gradients
+
+Any sky level mismatches when combining dithered exposures produce
+artifacts in the final image.  The three sources of such mismatches are sky
+gradients, sky level differences between the CCDs, and sky level
+differences between exposures.  While the flat field calibration,
+particularly with a sky flat, should remove differences in sky levels
+between CCDs, in practice there may still be small errors.  And the flat
+field will not deal with sky gradients across the large field of view.
+Exposure-to-exposure sky brightness variations can be dealt with at a later
+stage but even this is tricky.
+
+The best final result is obtained by fitting a low order surface (a plane
+or quadratic) to the sky and subtracting it from each CCD of each object
+exposure at this stage.  This will force the sky to be zero for all CCDs
+and all exposures.  Note that if one wants to preserve a sky level for
+statistical reasons it is possible to add a uniform constant after the
+subtraction to all the data (or add the constant to the final dither
+stacked image).
+
+To fit and subtract a sky and sky gradient the combination of
+\fBimsurfit\fR and \fBmsccmd\fR is used.  With \fBimsurfit\fR use the
+option to fit to medians in large blocks to remove the effects of objects.
+
+.nf
+    ms> msccmd
+    msccmd: imsurfit $input $output xo=2 yo=2 type=resid xm=100 ym=100 
+    Input files: obj*
+    Output files: obj*
+    msccmd: q
+.fi
+
+In this example the input and output are the same, replacing the original
+by the sky subtracted data, but one can create new output files if
+desired.  Note that x and y orders of 2 correspond to a plane and orders of
+3 correspond to a quadratic surface.
+
+.sh
+4.4.2 Constructing Single Images
+
+Making a single image from a mosaic exposure is done by mapping the pixels
+from each extension to a single uniform grid on the sky.  The WCS
+calibrations described in previous sections provide this.  For making
+a single image from a single exposure the WCS calibration is not critical
+and the default WCS is sufficient.  For combining multiple dithered
+exposures all the exposures must be registered to a common coordinate system,
+either relative to one reference exposure or to a set of catalog
+stars, and each exposure must be resampled to the same final
+coordinate system.
+
+The task that makes single images from mosaic exposures is \fBmscimage\fR.
+Its parameters are shown below.
+
+
+.nf
+                             I R A F  
+              Image Reduction and Analysis Facility
+    PACKAGE = mscred
+       TASK = mscimage
+
+    input   =           List of input mosaic exposures
+    output  =           List of output images
+    (referen=         ) Reference image
+    (pixmask=      yes) Create pixel mask?
+    (verbose= )_.verbose) Verbose output?
+
+			# Resampling parameters
+    (blank  =       0.) Blank value
+    (interpo=   linear) Interpolant for data
+    (minterp=   linear) Interpolant for mask
+    (fluxcon=       no) Preserve flux per unit area?
+    (ntrim  =        7) Edge trim in each extension
+    (nxblock=     2048) X dimension of working block size in pixels
+    (nyblock=     1024) Y dimension of working block size in pixels
+
+				    # Geometric mapping parameters
+    (interac=       no) Fit mapping interactively?
+    (nx     =       10) Number of x grid points
+    (ny     =       20) Number of y grid points
+    (fitgeom=  general) Fitting geometry
+    (functio=chebyshev) Surface type
+    (xxorder=        4) Order of x fit in x
+    (xyorder=        4) Order of x fit in y
+    (xxterms=     half) X fit cross terms type
+    (yxorder=        4) Order of y fit in x
+    (yyorder=        4) Order of y fit in y
+    (yxterms=     half) Y fit cross terms type
+.fi
+
+An output image is created for each input mosaic exposure.  The output
+image is created with a coordinate system defined by the specified
+"reference" image.  If no reference image is specified then the first
+input mosaic exposure is used to define a simple tangent plane coordinate
+system with optical distortions removed, and that coordinate system is used
+for all the input mosaic exposures.  The important point is that for a set
+of dithered exposures all the output images must be created with the same
+coordinate system grid so that they may be combined by simple integer
+shifts along the image axes.
+
+The normal usage is to specify all the mosaic exposures in a dither set as
+the input, give a matching list of output images, and leave the reference image unspecified.  If all the exposures in a dither set are not done at the
+same time then you must specify one of the earlier output images as the
+reference image to continue to create the output images on the same
+coordinate grid.
+
+The output images are created with a size that just covers the input data
+and initially filled with the specified "blank" value.  This is the
+value that the mosaic gaps will have in the final output image.  Then each
+extension is resampled into the appropriate part of the output image.  The
+coordinate mapping is generated by \fBgeomap\fR using the geometric mapping
+parameters which you don't need to change.  The resampling is done with the
+specified interpolation function.  The small rotations in the CCDs produce
+edge effects in the interpolated output pieces so a small trim is required
+to eliminate these.  [At the time this document was prepared the best value
+for the new science grade NOAO Mosaic had not been determined.]
+
+Linear interpolation is the fastest and most straightforward.  Other
+interpolation functions are available.  In particular sinc interpolation is
+now available as an add-on option (see the \fBmscred\fR installation
+instructions).  Experience with sinc interpolation shows that it is not
+overly slow and does provide improved results; particularly with
+maintaining the statistical characteristics of the sky noise.  The
+"minterpolant" parameter allows using a faster and more local interpolation
+function for the mask.  This is particularly useful when using sinc
+interpolation of the data to allow flagging only around the actual bad
+pixels and not extending out as far as the sinc interpolation does.
+
+It is useful for the later combining step to make bad pixel masks that
+reflect the interpolation and resampling from the input data.  These
+may be created by setting the "pixmask" parameter.  If this parameter
+is set and the input mosaic data have bad pixel masks defined through
+the header BPM keywords (default bad pixel masks are provided in
+the NOAO Mosaic data) then the masks will be interpolated in exactly
+the same way as the data.  The interpolated masks will appear in the
+working directory with names related to the output image names and
+with the output images containing the BPM keyword pointing to these
+masks.  The input bad pixel masks are assumed to have zero for good
+data and one for bad data and the output masks have zero for good
+data and values between zero and ten thousand for bad data.  The
+value is the result of interpolation and reflects the relative
+contribution of good and bad data.
+
+The "fluxconserve" parameter applies a pixel area correction if
+selected.  As discussed earlier, standard flat fielding distorts the flux
+per unit area in pixels of different projected size by making them have the
+same flux per pixel.  In effect this applies half of the flux conservation
+operation by adjusting the pixel values without adjusting the pixel sizes.
+\fBMscimage\fR does the second half by adjusting the pixel sizes.  So for
+standard flat fielded data, the usual route to making a combined dithered
+image, the flux conservation parameter should not be used to arrive at a
+proper final flux per unit area in the resampled data.  Flux conservation
+would only be used if the input mosaic data has previously been corrected
+back to proper flux per unit area through adjustment of the flat field or
+data for the variable pixel size inherent in the mosaic coordinate system.
+
+Below are two examples; one using prepared @files and one illustrating
+advanced usage of filename templates.
+
+.nf
+    ms> mscimage @dither1 @outdither1 pixmask+
+    ms> mscimage obj02![2-5]* %obj%mos%02![2-5]* pixmask+
+.fi
+
+In the second example the input template expands to obj022.fits to
+obj025.fits and the output template matches the input template using the
+first part of the %% substitution field and then replaces the "obj" with
+"mos" to give output images mos022.fits to mos025.fits.
+
+.sh
+4.4.3 Matching Intensity Scales
+
+When stacking dithered exposures (the single images created in the previous
+step) to fill in the mosaic gaps and remove bad pixels and cosmic ray
+events it is critical that the intensity scales of the images match.
+Otherwise you will see artifacts from the gaps, places with bad data, and
+around objects as the combined intensity level jumps when data from an
+exposure is missing or rejected.  Also the rejection algorithms require
+that the image intensities match both at the sky level and in the objects.
+
+There are two parameters that must be determined to match the intensity
+scales.  One is a additive offset caused by sky brightness variations.  The
+second is a multiplicative scale change caused by transparency and exposure
+time variations.  Matching the intensity scales for a set of dithered
+exposures consists of determining values for these two scaling parameters
+relative to a reference exposure and setting them in the image headers.
+The actual adjustment of the pixels values occurs when stacking the
+exposures.
+
+The intensity matching values are determined by the task \fBmscimatch\fR.
+The task parameters are shown below.
+
+
+.nf
+			   I R A F  
+	    Image Reduction and Analysis Facility
+    PACKAGE = mscred
+       TASK = mscimatch
+
+    input   =           List of images
+    coords  =           File of coordinates
+    (scale  =      yes) Determine scale?
+    (zero   =       no) Determine zero offset?
+    (box1   =       21) Inner box size for statistics
+    (box2   =       51) Outer box size for statistics
+    (lower  =       1.) Lower limit for good data
+    (upper  =    INDEF) Upper limit for good data
+    (niterat=        3) Number of sigma clipping iterations
+    (sigma  =       3.) Sigma clipping factor
+    (interac=       no) Interactive?
+    (verbose=      yes) Verbose?
+.fi
+
+The input is a list of images to be matched and a file of celestial
+coordinates (RA in hours and DEC in degrees) to use in computing the
+matching parameters.  The input images are the single images constructed
+from the mosaic exposures for a set of dithered observations.
+
+The parameters "scale" and "zero" select whether to determine the
+multiplicative scale, the zero level offsets, or both.  If the sky has been
+subtracted at an earlier stage (as recommended) then only the
+multiplicative scale difference needs to be determined.  The advantage of
+subtracting the sky earlier is that scale determination becomes better
+constrained.  Also determining the sky from photometry (as done by this
+task) is less robust than the surface fitting which uses all of the sky
+data.
+
+The scaling parameters are determined by measuring the mean flux in a set
+of matching regions between each input image.  The centers of the regions
+are specified by their celestial coordinates.  The list of coordinates
+should consist of the positions of objects in the field.  These objects
+should span a range of brightness.  As noted previously, you would normally
+use the same coordinate list as used with \fBmsccmatch\fR, which is
+generally obtained using \fBmsczero\fR.  However, you can use any IRAF task
+that produces a list of celestial coordinates from images with a WCS.  One
+possibility is to use \fBrimcursor\fR on one of the displayed single images
+with the "wcs" parameter set to "world" and the "wxformat" set to
+"%.2H" to produce right ascension values in hours instead of degrees.
+
+The now accurately aligned coordinate systems in the images are used to
+identify the matching pixel coordinate center in each image.  The regions
+to be measured consist of square boxes of the specified sizes about the
+pixel coordinate center.  There are two boxes, an inner box and an outer
+box which excludes the inner box.  The box sizes are intended to define
+photometry apertures for the objects and nearby background.  It is not
+critical that they exactly fit the objects or that the objects necessarily
+be stars but this is usually how they will be set.  Because of possible PSF
+variations the inner box should be large enough include all the light from
+stars over the whole data set.
+
+If the inner box is not fully contained in the input or reference image
+that box is not used for that pair.  Similarly the outer box must be fully
+contained in the images but if only the outer box is outside one or both
+images the measurement for the inner box may still be used.
+
+In order to exclude regions that include the gaps or bad data in one or
+both of the pair of images all pixels in a box must have values between the
+specified good data limits.  Those regions with values outside the limits
+are eliminated from the intensity matching.
+
+The mean fluxes in each region are used to simultaneously fit the relations
+
+.nf
+    mean_j = A_ij + B_ij * mean_i
+.fi
+
+for all i and j where i and j are any pair of images.  These equations are
+constrained by the fact that the scaling from image i to j, followed by the
+scaling from image j to k, must agree with the scaling from image i to
+image k.  The final scaling coefficients reported and stored in the image
+header are A_1j and B_1j, which correspond to the scalings to the first
+image in the input list.
+
+The task will attempt to reject photometry points which are discrepant.
+If the task is run interactively it will also show plots of the photometry
+flux in one image verses another.  It does this for sequential pairs of
+images.  Points can be deleted in these plots and they will be excluded
+from the data used to determine the scaling parameters.
+
+When the task is done determining the scaling factors they will be printed
+and a prompt issued to accept or not accept the results.  If the scaling
+parameters are accepted then the keywords \fBmsczero\fR and \fBmscscale\fR
+are recorded in the input image header when the "update" parameter is
+set.  Note that the reference image is assigned values of 0 and 1 for these
+header keywords.
+
+.sh
+4.4.4 Making the Final Stack Image
+
+After \fBmscimage\fR produces single images of each of the dithered mosaic
+exposures with a common coordinate system grid, a final image is created
+with the task \fBmscstack\fR.  The task \fBmscimatch\fR is generally used
+to match the intensity scales of the images before this step as described
+in the previous section.  However, for quick reductions or for other
+reasons the images may be stacked either with no intensity matching or
+using the "scale" and "zero" options of \fBmscstack\fR.  The task
+parameters are shown below.
+
+.nf
+                             I R A F  
+              Image Reduction and Analysis Facility
+    PACKAGE = mscred
+       TASK = mscstack
+
+    input   =             List of images to combine
+    output  =             Output image
+    (plfile =           ) List of output pixel list files (optional)
+
+    (combine=     median) Type of combine operation (median|average)
+    (reject =       none) Type of rejection
+    (masktyp=       none) Mask type
+    (maskval=         0.) Mask value
+    (blank  =         0.) Value if there are no pixels
+
+    (scale  =  !mscscale) Image scaling
+    (zero   =   !msczero) Image zero point offset
+    (weight =       none) Image weights
+    (statsec=           ) Image section for computing statistics
+
+    (lthresh=         1.) Lower threshold
+    (hthresh=      INDEF) Upper threshold
+    (nlow   =          1) minmax: Number of low pixels to reject
+    (nhigh  =          1) minmax: Number of high pixels to reject
+    (nkeep  =          1) Minimum to keep (pos) or maximum to reject (neg)
+    (mclip  =        yes) Use median in sigma clipping algorithms?
+    (lsigma =         3.) Lower sigma clipping factor
+    (hsigma =         3.) Upper sigma clipping factor
+    (rdnoise=         0.) ccdclip: CCD readout noise (electrons)
+    (gain   =         1.) ccdclip: CCD gain (electrons/DN)
+    (snoise =         0.) ccdclip: Sensitivity noise (fraction)
+    (sigscal=        0.1) Tolerance for sigma clipping scaling corrections
+    (pclip  =       -0.5) pclip: Percentile clipping parameter
+    (grow   =          0) Radius (pixels) for 1D neighbor rejection
+.fi
+
+This task is a simple variant of \fBcombine\fR that registers the images
+using the coordinate systems and has the default threshold parameters set
+to ignore values below one DN based on the default "blank"
+value in \fBmscimage\fR for the gaps.  If you have also generated
+bad pixel masks for the resampled images you can exclude them as well by
+setting "masktype" to "goodvalue".
+
+The real art in using this task is deciding how to scale and reject
+bad data not covered by the bad pixel masks.  A "combine" of "median"
+is the simplest but it does not optimize the signal-to-noise for the
+number of images.  If you "average" the data you will probably want
+to apply a rejection algorithm such as "avsigclip".
+
+Careful flat fielding will make each separate image have the same sky
+level across the different CCDs.  However, the sky levels and transparency
+may still be varying from exposure to exposure.  If you simply combine
+such data you will see imprints of the gaps.  So it is generally a
+good idea to scale the images.  This is done using the "scale"
+and "zero" parameters which can be set to header keyword values,
+files containing the values, or special values to compute image
+statistics in a particular region of the data.  The recommended
+method for scaling is to use the intensity matching task \fBmscimatch\fR
+described in the previous section and use the image header keywords
+\fBmscscale\fR and \fBmsczero\fR produced by that task.
+
+An example of using this task to create a final image is given below.
+
+.nf
+    ms> mscstack @field1 Field1 combine=average rej=avsigclip
+.fi
+
+.endhelp

@@ -1,0 +1,27 @@
+.help mscstack Aug97 mscred
+.ih
+NAME
+mscstack -- combine multiple reconstructed mosaic images
+.ih
+SYNOPSIS
+This is a simple convenience routine that combines multiple reconstructed
+images by registering using integer shifts based on the WCS.  It
+excludes the gaps in the individual mosaic images.
+.ih
+USAGE	
+mscstack input output
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls MSCSTACK - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+imcombine
+.endhelp

@@ -1,0 +1,39 @@
+imageid(im1)	1
+ampid(im1)	A
+datasec(im1)	!DSECA
+biassec(im1)	!BSECA
+trimsec(im1)	!TSECA
+ccdsec(im1)	!CSECA
+detsec(im1)	!CSECA
+ccdname(im1)	FORS
+ampname(im1)	AmpA
+
+imageid(im2)	2
+ampid(im2)	B
+datasec(im2)	!DSECB
+biassec(im2)	!BSECB
+trimsec(im2)	!TSECB
+ccdsec(im2)	!CSECB
+detsec(im2)	!CSECB
+ccdname(im2)	FORS
+ampname(im2)	AmpB
+
+imageid(im3)	3
+ampid(im3)	C
+datasec(im3)	!DSECC
+biassec(im3)	!BSECC
+trimsec(im3)	!TSECC
+ccdsec(im3)	!CSECC
+detsec(im3)	!CSECC
+ccdname(im3)	FORS
+ampname(im3)	AmpC
+
+imageid(im4)	4
+ampid(im4)	D
+datasec(im4)	!DSECD
+biassec(im4)	!BSECD
+trimsec(im4)	!TSECD
+ccdsec(im4)	!CSECD
+detsec(im4)	!CSECD
+ccdname(im4)	FORS
+ampname(im4)	AmpD

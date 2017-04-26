@@ -1,0 +1,79 @@
+include <error.h>
+include "mosgeom.h"
+
+procedure tile (input, output, blank, trimmed)
+
+char	input[ARB]		#I Input image template.
+char	output[ARB]		#I Output image name.
+real	blank			#I Fill value for empty regions of mosaic.
+bool	trimmed			#I Tile trim sections rather than data sections.
+
+pointer	inlist, sp, image, inmos, mos, outmos
+int	ninput, i
+
+pointer	imtopen(), mos_mapin(), mos_mapout()
+int	imtlen(), imtgetim()
+
+begin
+
+call eprintf ("tile\n")
+
+	inlist = imtopen (input)
+	ninput = imtlen (inlist)
+
+	# No images match template. Exit silently.
+	if (ninput == 0)
+	    return
+
+	call smark (sp)
+	call salloc (image, SZ_FNAME, TY_CHAR)
+	call salloc (inmos, ninput,   TY_INT)
+
+call eprintf ("mapping input images\n")
+
+	# Map input images and fill out mosgeom structuress
+	ninput = 0
+	while (imtgetim (inlist, Memc[image], SZ_FNAME) != EOF) {
+	    # Issue a warning if we can't access any of the images
+	    iferr (mos = mos_mapin (Memc[image])) {
+		call erract (EA_WARN)
+		next
+	    }
+	    ninput = ninput + 1		# Count succesfully mapped images
+	    Memi[inmos+ninput-1] = mos
+	}
+
+	if (ninput == 0) {
+	    call sfree (sp)
+	    return
+	}
+
+call eprintf ("mapping output image\n")
+	# Map output image
+	iferr (outmos = mos_mapout (output, Memi[inmos], ninput, trimmed)) {
+	    do i = 1, ninput {
+		call mos_unmap (Memi[inmos+i-1])
+	    }
+	    call sfree (sp)
+	    call erract (EA_ERROR)
+	}
+
+	# Tile TRIM sections
+	if (trimmed) {
+call eprintf ("tileing trimmed images\n")
+	    call mos_ttile (Memi[inmos], ninput, outmos, blank)
+
+	# Tile DATA sections
+	} else {
+call eprintf ("tileing untrimmed images\n")
+	    call mos_dtile (Memi[inmos], ninput, outmos, blank)
+	}
+
+	# Tidy up
+call eprintf ("close up shop\n")
+	call mos_unmap (outmos)
+	do i = 1, ninput {
+	    call mos_unmap (Memi[inmos+i-1])
+	}
+	call sfree (sp)
+end

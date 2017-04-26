@@ -1,0 +1,62 @@
+# MSCRED asks for the keyword given in the first column.  The second column
+# is the keyword sought in your image headers.  Edit the second column to
+# change the default translation.  Note that when there is no translation
+# the entry need not be in the translation file.
+
+imagetyp	obstype
+amp		imageid
+subset		filter
+
+biassec		biassec
+ccdmean		ccdmean
+ccdmeant	ccdmeant
+ccdname		ccdname
+ccdsec		ccdsec
+ccdsum		ccdsum
+darktime	darktime
+datasec		datasec
+dec		dec
+detsec		detsec
+exptime		exptime
+fringscl	fringscl
+mkillum		mkillum
+ncombine	ncombine
+nscanrow	nscanrow
+ra		ra
+trimsec		trimsec
+
+darkcor		darkcor
+fixpix		fixpix
+flatcor		flatcor
+fringecor	fringecor
+illumcor	illumcor
+illumflt	illumflt
+overscan	overscan
+readcor		readcor
+scancor		scancor
+sflatcor	sflatcor
+trim		trim
+zerocor		zerocor
+
+# Image type keyword value translations.
+# The value of the "imagetyp" keyword will be translated from the first
+# column to the second column which is what MSCRED recognizes.  Edit the
+# first column with the keyword values in your data.  It is case sensitive
+# and if the keyword value contains spaces it must be quoted.
+
+comp		comp
+dark		dark
+flat		flat
+fringe		fringe
+illum		illum
+mask		mask
+object		object
+other		other
+skyflat		skyflat
+zero		zero
+
+# Read the following  help topics for more information.
+#    instruments - Instrument specific data files
+#   ccdgeometry - Discussion of CCD coordinate/geometry keywords
+#       ccdtypes - Description of the CCD image types
+#        subsets - Description of CCD subsets

@@ -1,0 +1,320 @@
+.help rmpupil Jan02 mscred
+.ih
+NAME
+rmpupil -- remove pupil pattern from single or multiextension data
+.ih
+PARAMETERS
+.ls input
+List of input images or multiextension files.
+.le
+.ls output
+List of corrected output images or multiextension files.  If no list is
+specified then the input list is used, otherwise the output list must match the
+input list.  If an input and output file are the same the output is
+created in a temporary file and the input is replaced after the output is
+completed.
+.le
+.ls pupil
+List of pupil images or multiextension files.  The list must either match
+the input list or be a single file to be used for all the input files.
+The pupil pattern is assumed to have a zero background.
+.le
+.ls masks
+List of masks identifying pixels to ignore in the input data.  Pixels to
+ignore have non-zero mask values.  An empty list applies no bad
+pixel mask, a single mask applies to all input data, and a list is matched
+with the input list. A mask is specified by a filename or by
+reference to a filename given by the value of a header keyword in the input
+image.  A header keyword reference is made with the syntax "!<keyword>"
+where <keyword> is the desired keyword with case ignored.  For
+multiextension files the masks may be either a multiextension file with
+matching extension names or a directory of pixel list files with the
+extension names as the filenames.
+.le
+
+.ls pupilmasks
+List of masks identifying pixels to ignore in the pupil image.
+This mask is primarily intended to restrict the amplitude calculation
+to the region of the pupil pattern.  Pixels to ignore have
+non-zero mask values.  The same options for specifying the masks apply
+as for the \fImasks\fR parameter.  Keyword references will sought in the
+pupil pattern image header.
+.le
+.ls outtype = "sdiff" (sdiff|sflat)
+Output type from the choices "sdiff" and "sflat".  The first one scales
+and subtracts the pupil pattern and the second flattens the input
+by the pupil pattern.
+.le
+.ls ncblk = 5, nlblk = 5
+Moving average block sizes for the input and pupil images.
+The block average size for columns and for lines are specified separately.
+.le
+.ls extfit = "im[2367]"
+Extensions to use for fitting the pupil amplitude.  A null string matches
+all extension names.  Otherwise the parameter is a comma separated list of
+patterns which match the entire extension name.  Thus, a list of extension
+names may be given or the pattern matching characters '?' for any
+character or [] for a set of characters.  The set may include ranges in
+ascii order by using hyphens; i.e. 1-3 matches the characters 1, 2, and 3.
+The default value is for the KPNO Mosaic at the Mayall telescope.
+All the selected extensions in the input files must also exist in the
+pupil and mask files.
+.le
+.ls logfile = ""
+Filename for appending log information.  If no name is specified then no
+log is written.  Note that there is no need to use "STDOUT" since the
+same information is written when the \fIverbose\fR parameter is set.
+.le
+.ls verbose = yes
+If set to yes, log information is written to the standard output.  Note
+that this is the same information as written to the logfile specified
+by the \fIlogfile\fR parameter.
+.le
+.ih
+DESCRIPTION
+RMPUPIL determines the pupil amplitude that minimizes the weighted mean
+difference between an input image and a fringe image given in equation 1.
+The input images, specified by the \fIinput\fR parameter, may be individual
+images (which includes images selected from multiextension files as
+explicit image extensions) or multiextension files specified by a root
+filename.  In the latter case the image extension names selected by the
+\fIextfit\fR parameter are used for computing a global pupil amplitude for
+all the extensions.
+
+The output of this task are pupil corrected images or multiextension
+files.  When the input is a multiextension file the output is a
+multiextension file with all the same extensions.  Note that all the
+extensions in the input are output regardless of which extensions are
+selected for fitting.
+
+The statistic used to compute the scale is
+
+.nf
+    (1)  <(((A - <A>) - s (P - <P>)) (P - <P>))> = 0
+.fi
+
+where
+
+.nf
+    A		Input image		  (\fIinput\fR parameter)
+    B		Input image background	  (\fIbackground\fR parameter)
+    P		Pupil image	 	  (\fIpupil\fR parameter)
+    s		Pupil amplitude scale factor
+.fi
+
+The solution of equation 1 is determined over all pixels in the image or
+extensions selected by the \fIextfit\fR parameter which are not flagged in
+the pixel masks specified by the \fImasks\fR and \fIpupilmasks\fR
+parameters.  For multiextension files equation 1 is also solved separately
+for each extension and estimates of the pupil amplitude are shown in the
+log output (see examples 2 and 3).  However, the final pupil amplitude is
+not the average of these values but the solution over all pixels.  To treat
+image extensions as independent images the various file lists must be
+explicit images rather than multiextension file rootnames (see example 3).
+
+The fitting defined by equation 1 is improved by smoothing when the data
+and pupil pattern include noise, such as occurs when it is derived from
+observational data.  The images may be smoothed by a moving block average
+with block sizes specified by the parameters \fIncblk\fR and \fInlblk\fR.
+
+There are two types of output from the task selected by the \fIouttype\fR
+parameter.  When the type is "sdiff" the output is "A - s * P".  When
+the type is "sflat" the output is "A / (f * P + 1)" where
+
+.nf
+    (2)  f = s / b = s / (<A> - s * <P>)
+.fi
+
+The quantity b is an estimate of the background outside the pupil pattern.
+The derived quantities f and b are printed in the log output under the
+keywords "flatscale" and "flatbkg".
+
+While the observed pupil pattern is basically a scattered (additive) light
+effect it must be removed in a two step process when it also appears in
+the flat field data.  In the first step the pattern is removed from the
+flat field data using the "sflat" option.  This separates the underlying
+relative responses of the pixels.  After this corrected flat field is
+applied to the object data the pupil pattern is then removed as additive
+light using the "sdiff" option.  Generally the pupil pattern image is
+derived before each step.  A pupil pattern is first derived from data which
+has not been flat fielded, in other words from the flat field data itself.
+Then, after the object data has been flat fielded by the corrected flat
+field, a new pupil pattern is extracted from a sky flat field produced
+from the flat fielded object data.
+
+A key to obtaining the best match between the pupil pattern and the input
+data is to use masks for the input and the pattern.  The mask for the
+input data identifies bad data and objects in the input image.  The task
+\fBnproto.objmasks\fR is recommended for creating the masks.  When removing
+the pattern from flat field data the mask may be absent or identify regions
+where the flat field response significantly distorts the pattern, such
+as regions of very low or non-linear response or dust patterns.
+
+The pattern mask restricts the data used to determine the pupil amplitude
+to where the pupil pattern is located.  The two masks can be combined into
+one mask but it may be easier to use two separate masks since the pattern
+mask will often be independent of the data or even the date of observation.
+
+The masks specified by the \fImasks\fR and \fIpupilmasks\fR parameters may be
+in any of the supported masks formats.  As of IRAF V2.12 this includes
+pixel list (.pl) files and FITS "type=mask" extensions.  When the input is
+a multiextension file, the selected extension names are appended to the
+mask filename to select masks with the same extension name.  If a mask file
+of the form "name[ext]" is not found the task will treat the filename as a
+directory of pixel list files and select the filename corresponding to the
+extension name; i.e. "name/ext.pl".
+
+In addition to the pupil corrected image, log output to the terminal is
+produced when \fIverbose\fR is "yes" and log output to a specified file
+is produced by setting \fIlogfile\fR.  The output is the same for both.
+Because this task is a simple script calling the task \fBpatfit\fR
+the log output contains some additional information not described here.
+See the help page for \fBpatfit\fR for details.
+
+The output image will also contain a record of the operation performed
+under the keyword RMPUPIL as in the following example.
+
+.nf
+    RMPUPIL  = 'o262 - 0.80696 pupil'
+.fi
+
+.ih
+EXAMPLES
+1. Pupil removal from a single image, "o262".
+The input image is processed to produce a mask, "objmask262", of the
+objects and bad pixels (see \fBnproto.objmasks\fR).  A pupil mask, "pupilmask",
+has been created at the same time as the pupil pattern image, "pupil".
+
+.nf
+    cl> rmpupil o262 fo262 pupil objmask262 pupilmask=pupilmask
+    RMPUPIL: NOAO/IRAF V2.11EXPORT ... 18-Jan-2002
+      input = o262
+      pattern = pupil
+      weight = pupil
+        ncblk = 5
+        nlblk = 5
+      input background = <input>
+      pattern background = <pattern>
+      weight background = <weight>
+      input mask = objmask262
+      pattern mask = pupilmask
+      output = fo262
+      outtype = sdiff
+      <input> = 7650.
+      <pattern> = 0.1554
+      <weight> = 0.1554
+      scale = 0.807
+	fo262 = o262 - 0.80696 pupil
+.fi
+
+2.  The same example but with multiextension files.  In this
+case the object mask may either be a multiextension file of mask type
+extensions (V2.12 and later) or a directory "objmask262" with files im1.pl,
+im2.pl, etc.  This shows fitting the pupil only in the set of extensions
+where parts of the pupil pattern are found and then creating an
+output with all the extensions.
+
+.nf
+    cl> rmpupil o262 fo262 pupil objmask262 pupilmask=pupilmask
+    RMPUPIL: NOAO/IRAF V2.11EXPORT ... 15-Jan-2002
+      input = o262
+      pattern = pupil
+      weight = pupil
+        ncblk = 5
+        nlblk = 5
+      input background = <input>
+      pattern background = <pattern>
+      weight background = <weight>
+      input mask = objmask262
+      pattern mask = pupilmask
+      output = fo262
+      outtype = sdiff
+	o262[im2]: 0.8103
+	o262[im3]: 0.8235
+	o262[im6]: 0.8365
+	o262[im7]: 0.7584
+      <input> = 7650.
+      <pattern> = 0.5208
+      <weight> = 0.5208
+      scale = 0.8095
+	fo262[im1] = o262[im1] - 0.80953 pupil[im1]
+	fo262[im2] = o262[im2] - 0.80953 pupil[im2]
+	fo262[im3] = o262[im3] - 0.80953 pupil[im3]
+	fo262[im4] = o262[im4] - 0.80953 pupil[im4]
+	fo262[im5] = o262[im5] - 0.80953 pupil[im5]
+	fo262[im6] = o262[im6] - 0.80953 pupil[im6]
+	fo262[im7] = o262[im7] - 0.80953 pupil[im7]
+	fo262[im8] = o262[im8] - 0.80953 pupil[im8]
+.fi
+
+3.  The same multextension example treating the extensions as
+independent images.  Note that in this case the mask is actually
+objmask262/im1.pl but is referenced as objmask262[im1] (the other
+form could also be used).
+
+.nf
+    cl> dpar rmpupil
+    rmpupil.input = "o262[im2],o262[im3],o262[im6],o262[im7]"
+    rmpupil.output = "fo262[im2],fo262[im3,append],...
+    rmpupil.pupil = "pupil[im2],pupil[im3],...
+    rmpupil.masks = "objmask262[im2],objmask262[im3],...
+    rmpupil.patternmasks = "pupilmask[im2],pupilmask[im3],...
+    rmpupil.outtype = "sdiff"
+    rmpupil.ncblk = 5
+    rmpupil.nlblk = 5
+    rmpupil.extfit = ""
+    rmpupil.logfile = "logfile"
+    rmpupil.verbose = yes
+    rmpupil.mode = "ql"
+    # EOF
+    cl> rmpupil
+    List of input images (o262[im2],o262[im3],...
+    List of output corrected images (fo262[im2],fo262[im3,append],...
+    Pupil or list of pupil patterns (pupil[im2],...
+    List of object/bad data masks (objmask262[im2],...
+    RMPUPIL: NOAO/IRAF V2.11EXPORT ... 18-Jan-2002
+      input = o262[im2]
+      pattern = pupil[im2]
+      weight = pupil[im2]
+        ncblk = 5
+        nlblk = 5
+      input background = <input>
+      pattern background = <pattern>
+      weight background = <weight>
+      input mask = objmask262[im2]
+      pattern mask = pupilmask[im2]
+      output = fo262[im2]
+      outtype = sdiff
+      <input> = 7340.
+      <pattern> = 0.1587
+      <weight> = 0.1587
+      scale = 0.8088
+	fo262[im2] = o262[im2] - 0.80883 pupil[im2]
+    RMPUPIL: NOAO/IRAF V2.11EXPORT ... 18-Jan-2002
+      input = o262[im3]
+      pattern = pupil[im3]
+      weight = pupil[im3]
+        ncblk = 5
+        nlblk = 5
+      input background = <input>
+      pattern background = <pattern>
+      weight background = <weight>
+      input mask = objmask262[im3]
+      pattern mask = pupilmask[im3]
+      output = fo262[im3,append]
+      outtype = sdiff
+      <input> = 7299.
+      <pattern> = -0.3147
+      <weight> = -0.3147
+      scale = 0.7948
+	fo262[im3,append] = o262[im3] - 0.79481 pupil[im3]
+    ...
+.fi
+
+Note that in this case an output multiextension file is built from the
+individual outputs by using the "append" syntax of the FITS image kernel.
+
+.ih
+SEE ALSO
+nproto.objmasks, patfit, rmfringe, irmpupil
+.endhelp

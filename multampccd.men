@@ -1,0 +1,25 @@
+       ccdhedit - Mosaic header editor
+        ccdlist - List mosaic processing information
+        ccdproc - Process mosaic exposures
+        combine - Combine mosaic exposures
+    darkcombine - Combine and process mosaic dark count exposures
+    flatcombine - Combine and process mosaic flat field exposures
+  setinstrument - Set instrument parameters
+   sflatcombine - Combine and process mosaic sky flat field exposures
+    zerocombine - Combine and process mosaic zero level exposures
+
+        mimpars - Mosaic image parameters for display
+       mscarith - Image arithmetic mosaic exposures
+      mscblkavg - Block average mosaic exposures with header keyword updating
+         msccmd - Execute general command with image extension expansion
+     mscdisplay - Display mosaic exposures in single frames
+     mscexamine - Examine mosaic exposures displayed as single frames
+       mscfocus - Measure focus from mosaic focus exposures
+     mscotfflat - Built on-the-fly flat field calibrations
+       mscrfits - Read mosaic data from a FITS tape
+        mscstat - Image statistics on mosaic image extensions
+       mscwfits - Write mosaic data to a FITS tape
+
+    	      ADDITIONAL HELP TOPICS
+
+       mscguide - Introductory guide to using the MSCRED package

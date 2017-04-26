@@ -1,0 +1,159 @@
+.help ccdlist Jul01 mscred
+.ih
+NAME
+ccdlist -- List CCD processing information
+.ih
+USAGE
+ccdlist images
+.ih
+PARAMETERS
+.ls images
+List of mosaic exposures to be listed.  A subset of the these may be
+selected using the CCD image type parameter.
+.le
+.ls ccdtype = ""
+CCD type to be listed.  If no type is specified then all the types are
+listed.  If a CCD type is specified then only images of that type are
+listed.  See \fBccdtypes\fR for a list of the package image types.
+.le
+.ls extname = ""
+Comma delimited list of patterns matching the extension names to be listed.
+The null string, "", selects all extension names.  Otherwise a pattern
+must match the full name.  For example the pattern "[1-8]" matches
+"5" but not "im5".  One form of pattern is an exact match so that
+a parameter value of "im1,im12" matches both "im1" and "im12", but not
+"im11".  Typically the parameter would be "" to select all extensions or
+just the name of the first extension since all extensions should have the
+same filter, type, title, and processing status.
+.le
+.ls names = no
+List the image names only?  Used with the CCD image type parameter to make
+a list of the images of the specified type.
+.le
+.ls long = no
+Long format listing?  The images are listed in a long format containing some
+image parameters and the processing history.
+.le
+.ls ccdproc (pset)
+CCD processing parameter set.
+.le
+.ih
+DESCRIPTION
+Information from the specified input mosaic exposures is listed on the standard
+output.  A specific CCD type may be selected from the input exposures by
+the parameter \fIccdtype\fR.  There are three list formats; the default one
+line per image format, an image name only format, and a multi-line long
+format.  The default one line format consists of the image name, image
+size, image pixel type, CCD image type, amplifier ID (if defined), subset
+ID (if defined), processing flags, and title.  This format contains the
+same information as that produced by \fBimheader\fR as well as CCD specific
+information.  The processing flags identifying the processing operations
+performed on the image are given by the following single letter codes.
+
+.nf
+	X - Crosstalk correction
+	B - Bad pixel replacement
+	O - Overscan bias subtraction
+	T - Trimming
+	Z - Zero level subtraction
+	D - Dark count subtraction
+	F - Flat field calibration
+.fi
+
+The long format has the same first line as the default format plus additional
+instrument information such as the exposure time and the full processing
+history.  In addition to listing the completed processing, the operations
+not yet done (as specified by the \fBccdproc\fR parameters) are also
+listed.
+
+The image name only format is intended to be used to generate lists of
+images of the same CCD image type.  These lists may be used as "@" file
+lists in IRAF tasks.
+.ih
+EXAMPLES
+1. To list the default format for extension im1 of all images:
+
+.nf
+    cl> ccdlist *.fits extname=im1
+    ccd001.fits[im1][544,512][short][unknown][1][V]:FOCUS L98-193
+    ccd007.fits[im1][544,512][short][object][1][V]:N2968 V 600s
+    ccd015.fits[im1][544,512][short][object][1][B]:N3098 B 500s
+    ccd024.fits[im1][544,512][short][object][1][R]:N4036 R 600s
+    ccd045.fits[im1][544,512][short][flat][1][V]:dflat 6v+blue 5s
+    ccd066.fits[im1][544,512][short][flat][1][B]:dflat 6v+blue 5s
+    ccd103.fits[im1][544,512][short][flat][1][R]:dflat 6v+blue 5s
+    ccd104.fits[im1][544,512][short][zero][1][]:bias
+    ccd105.fits[im1][544,512][short][dark][1][]:dark 3600s
+.fi
+
+2. To list all extensions of one mosaic exposure which has been processed:
+
+.nf
+cl> ccdlist obj092
+    obj092[im1][128,256][real][object][1][R][XBOTZF]:NGC1569
+    obj092[im2][128,256][real][object][2][R][XBOTZF]:NGC1569
+    obj092[im3][128,256][real][object][3][R][XBOTZF]:NGC1569
+    obj092[im4][128,256][real][object][4][R][XBOTZF]:NGC1569
+    obj092[im5][127,256][real][object][5][R][XBOTZF]:NGC1569
+    obj092[im6][127,256][real][object][6][R][XBOTZF]:NGC1569
+    obj092[im7][127,256][real][object][7][R][XBOTZF]:NGC1569
+    obj092[im8][127,256][real][object][8][R][XBOTZF]:NGC1569
+.fi
+
+
+These exposures have not been processed.
+
+3. To restrict the listing to just the object images:
+
+.nf
+    cl> ccdlist *.fits extname=im1 ccdtype=object
+    ccd007.fits[im1][544,512][short][object][1][V]:N2968 V 600s
+    ccd015.fits[im1][544,512][short][object][1][B]:N3098 B 500s
+    ccd024.fits[im1][544,512][short][object][1][R]:N4036 R 600s
+.fi
+
+4. The long list for image "ccd007" is obtained by:
+
+.nf
+    cl> ccdlist ccd007 extname=im1 l+
+    ccd007[im1][544,512][short][object][1][V]:N2968 R 600s
+	exptime = 200. darktime = 200.
+        [TO BE DONE] Overscan strip is [520:540,*]
+        [TO BE DONE] Trim image section is [3:510,3:510]
+        [TO BE DONE] Flat field correction
+.fi
+
+5. After processing the images have the short listing:
+
+.nf
+    cl> ccdlist *.fits extname=im1 ccdtype=object
+    ccd007.fits[im1][508,508][real][object][1][V][OTF]:N2968 V 600s
+    ccd015.fits[im1][508,508][real][object][1][B][OTF]:N3098 B 500s
+    ccd024.fits[im1][544,512][short][object][1][R][OTF]:N4036 R 600s
+.fi
+
+The processing indicated is overscan subtraction, trimming, and flat fielding.
+
+6. The long listing for "ccd007" after processing is:
+
+.nf
+    cl> ccdlist ccd007 extname=im1 l+
+    ccd007[im1][508,508][real][object][1][V][OTF]:N2968 R 600s
+	exptime = 200. darktime = 200.
+        Jun  2 18:18 Overscan section is [520:540,*] with mean=481.8784
+        Jun  2 18:18 Trim data section is [3:510,3:510]
+        Jun  2 18:19 Flat field image is FlatV with scale=138.2713
+.fi
+
+.ih
+REVISIONS
+.ls CCDLIST - MSCRED
+Modified to work with multiextension mosaic exposures.
+.le
+.ls CCDLIST V2.11
+Added amplifier field in listing.
+.le
+.ih
+SEE ALSO
+ccdtypes ccdgroups
+.endhelp

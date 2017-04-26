@@ -1,0 +1,368 @@
+.help mscimage Aug97 mscred
+.ih
+NAME
+mscimage -- reconstruct single images from mosaic exposures
+.ih
+SYNOPSIS
+Multiextension mosaic exposures are resampled, based on the individual
+extension WCS with distortions, into a single image with a simple WCS.
+This may include a pixel mask identify regions of no data and pixels with
+contributions from bad pixels.  Multiple exposures can be resampled to a
+common reference WCS such that the images can be registered with integer
+pixel shifts.  This task will also work with single images to resample
+to a new output image on a desired coordinate grid.
+.ih
+USAGE	
+mscimage input output
+.ih
+PARAMETERS
+.ls input
+List of input mosaic exposures to be resampled into a single images.
+Single images may also be used if desired.
+.le
+.ls output
+List of output images.  The number of output images must match
+the number of input mosaic exposures or images.
+.le
+.ls reference = ""
+Reference image for defining the coordinate system.  If no reference image
+is specified then the first input mosaic exposure or image will be used to
+define the output coordinate system.  The purpose of a reference image is
+to create multiple output images with pixel sampling that allows the images
+to be stacked by simple integer pixel shifts.  \fBThis must be a single
+image and not a mosaic exposure.\fR
+.le
+.ls pixmask = yes
+Create pixel masks for each output image?  The output mask will have the
+same name as the output image (minus the image type extension) with the 
+extension "_bpm.pl".  The output mask name will also be recorded in the
+output image under the keyword BPM.  The output pixel mask will
+identify gap pixels plus any pixels in the output image which have
+contributions from bad pixels associated with each input extension.  The
+input pixel masks are specified by the BPM keyword in the extension.  If
+there is no bad pixel mask, an empty (all good pixels) mask will be
+assumed.
+.le
+.ls verbose = ")_.verbose"
+Print verbose information?  The default value points to the package
+\fIverbose\fR parameter.  The verbose information identifies the reference
+image being used and gives progress information when the empty output
+image is first created and then as each input extension is mapped to the
+output image.
+.le
+
+.ls blank = 0.
+The value assigned to regions where there is no data; i.e. the gaps between
+mosaic pieces and edges where small rotations produce no data in the
+output rectangular image.
+.le
+.ls interpolant = "linear"
+The interpolation type used on the image data.  The choices are
+
+.nf
+    nearest - nearest pixel
+     linear - bi-linear interpolation
+      poly3 - bi-cubic polynomial interpolation
+      poly5 - bi-quintic polynomial interpolation
+    spline3 - bi-cubic spline interpolation
+       sinc - 2D sinc interpolation
+      lsinc - look-up table sinc interpolations
+    drizzle - 2D drizzle resampling
+.fi
+
+For further information about the interpolants see \fBgeotran\fR.
+The interpolation type has a major effect on the speed of execution.
+.le
+.ls minterpolant = "linear"
+The interpolation type used on the bad pixel mask.  The choices are the
+same as for the \fIinterpolant\fR parameter.  The input bad pixel masks
+are interpolated to create an output bad pixel mask which includes the
+regions with no data such as mosaic gaps.  See the DISCUSSION to
+details about how this is done and how the choice of an interpolant should
+be made.
+.le
+.ls boundary = "reflect" (nearest|constant|reflect|wrap)
+Boundary extension to use to interpolate the data near the boundaries.
+The bad pixel mask interpolation only uses constant boundary extension
+as explained in the DISCUSSION.  The choices are
+
+.nf
+    nearest - the nearest boundary pixel
+   constant - the value supplied by the \fIconstant\fR parameter
+    reflect - reflect about the boundary
+       wrap - wrap around to the opposite side
+.fi
+
+To avoid ringing in the interpolation the boundary extension should
+not have a sharp discontinuity.  The "reflect" option is recommended.
+The \fIntrim\fR parameter can also be used to avoid needing to interpolate
+beyond the image.
+.le
+.ls constant = 0.
+Constant value for "constant" boundary extension.
+.le
+.ls fluxconserve = no
+Conserve the flux per unit area?  If the input exposures have been
+flat-fielded to yield a constant sky per pixel then flux conservation
+should not be used.  If the input exposures have been corrected to observed
+flux per pixel (where the sky varies with the project size of the pixel on
+the sky) then flux conservation should be used.
+.le
+.ls trim = 7
+Number of pixels to trim around the input image.  This can be used to
+eliminate bad edge data.  It also has the effect of avoiding interpolation
+problems at the image edges.  The piece of the image interpolated is
+trimmed at the edges by the specified amount but the data in the trimmed
+region is still used to interpolate beyond the trimmed edge.  The amount of
+trim will depend on the number of bad columns and lines on the edges
+and on the extent of the interpolant.  In general the edge should be
+at least half of the size of the interpolatant so that for cubics it
+would be at least 1, for quintic 2, and for sinc half the size of
+the sinc kernel.
+.le
+.ls nxblock = 2048, nyblock = 1024
+Working block size for the interpolation.  The parameters should be set
+as large as possible consistent with the available memory maximize the
+interpolation efficiency.  The x block size should typically correspond
+to the maximum number of columns in an input extension since the
+interpolation is done extension by extension.
+.le
+
+The following parameters deal with determining the mapping function
+between input and output pixels.  The defaults should be adequate for
+all cases.  See the DESCRIPTION for the meaning of the transformation
+and \fBgeomap\fR for more detailed information about the parameters.
+
+.ls interactive = no
+Fit the mapping function interactively?  The selects the interactive
+fitting option of \fBgeomap\fR.
+.le
+.ls nx = 10, ny = 20
+Number of x and y grid points to use over the input image (each piece in
+a mosaic) to use in determining
+the mapping function.  The grid separation  in x and y should be about
+equal so the default values are appropriate for input image extensions which
+have twice as many lines as columns.
+.le
+.ls fitgeometry = "general"  (shift|xyscale|rotate|rscale|rxyscale|general)
+Type of fitting geometry for the mapping function.  This should always
+be "general".  See \fBgeomap\fR for a description of the choices.
+.le
+.ls function = "chebyshev" (chebyshev|legendre|polynomial)
+Type of mapping function to use.  The choices are
+
+.nf
+     chebyshev - Chebyshev polynomial
+      legendre - Legendre polynomial
+    polynomial - Power series polynomial
+.fi
+.le
+.ls xxorder = 4, xyorder = 4, yxorder = 4, yyorder = 4
+Orders of fitting function where order means the highest power of
+x or y terms.
+.le
+.ls xxterms = "half", yxterms = "half" (none|half|full)
+Type of cross terms for x^i*y^j.  The options are "none" to include
+only terms in which either i or j is zero,
+"half" to include only terms where i+j is less
+than the maximum for either i or j, and "full" where i and j 
+take all values less than the maximum for each.
+.le
+.ih
+DESCRIPTION
+\fBMscimage\fR takes mosaic exposures, consisting of multiple extensions in
+a multiextension FITS (MEF) file, or single images and resamples them to
+output images with a desired coordinate grid on the sky.  For mosaic
+exposures all the pieces are resampled to create a single output image.  This is
+the common usage of this task.  For single input images this task might be used
+to take images with different spatial sampling and put them on a common
+grid.  By specifying the same output grid on the sky multiple output
+images from multiple input exposures can be stacked with simple integer
+shifts.  The output is designed to be used with \fBmscstack\fR or
+\Bimcombine\fR with "offset=wcs".
+
+The list of input mosaic exposures or single images is specified with the
+\fIinput\fR parameter and a matching list of output images is specified
+with the \fIoutput\fR parameter.  The coordinate grid for the output
+images is defined by specifying a \fIreference\fR image with the desired
+coordinate grid.  The reference is a single image and not a MEF mosaic
+exposure.  The output of \fBmscimage\fR may be used as a reference image
+to resample other images to the same coordinate grid.
+
+If no reference image is specified then the first input exposure is used to
+define the output coordinate grid.  When the input is a mosaic (which
+assumes all the pieces have a common tangent point) the piece nearest the
+tangent point on the sky is used as the reference.  Only the linear
+components of the input image coordinate system are used.  In other words,
+the linear scales and rotation of the coordinate system at the tangent
+point are used along with a standard tangent plane projection for the
+output coordinate system.  The resampling will remove any higher distortion
+terms.
+
+It is important to understand that resampling to a common coordinate grid
+does not mean the images are registered in pixel space.  What it means
+is that if one takes the coordinate system of the reference and extends
+it to infinity then the output image will map to pixels in that grid
+and the output image will be trimmed to just include the data.  Thus
+different images will not overlay on a display but will stack into
+a larger image without subpixel errors.  For a set of dithered images
+or mosaic exposures, one common usage is to specify all the exposures
+in the input leaving the reference image blank.  Then all the output
+images will automatically be resampled so that they can be easily stacked
+with \fBmscstack\fR.
+
+The resampling involves using the world coordinate system (WCS) of the
+input image or each piece of the input mosaic exposure to interpolate the
+pieces to the appropriate places in the output image.  This task may also
+create a bad pixel mask, selected by the \fIpixmask\fR parameter, from
+the input bad pixel masks given by the "BPM" keyword in the headers.
+Even if there are no masks for the input images/mosaic exposures an
+output mask is desirable since it will still identify regions with
+no data such as the gaps in a mosaic and regions around the edges that
+don't map into the image rectangle.  This is discussed further later.
+
+The resampling of the input pieces to the output image is done piece by
+piece where a single input image is treated as an exposure with a single
+piece.  First an
+empty output image is created with all pixels having the \fIblank\fR
+value.  The output has a size that will just include all the input data.
+Then each input piece is mapped to the appropriate region of the output
+image.  The mapping function maps input pixel coordinates (xin, yin) to
+output pixel coordinates (xout,yout).  The mapping function is used to
+determine which input pixels contribute to each output pixel and an
+interpolation is done to create the output pixel value.
+
+The mapping function is determined using the task \fBgeomap\fR and
+the interpolation is done using the task \fBgeotran\fR.  Many of the
+parameters of this task are for those tasks.
+
+The mapping function for an input piece is derived as follows.  A grid of
+points (xin,yin) covering the input piece is generated.  The number of grid
+points in each dimension is set by the \fInx\fR and \fIny\fR parameters.
+The grid includes the corners.  The WCS of the input piece is used to
+convert the grid pixel coordinates to sky coordinates (wx,wy).  The
+WCS of the output image is used to convert the sky coordinates to matching
+pixel coordinates in the output image (xout,yout).  The task
+\fBgeomap\fR is used to fit a mapping function (actually one function
+for each dimension)
+
+.nf
+    xin = f1(xout,yout)
+    yin = f2(xout,yout)
+.fi
+
+where the function parameters are defined by task parameters.  The function
+should be general enough to accurately follow distortions in the mapping
+between the input and output pixel coordinates.  The default values for
+this task should generally be adequate though one might adjust the number
+of grid points according to the ratio of the input extension dimensions.
+
+Once the mapping function is determined the task \fBgeotran\fR does the
+resampling of the input piece to the output image.  This task requires a
+interpolation type, given by the \fIinterpolant\fR parameter, what to do at
+the boundary, given by the \fIboundary\fR and \fIconstant\fR parameters,
+whether to adjust the interpolated value by the ratio of the input and
+output pixel areas to conserve flux specified by the \fIfluxconserve\fR
+parameter, and some memory limits specified by \fInxblock\fR and
+\fInyblock\fR.
+
+Whether or not the flux conservation option should be used depends on
+whether the input data has been calibrated to a constant sky or
+not.  Usually the data is calibrated using a flat-field or sky flat-field
+which has the effect of making the pixel values be uniform for the sky.
+This is done regardless of the project pixel size on the sky.  If
+this is the case then the flux conservation option should not be used
+because the output WCS is defined to have uniform pixel areas on the
+sky and, therefore, uniform pixel values for the sky.
+
+However, the input data may be calibrated to have sky pixel values
+corresponding to the projected area of the pixel on the sky.  This
+is typically done by taking the flat-fielded data and apply a pixel
+size correction to the data.  In this case the flux conservation option
+should be used to make the pixel sizes from the input to the output
+with the associated change in pixel values.
+
+The output masks are created by taking any input masks and creating
+temporary masks with non-zero values (the bad pixel indication) in the
+input mask mapped to 10000.  If there is no input mask then an empty
+temporary mask is created.  This mask is then interpolated using the same
+coordinate mapping used for the data.  Because the input mask jumps between
+zero and 10000 any interpolated value will generally be 0 where there are
+only good values contributing to the interpolation, 10000 if there are only
+bad pixels, or some value in between when there are contributions from the
+bad pixels.  The value 10000 is used since pixel masks have integer values
+only so any interpolated value with 0.01% effect from a bad pixel will
+still be identified as a bad pixel.  At the edges of the image the pixel
+mask interpolation uses constant value boundary extension with the value of
+10000.  This effectively acts as a mask for the out of bounds regions.
+
+The interpolation functions for the data and the mask can be independently
+selected.  One might use the same function for both.  However, some
+desirable interpolation functions, such as sinc interpolation, require a
+large piece of the input for each output pixel.  This would effectively
+mask a large area about any bad pixel.  In this case it is recommended that
+the input data have the bad pixels, including cosmic rays, replaced by
+interpolated data (using \fBccdproc\fR or \fBfixpix\fR for instance) to
+eliminate sharp features that ring in the interpolators.  By smoothing over
+the bad pixels artificially, the effects on distant pixels from something
+like a sinc interpolation should be minimal and so you might only want only
+the pixels near the marked bad pixels to appear in the output mask.  This
+is done by using an \fBminterpolant\fR of "linear" or "poly3" for the mask
+even when using a larger interpolant for the data.
+
+There is still the problem of interpolating near the edges of the input
+pieces.  The "reflect" boundary extension will largely minimize ringing at
+the edges from an interpolator.  But a possibly better method is to use the
+\fIntrim\fR parameter to mask out the edges of the input pieces.  Even
+though the trimmed pixels are not mapped to the output (where they appear
+with the \fIblank\fR) they are still available for the interpolation.  Thus
+the trim parameter should be set to excludes actual bad edges and then to
+trim in beyond the range of the interpolator.  The value to use would be
+one-half of the order or extent of the interpolator.  For dithered mosaic
+exposures the trimming widens the gaps slightly but insures that there are
+no edge effects to bleed through when stacking the dithers to fill in the
+gaps.
+.ih
+EXAMPLES
+1.  Create images for a set of dithered exposures to be later stacked.
+
+.nf
+    cl> mscimage @dither1 mos//@dither1
+.fi
+
+2.  Create images on a common WCS.
+
+.nf
+    cl> mscimage obj0321 mos0321
+    cl> mscimage obj0322 mos0322 ref=mos0321
+    cl> mscimage obj0323 mos0323 ref=mos0321
+.fi
+.ih
+REVISIONS
+.ls MSCIMAGE - V4.1: September 6, 2000
+The trimming was changed from being done on the output region to being done
+on the input region.  This better insures minimzation of edge effects since
+when masking on the output there is a variable amount of the input edges
+masked (sometimes none) depending on the distortions.
+
+The parameters "boundary" and "constant" were added to allow control over
+the boundary extension.  Previously it was fixed to be constant boundary
+extension with the constant given by the "blank" parameter.
+
+Because it was a simple change the task was modified to allow single
+images as input as well as MEF mosaic exposures.
+.le
+.ls MSCIMAGE - V2.11 external package
+First release.
+.le
+.ih
+BUGS AND LIMITATIONS
+The current version requires that the circumscribed boxes containing
+the input extension as projected on the output image do not overlap.
+This means the rotations of the pieces should be small and the output
+coordinate system is not rotated with respected to the mean orientation
+of the input exposure.
+.ih
+SEE ALSO
+geomap, geotran
+.endhelp

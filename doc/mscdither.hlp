@@ -1,0 +1,29 @@
+.help mscdither Aug97 mscred
+.ih
+NAME
+mscdither -- pipeline to make final image from dithered Mosaic exposures
+.ih
+SYNOPSIS
+The pipeline is a convenience script combining \fBmscregister\fR,
+\fBmscimage\fR, and \fBmscstack\fR.  The stacking uses a simple
+median combining with no rejections other than the median and
+a threshold to exclude the gaps.  More complex combining should use
+the individual tasks.
+.ih
+USAGE	
+mscdither input output
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls MSCDITHER - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+mscregister mscimage mscstack
+.endhelp

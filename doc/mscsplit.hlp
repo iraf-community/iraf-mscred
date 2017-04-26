@@ -1,0 +1,101 @@
+.help mscsplit Nov99 mscred
+.ih
+NAME
+mscsplit -- split MEF files into separate images
+.ih
+SYNOPSIS
+This task splits MEF files into separate images.  The output images have
+names of the form rootname_N where rootname is a user specified output
+rootname and N is the extension number.  The primary images or global
+headers are also created.  The output of this task can be used with MSCJOIN
+to recreate an MEF file with the same structure and extension names.
+.ih
+USAGE	
+mscsplit input
+.ih
+PARAMETERS
+.ls input
+List of input MEF files to be split.  If the list includes image type
+extensions then the extension must be specified in the \fImefext\fR parameter.
+.le
+.ls output = ""
+List of output root names.  If no output rootname is given then the input
+name is used as the rootname.  The output split images will have the
+specified rootname with suffix "_N" where N is the extension number.
+.le
+.ls mefext = ".fits"
+MEF filename extension.  This is used to identify the part of the input
+name to strip off to form the rootname for the output if no rootname is
+specified.
+.le
+.ls delete = no
+Delete MEF files after splitting?
+.le
+.ls verbose = no
+Print processing information?
+.le
+.ih
+DESCRIPTION
+MSCSPLIT takes multiextension format (MEF) files and separates them into
+separate images.  The output is designed to be used with MSCJOIN to
+recreate an MEF file with the same structure and extension names.  Typically
+this task is used to allow operating on the extension images separately
+after which the MEF file is recreated.
+
+A list of input MEF files is given and each file is separated into images
+with names of the form rootname_N where rootname is a user specified output
+rootname and N is the extension number.  The primary image, extension
+number 0, is also created.  The output rootname list may be left blank in
+which case the input MEF file name is used as the rootname.
+
+If the input MEF file is not found or the output files exist then a warning
+is printed and the task proceeds to the next input file.
+
+The \fIdelete\fR parameter may be used to delete the input MEF file
+after splitting.  This is useful in conjunction with MSCJOIN to later
+recreate the MEF file.
+
+The output separate images may be displayed with MSCDISPLAY if the
+parameter \Imimpars.exttmplt\fR is of the form "_![1-9]*.*" and
+the rootname does not match an MEF file.  Other display oriented tasks
+such as MSCZERO and MSCEXAM will also work with this format.
+.ih
+EXAMPLES
+1. Split an MEF file and delete it after splitting.  Then do some
+operations that modify the images.  Display the separate images
+with MSCDISPLAY.  Finally recreate the MEF file.
+
+.nf
+    cl> mscsplit obj012 del+ verb+
+    obj012[0] -> obj012_0
+    obj012[im1] -> obj012_1
+    obj012[im2] -> obj012_2
+    obj012[im3] -> obj012_3
+    obj012[im4] -> obj012_4
+    obj012[im5] -> obj012_5
+    obj012[im6] -> obj012_6
+    obj012[im7] -> obj012_7
+    obj012[im8] -> obj012_8
+    cl> imedit obj012_3 ""
+    cl> mscdisplay obj012 1 exttmplt="![1-9]*.*"
+    file template: obj012_![1-9]*.*
+    cl> mscjoin obj012 del+ verb+
+    obj012_0 -> obj012
+    obj012_1.fits -> obj012[append,inherit]
+    obj012_2.fits -> obj012[append,inherit]
+    obj012_3.fits -> obj012[append,inherit]
+    obj012_4.fits -> obj012[append,inherit]
+    obj012_5.fits -> obj012[append,inherit]
+    obj012_6.fits -> obj012[append,inherit]
+    obj012_7.fits -> obj012[append,inherit]
+    obj012_8.fits -> obj012[append,inherit]
+.fi
+.ih
+REVISIONS
+.ls MSCSPLIT - V3.2
+First release.
+.le
+.ih
+SEE ALSO
+mscjoin, fitsutil
+.endhelp

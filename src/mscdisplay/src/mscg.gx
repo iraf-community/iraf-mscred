@@ -1,0 +1,541 @@
+include	<imhdr.h>
+include "mosgeom.h"
+
+$for (silrd)
+
+# MSCL2 -- Get line of data.
+
+pointer procedure mscl2$t (mg, line)
+
+pointer	mg		#I MOSGEOM pointer
+int	line		#I Line
+
+int	i, nc, b1, b2, nb
+real	bias
+pointer	im, dzbuf, dfbuf, inbuf, outbuf
+
+pointer imgl2$t()
+$if (datatype == csir)
+real	asum$t()
+$else $if (datatype == ld)
+double	asum$t()
+$else
+PIXEL procedure asum$t()
+$endif $endif
+$if (datatype != s)
+pointer	mscbuf(), imgl2s()
+real	asums()
+$endif
+$if (datatype != r)
+pointer	imgl2r()
+$endif
+$if (datatype != i)
+pointer	imgl2i()
+$endif
+
+begin
+	im = MG_IM(mg)
+	nc = IM_LEN(im,1)
+
+	if (MG_USHORT(mg) == YES) {
+	    IM_PIXTYPE(im) = TY_SHORT
+	    inbuf = imgl2s (im, line)
+	    IM_PIXTYPE(im) = TY_USHORT
+	    $if (datatype == s)
+	    outbuf = inbuf
+	    $else
+	    outbuf = mscbuf (nc, TY_PIXEL)
+	    $endif
+
+	    if (CKNODATA(mg) == YES) {
+		NODATA(mg) = NO
+		do i = 0, nc-1
+		   if (Mems[inbuf+i] != 0)
+		       break
+		if (i == nc) {
+		    NODATA(mg) = YES
+		    return (outbuf)
+		}
+	    }
+
+	    if (PROC(mg) == NO) {
+		call mscuproc$t (Mems[inbuf], Mem$t[outbuf], nc, -32768.,
+		    INDEFR, INDEFI, INDEFR)
+		return (outbuf)
+	    }
+
+	    # Process data.
+	    bias = 0.
+	    if (DOBIAS(mg) == YES) {
+		b1 = min (BX1(mg), BX2(mg))
+		b2 = max (BX1(mg), BX2(mg))
+		if (b1 >= 1 && b2 <= nc) {
+		    nb = b2 - b1 + 1
+		    bias = asums (Mems[inbuf+b1-1], nb)/ nb
+		}
+	    }
+
+	    if (DOZERO(mg) == YES && DOFLAT(mg) == YES) {
+		dzbuf = imgl2r (DZIM(mg), line)
+		dfbuf = imgl2i (DFIM(mg), line)
+		call mscuproc$t (Mems[inbuf], Mem$t[outbuf], nc, bias,
+		    Memr[dzbuf], Memi[dfbuf], CCDMEAN(mg))
+	    } else if (DOZERO(mg) == YES) {
+		dzbuf = imgl2r (DZIM(mg), line)
+		call mscuproc$t (Mems[inbuf], Mem$t[outbuf], nc, bias,
+		    Memr[dzbuf], INDEFI, INDEFR)
+	    } else if (DOFLAT(mg) == YES) {
+		dfbuf = imgl2i (DFIM(mg), line)
+		call mscuproc$t (Mems[inbuf], Mem$t[outbuf], nc, bias,
+		    INDEFR, Memi[dfbuf], CCDMEAN(mg))
+	    } else
+		call mscuproc$t (Mems[inbuf], Mem$t[outbuf], nc, bias,
+		    INDEFR, INDEFI, INDEFR)
+
+	} else {
+	    inbuf = imgl2$t (im, line)
+	    outbuf = inbuf
+
+	    if (PROC(mg) == NO)
+		return (outbuf)
+
+	    # Process data.
+	    bias = 0.
+	    if (DOBIAS(mg) == YES) {
+		b1 = min (BX1(mg), BX2(mg))
+		b2 = max (BX1(mg), BX2(mg))
+		if (b1 >= 1 && b2 <= nc) {
+		    nb = b2 - b1 + 1
+		    bias = asum$t (Mem$t[inbuf+b1-1], nb)/ nb
+		}
+	    }
+
+	    if (DOZERO(mg) == YES && DOFLAT(mg) == YES) {
+		dzbuf = imgl2r (DZIM(mg), line)
+		dfbuf = imgl2i (DFIM(mg), line)
+		call mscproc$t (Mem$t[inbuf], Mem$t[outbuf], nc, bias,
+		    Memr[dzbuf], Memi[dfbuf], CCDMEAN(mg))
+	    } else if (DOZERO(mg) == YES) {
+		dzbuf = imgl2r (DZIM(mg), line)
+		call mscproc$t (Mem$t[inbuf], Mem$t[outbuf], nc, bias,
+		    Memr[dzbuf], INDEFI, INDEFR)
+	    } else if (DOFLAT(mg) == YES) {
+		dfbuf = imgl2i (DFIM(mg), line)
+		call mscproc$t (Mem$t[inbuf], Mem$t[outbuf], nc, bias,
+		    INDEFR, Memi[dfbuf], CCDMEAN(mg))
+	    } else
+		call mscproc$t (Mem$t[inbuf], Mem$t[outbuf], nc, bias,
+		    INDEFR, INDEFI, INDEFR)
+
+	}
+
+	return (outbuf)
+end
+
+
+# MSCNL -- Get next line of data.
+
+int procedure mscnl$t (mg, outbuf, v)
+
+pointer	mg		#I MOSGEOM pointer
+pointer	outbuf		#I Data buffer
+long	v[ARB]		#I Vector
+
+int	i, nc, b1, b2, nb, stat
+long	vf[IM_MAXDIM]
+real	bias
+pointer	im, dzbuf, dfbuf, inbuf
+
+pointer imgnl$t()
+$if (datatype == csir)
+real	asum$t()
+$else $if (datatype == ld)
+double	asum$t()
+$else
+PIXEL procedure asum$t()
+$endif $endif
+$if (datatype != s)
+pointer	mscbuf(), imgnls()
+real	asums()
+$endif
+$if (datatype != r)
+pointer	imgnlr()
+$endif
+$if (datatype != i)
+pointer	imgnli()
+$endif
+
+begin
+	im = MG_IM(mg)
+	nc = IM_LEN(im,1)
+	call amovl (v, vf, IM_NDIM(im))
+
+	if (MG_USHORT(mg) == YES) {
+	    IM_PIXTYPE(im) = TY_SHORT
+	    stat = imgnls (im, inbuf, v)
+	    if (stat == EOF)
+		return (stat)
+	    IM_PIXTYPE(im) = TY_USHORT
+	    $if (datatype == s)
+	    outbuf = inbuf
+	    $else
+	    outbuf = mscbuf (nc, TY_PIXEL)
+	    $endif
+
+	    if (CKNODATA(mg) == YES) {
+		NODATA(mg) = NO
+		do i = 0, nc-1
+		   if (Mems[inbuf+i] != 0)
+		       break
+		if (i == nc) {
+		    NODATA(mg) = YES
+		    return (outbuf)
+		}
+	    }
+
+	    if (PROC(mg) == NO) {
+		call mscuproc$t (Mems[inbuf], Mem$t[outbuf], nc, -32768.,
+		    INDEFR, INDEFI, INDEFR)
+		return (stat)
+	    }
+
+	    # Process data.
+	    bias = 0.
+	    if (DOBIAS(mg) == YES) {
+		b1 = min (BX1(mg), BX2(mg))
+		b2 = max (BX1(mg), BX2(mg))
+		if (b1 >= 1 && b2 <= nc) {
+		    nb = b2 - b1 + 1
+		    bias = asums (Mems[inbuf+b1-1], nb)/ nb
+		}
+	    }
+
+	    if (DOZERO(mg) == YES && DOFLAT(mg) == YES) {
+		stat = imgnlr (DZIM(mg), dzbuf, vf)
+		call amovl (v, vf, IM_NDIM(im))
+		stat = imgnli (DFIM(mg), dfbuf, vf)
+		call mscuproc$t (Mems[inbuf], Mem$t[outbuf], nc, bias,
+		    Memr[dzbuf], Memi[dfbuf], CCDMEAN(mg))
+	    } else if (DOZERO(mg) == YES) {
+		stat = imgnlr (DZIM(mg), dzbuf, vf)
+		call mscuproc$t (Mems[inbuf], Mem$t[outbuf], nc, bias,
+		    Memr[dzbuf], INDEFI, INDEFR)
+	    } else if (DOFLAT(mg) == YES) {
+		stat = imgnli (DFIM(mg), dfbuf, vf)
+		call mscuproc$t (Mems[inbuf], Mem$t[outbuf], nc, bias,
+		    INDEFR, Memi[dfbuf], CCDMEAN(mg))
+	    } else
+		call mscuproc$t (Mems[inbuf], Mem$t[outbuf], nc, bias,
+		    INDEFR, INDEFI, INDEFR)
+
+	} else {
+	    stat = imgnl$t (im, inbuf, v)
+	    outbuf = inbuf
+
+	    if (PROC(mg) == NO)
+		return (stat)
+
+	    # Process data.
+	    bias = 0.
+	    if (DOBIAS(mg) == YES) {
+		b1 = min (BX1(mg), BX2(mg))
+		b2 = max (BX1(mg), BX2(mg))
+		if (b1 >= 1 && b2 <= nc) {
+		    nb = b2 - b1 + 1
+		    bias = asum$t (Mem$t[inbuf+b1-1], nb)/ nb
+		}
+	    }
+
+	    if (DOZERO(mg) == YES && DOFLAT(mg) == YES) {
+		stat = imgnlr (DZIM(mg), dzbuf, vf)
+		call amovl (v, vf, IM_NDIM(im))
+		stat = imgnli (DFIM(mg), dfbuf, vf)
+		call mscproc$t (Mem$t[inbuf], Mem$t[outbuf], nc, bias,
+		    Memr[dzbuf], Memi[dfbuf], CCDMEAN(mg))
+	    } else if (DOZERO(mg) == YES) {
+		stat = imgnlr (DZIM(mg), dzbuf, vf)
+		call mscproc$t (Mem$t[inbuf], Mem$t[outbuf], nc, bias,
+		    Memr[dzbuf], INDEFI, INDEFR)
+	    } else if (DOFLAT(mg) == YES) {
+		stat = imgnli (DFIM(mg), dfbuf, vf)
+		call mscproc$t (Mem$t[inbuf], Mem$t[outbuf], nc, bias,
+		    INDEFR, Memi[dfbuf], CCDMEAN(mg))
+	    } else
+		call mscproc$t (Mem$t[inbuf], Mem$t[outbuf], nc, bias,
+		    INDEFR, INDEFI, INDEFR)
+	}
+
+	return (stat)
+end
+
+
+# MSCS2 -- Get section of data.
+
+pointer procedure mscs2$t (mg, x1, x2, y1, y2)
+
+pointer	mg		#I MOSGEOM pointer
+int	x1, x2, y1, y2	#I Section
+
+int	i, c1, c2, nc, nl, np, b1, b2, nb, line
+real	bias
+pointer	im, dzbuf, dfbuf, inbuf, outbuf, inptr, outptr
+
+pointer imgs2$t(), imgl2i(), imgl2r()
+$if (datatype == csir)
+real	asum$t()
+$else $if (datatype == ld)
+double	asum$t()
+$else
+PIXEL procedure asum$t()
+$endif $endif
+$if (datatype != s)
+pointer	mscbuf(), imgs2s()
+real	asums()
+$endif
+
+begin
+	im = MG_IM(mg)
+	if (PROC(mg) == NO) {
+	    c1 = x1
+	    c2 = x2
+	} else {
+	    c1 = 1
+	    c2 = IM_LEN(im,1)
+	}
+	nc = x2 - x1 + 1
+	nl = y2 - y1 + 1
+	np = nc * nl
+
+	if (MG_USHORT(mg) == YES) {
+	    IM_PIXTYPE(im) = TY_SHORT
+	    inbuf = imgs2s (im, c1, c2, y1, y2)
+	    IM_PIXTYPE(im) = TY_USHORT
+	    $if (datatype == s)
+	    outbuf = inbuf
+	    $else
+	    outbuf = mscbuf (np, TY_PIXEL)
+	    $endif
+
+	    if (CKNODATA(mg) == YES) {
+		NODATA(mg) = NO
+		do i = 0, np-1
+		   if (Mems[inbuf+i] != 0)
+		       break
+		if (i == np) {
+		    NODATA(mg) = YES
+		    return (outbuf)
+		}
+	    }
+
+	    if (PROC(mg) == NO) {
+		call mscuproc$t (Mems[inbuf], Mem$t[outbuf], np, -32768.,
+		    INDEFR, INDEFI, INDEFR)
+		return (outbuf)
+	    }
+
+	    # Process data.
+	    if (DOBIAS(mg) == YES) {
+		b1 = min (BX1(mg), BX2(mg))
+		b2 = max (BX1(mg), BX2(mg))
+		nb = b2 - b1 + 1
+	    } else {
+		b1 = 0
+		b2 = 0
+	    }
+	    do line = y1, y2 {
+		inptr = inbuf + (line - y1) * (c2 - c1 + 1)
+		bias = 0.
+		if (b1 >= 1 && b2 <= c2)
+		    bias = asums (Mems[inptr+b1-1], nb)/ nb
+
+		inptr = inbuf + (line - y1) * (c2 - c1 + 1) + x1 - 1
+		outptr = outbuf + (line - y1) * nc
+		if (DOZERO(mg) == YES && DOFLAT(mg) == YES) {
+		    dzbuf = imgl2r (DZIM(mg), line) + x1 - 1
+		    dfbuf = imgl2i (DFIM(mg), line) + x1 - 1
+		    call mscuproc$t (Mems[inptr], Mem$t[outptr], nc, bias,
+			Memr[dzbuf], Memi[dfbuf], CCDMEAN(mg))
+		} else if (DOZERO(mg) == YES) {
+		    dzbuf = imgl2r (DZIM(mg), line) + x1 - 1
+		    call mscuproc$t (Mems[inptr], Mem$t[outptr], nc, bias,
+			Memr[dzbuf], INDEFI, INDEFR)
+		} else if (DOFLAT(mg) == YES) {
+		    dfbuf = imgl2i (DFIM(mg), line) + x1 - 1
+		    call mscuproc$t (Mems[inptr], Mem$t[outptr], nc, bias,
+			INDEFR, Memi[dfbuf], CCDMEAN(mg))
+		} else
+		    call mscuproc$t (Mems[inptr], Mem$t[outptr], nc, bias,
+			INDEFR, INDEFI, INDEFR)
+	    }
+
+	} else {
+	    inbuf = imgs2$t (im, c1, c2, y1, y2)
+	    outbuf = inbuf
+
+	    if (PROC(mg) == NO)
+		return (outbuf)
+
+	    # Process data.
+	    if (DOBIAS(mg) == YES) {
+		b1 = min (BX1(mg), BX2(mg))
+		b2 = max (BX1(mg), BX2(mg))
+		nb = b2 - b1 + 1
+	    } else {
+		b1 = 0
+		b2 = 0
+	    }
+	    do line = y1, y2 {
+		inptr = inbuf + (line - y1) * (c2 - c1 + 1)
+		bias = 0.
+		if (b1 >= 1 && b2 <= nc)
+		    bias = asum$t (Mem$t[inptr+b1-1], nb)/ nb
+
+		inptr = inbuf + (line - y1) * (c2 - c1 + 1) + x1 - 1
+		outptr = outbuf + (line - y1) * nc
+		if (DOZERO(mg) == YES && DOFLAT(mg) == YES) {
+		    dzbuf = imgl2r (DZIM(mg), line) + x1 - 1
+		    dfbuf = imgl2i (DFIM(mg), line) + x1 - 1
+		    call mscproc$t (Mem$t[inptr], Mem$t[outptr], nc, bias,
+			Memr[dzbuf], Memi[dfbuf], CCDMEAN(mg))
+		} else if (DOZERO(mg) == YES) {
+		    dzbuf = imgl2r (DZIM(mg), line) + x1 - 1
+		    call mscproc$t (Mem$t[inptr], Mem$t[outptr], nc, bias,
+			Memr[dzbuf], INDEFI, INDEFR)
+		} else if (DOFLAT(mg) == YES) {
+		    dfbuf = imgl2i (DFIM(mg), line) + x1 - 1
+		    call mscproc$t (Mem$t[inptr], Mem$t[outptr], nc, bias,
+			INDEFR, Memi[dfbuf], CCDMEAN(mg))
+		} else
+		    call mscproc$t (Mem$t[inptr], Mem$t[outptr], nc, bias,
+			INDEFR, INDEFI, INDEFR)
+	    }
+	}
+
+	return (outbuf)
+end
+
+
+# MSCUPROC - Process unsigned input.
+
+procedure mscuproc$t (in, out, n, bias, zero, flat, ccdmean)
+
+short	in[ARB]
+PIXEL	out[ARB]
+int	n
+real	bias
+real	zero[ARB]
+int	flat[ARB]
+real	ccdmean
+
+int	i
+real	val
+
+begin
+	if (!IS_INDEFR(ccdmean) && !IS_INDEFR(zero[1])) {
+	    do i = 1, n {
+		val = flat[i] / ccdmean
+		if (val <= 0.)
+		    val = 1.
+		out[i] = (in[i] - zero[i] - bias) / val
+	    }
+
+	} else if (!IS_INDEFR(ccdmean)) {
+	    do i = 1, n {
+		val = flat[i] / ccdmean
+		if (val <= 0.)
+		    val = 1.
+		out[i] = (in[i] - bias) / val
+	    }
+
+	} else if (!IS_INDEFR(zero[1])) {
+	    do i = 1, n
+		out[i] = in[i] - zero[i] - bias
+
+	} else {
+	    if (bias == 0.)
+		call achts$t (in, out, n)
+	    else
+		do i = 1, n
+		    out[i] = in[i] - bias
+	}
+end
+
+
+# MSCPROC - Process input.
+
+procedure mscproc$t (in, out, n, bias, zero, flat, ccdmean)
+
+PIXEL	in[ARB]
+PIXEL	out[ARB]
+int	n
+real	bias
+real	zero[ARB]
+int	flat[ARB]
+real	ccdmean
+
+int	i
+real	val
+
+begin
+	if (!IS_INDEFR(ccdmean) && !IS_INDEFR(zero[1])) {
+	    do i = 1, n {
+		val = flat[i] / ccdmean
+		if (val <= 0.)
+		    val = 1.
+		out[i] = (in[i] - zero[i] - bias) / val
+	    }
+
+	} else if (!IS_INDEFR(ccdmean)) {
+	    do i = 1, n {
+		val = flat[i] / ccdmean
+		if (val <= 0.)
+		    val = 1.
+		out[i] = (in[i] - bias) / val
+	    }
+
+	} else if (!IS_INDEFR(zero[1])) {
+	    do i = 1, n
+		out[i] = in[i] - zero[i] - bias
+
+	} else {
+	    if (bias == 0.)
+		call amov$t (in, out, n)
+	    else
+		do i = 1, n
+		    out[i] = in[i] - bias
+	}
+end
+
+$endfor
+
+
+# MSCBUF -- Maintain buffer when data type conversion from IMIO is needed.
+
+pointer procedure mscbuf (buflen, buftype)
+
+int	buflen		#I buffer length
+int	buftype		#I buffer type
+
+int	n, type
+pointer	buf
+
+data	n/0/, type/0/, buf/NULL/
+
+begin
+	if (buflen == n && buftype == type)
+	    return (buf)
+
+	if (buftype != type) {
+	    call mfree (buf, type)
+	    n = 0
+	}
+
+	if (n == 0)
+	    call malloc (buf, buflen, buftype)
+	else
+	    call realloc (buf, buflen, buftype)
+
+	n = buflen
+	type = buftype
+	return (buf)
+end

@@ -1,0 +1,45 @@
+# Make CCDRED Package.
+
+$call	lccdred
+$call	relink
+$exit
+
+update:
+	$call	update@src
+	$call	relink
+	$call	install
+	;
+
+install:
+	$move	xx_ccdred.e mscbin$x_ccdred.e
+	;
+
+relink:
+	$checkout x_ccdred.o mscbin$
+	$iffile (lib$libimc.a)
+	    $set LIBS = "-lccdred -limc -lxtools -lcurfit -lgsurfit -lncar -lgks"
+	$else
+	    $set LIBS = "-lccdred -lcombine -lxtools -lcurfit -lgsurfit -lncar -lgks"
+	$endif
+	$omake	x_ccdred.x
+	$ifnewer (../plp2li.x, iraf$sys/plio/tf/plp2li.x)
+	    $link  -z x_ccdred.o ../plp2li.o $(LIBS) -o xx_ccdred.e
+	$else
+	    $link  x_ccdred.o $(LIBS) -o xx_ccdred.e
+	$endif
+	$checkin x_ccdred.o mscbin$
+	;
+
+lccdred:
+	$checkout libccdred.a mscbin$
+	$update libccdred.a
+	$checkin libccdred.a mscbin$
+	;
+
+lcombine:
+	$call	lcombine@src
+	;
+
+libccdred.a:
+	@src
+	;

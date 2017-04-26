@@ -1,0 +1,24 @@
+image,s,a,"",,,Root name for input images
+frame,i,a,1,1,4,"display frame to be written into"
+
+# Display parameters"
+erase,b,h,yes,,,erase frame
+select_frame,b,h,yes,,,display frame being loaded
+zscale,b,h,yes,,,display range of greylevels near median
+zrange,b,h,yes,,,display full image intensity range
+zcombine,s,h,"none","|none|minmax|average|median|",,Algorithm for combining z1 and z2 values for each image
+z1,r,h,,,,minimum greylevel to be displayed
+z2,r,h,,,,maximum greylevel to be displayed
+ztrans,s,h,linear,,,greylevel transformation (linear|log|none|user)
+contrast,r,h,0.25,,,contrast adjustment for zscale algorithm
+nsample_lines,i,h,5,,,number of sample lines
+order,i,h,0,0,1,"spatial interpolator order (0=replicate, 1=linear)"
+lutfile,f,h,"",,,"file containing user defined look up table
+
+# PROCESSING PARAMETERS"
+procpars,pset,h,"",,,"Processing parameters
+
+# AMPLIFIER INFORMATION"
+ampinfo,pset,h,"",,,"Amplifier Information pset
+"
+mode,s,h,"a",,,

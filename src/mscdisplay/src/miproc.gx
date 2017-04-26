@@ -1,0 +1,118 @@
+include	"mosgeom.h"
+include	"mosproc.h"
+
+$for (silrd)
+
+# MIPROCx -- Perform quick look processing on data array
+
+procedure miproc$t (mg, in, out, nx, line, overscan, novr)
+pointer	mg			#I Mosgeom pointer.
+PIXEL	in[ARB]			#I Raw data array.
+PIXEL	out[ARB]		#O Processed array.
+int	nx			#I Number of pixels.
+int	line			#I image line.
+PIXEL	overscan[ARB]		#I Overscan vector.
+int	novr			#I Number of pixels in overscan vector.
+
+int	i
+real	k1, k2
+
+real	linebias$t()
+
+errchk	linebias$t
+
+include "mosproc.com"
+
+begin
+	switch (proc) {
+
+	case NONE:
+	    do i = 1, nx 
+		out[i] = in[i]
+
+	case D:
+	    k1 = DARK(mg)
+	    do i = 1, nx
+		out[i] = in[i] - k1
+
+	case G:
+	    k2 = GAIN(mg)
+	    do i = 1, nx
+		out[i] = in[i] * k2
+
+	    case DG:
+	    k1 = DARK(mg)
+	    k2 = GAIN(mg)
+	    do i = 1, nx
+		out[i] = (in[i] - k1) * k2
+
+	case C, A:
+	    k1 = BIAS(mg)
+	    do i = 1, nx
+		out[i] = in[i] - k1
+
+	case CD, AD:
+	    k1 = DARK(mg) + BIAS(mg)
+	    do i = 1, nx
+		out[i] = in[i] - k1
+
+	case CG, AG:
+	    k1 = BIAS(mg)
+	    k2 = GAIN(mg)
+	    do i = 1, nx
+		out[i] = (in[i] - k1) * k2
+
+	case CDG, ADG:
+	    k1 = DARK(mg) + BIAS(mg)
+	    k2 = GAIN(mg)
+	    do i = 1, nx
+		out[i] = (in[i] - k1) * k2
+
+	case L:
+	    k1 = linebias$t (overscan, novr)
+	    do i = 1, nx
+		out[i] = in[i] - k1
+
+	case LD:
+	    k1 = DARK(mg) + linebias$t (overscan, novr)
+	    do i = 1, nx
+		out[i] = in[i] - k1
+
+	case LG:
+	    k1 = linebias$t (overscan, novr)
+	    k2 = GAIN(mg)
+	    do i = 1, nx
+		out[i] = (in[i] - k1) * k2
+
+	case LDG:
+	    k1 = DARK(mg) + linebias$t (overscan, novr)
+	    k2 = GAIN(mg)
+	    do i = 1, nx
+		out[i] = (in[i] - k1) * k2
+
+	case F:
+	    k1 = Memr[OVRSCN(mg)+line -1]
+	    do i = 1, nx
+		out[i] = in[i] - k1
+
+	case FD:
+	    k1 = DARK(mg) + Memr[OVRSCN(mg)+line -1]
+	    do i = 1, nx
+		out[i] = in[i] - k1
+
+	case FG:
+	    k1 = Memr[OVRSCN(mg)+line-1]
+	    k2 = GAIN(mg)
+	    do i = 1, nx
+		out[i] = (in[i] - k1) * k2
+
+	case FDG:
+	    k1 = DARK(mg) + Memr[OVRSCN(mg)+line-1]
+	    k2 = GAIN(mg)
+	    do i = 1, nx
+		out[i] = (in[i] - k1) * k2
+
+	}
+end
+
+$endfor

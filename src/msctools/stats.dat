@@ -1,0 +1,19 @@
+
+  NOTES:
+    1.  These statistics are computed from the master WCS solutions for
+	the CCDs in the Mosaic.  These solutions map pixels to celestial
+	coordinates and include the optical and sky projection effects.
+    2.  The field rotation is a clockwise angle of the declination axis from
+	the image column axis.  For example an angle of 270 means that
+	declination increases to the left in an unflipped display.
+    3.  The CCD rotation is a relative rotation from the mean field
+	rotation.
+    4.  The gaps are computed from the distance on the sky of the indicated
+	pixels as shown in the arcsec column.  The pixel gap is computed
+	from the arc second distance using the mean pixel scale.  The
+	millimeter gap is derived from the pixel gap using the average
+	pixel size.  Because this is derived from the sky the gap is not
+	precisely the true physical gap.
+    5.  The offsets are derived from the sky distance between the
+	center of each CCD and the indicated reference point.  The
+	sky distance is converted to pixels using the mean pixel scale.

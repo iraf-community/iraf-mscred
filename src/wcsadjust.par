@@ -1,0 +1,16 @@
+images,s,a,,,,List of mosaic exposures
+database,s,h,"mscwcs.dat",,,Corrected WCS database
+update,b,h,yes,,,Update images?
+ra_shift,r,h,0.,,,RA shift (arc sec)
+dec_shift,r,h,0.,,,Dec shift (arc sec)
+ra_mag,r,h,1.,,,RA magnification
+dec_mag,r,h,1.,,,Dec magnification
+ra_rot,r,h,0.,,,RA rotation (deg)
+dec_rot,r,h,0.,,,Dec rotation (deg)
+forward,b,h,yes,,,Forward transformation?
+nxgrid,i,h,10,2,,Number of x grid points
+nygrid,i,h,20,2,,Number of y grid points
+xxorder,i,h,3,2,,Order of xi fit in x
+xyorder,i,h,3,2,,Order of xi fit in y
+yxorder,i,h,3,2,,Order of eta fit in x
+yyorder,i,h,3,2,,Order of eta fit in y

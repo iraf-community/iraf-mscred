@@ -1,0 +1,14 @@
+# Root task entry for the package help tree.  Defines `<package>'
+# as both a task and a package in the help database.
+
+mscred		men  = mscred$mscred.men,
+		hlp  = mscred$mscred.men,
+		sys  = mscred$mscguide.hlp,
+		pkg  = mscred$mscred.hd,
+		src  = mscred$mscred.cl
+
+multampccd	men  = mscred$multampccd.men,
+		hlp  = mscred$multampccd.men,
+		sys  = mscred$mscguide.hlp,
+		pkg  = mscred$mscred.hd,
+		src  = mscred$multampccd.cl

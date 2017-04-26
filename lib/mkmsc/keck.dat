@@ -1,0 +1,31 @@
+ampid(im1)	1
+datasec(im1)	[205:1228,1:4096]
+biassec(im1)	[4301:4380,1:4096]
+ccdsec(im1)	[1:1024,1:4096]
+detsec(im1)	[1:1024,1:4096]
+ccdname(im1)	"CCD 1"
+ampname(im1)	"AMP 1"
+
+ampid(im2)	2
+datasec(im2)	[1229:2252,1:4096]
+biassec(im2)	[4381:4460,1:4096]
+ccdsec(im2)	[1025:2048,1:4096]
+detsec(im2)	[1025:2048,1:4096]
+ccdname(im2)	"CCD 1"
+ampname(im2)	"AMP 2"
+
+ampid(im3)	3
+datasec(im3)	[2253:3276,1:4096]
+biassec(im3)	[4461:4540,1:4096]
+ccdsec(im3)	[1:1024,1:4096]
+detsec(im3)	[2049:3072,1:4096]
+ccdname(im3)	"CCD 2"
+ampname(im3)	"AMP 1"
+
+ampid(im4)	4
+datasec(im4)	[3277:4300,1:4096]
+biassec(im4)	[4541:4620,1:4096]
+ccdsec(im4)	[1024:2048,1:4096]
+detsec(im4)	[3073:4096,1:4096]
+ccdname(im4)	"CCD 2"
+ampname(im4)	"AMP 2"

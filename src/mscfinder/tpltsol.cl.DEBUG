@@ -1,0 +1,297 @@
+procedure tpltsol (image, table, database)
+
+string	image			{prompt="Input image name"}
+string	table			{prompt="Input table name"}
+string	database		{prompt="Output database name"}
+string	results = ""		{prompt="Results summary file\n"}
+
+bool	imupdate = no		{prompt="Update the image WCS?"}
+bool	tabupdate = no		{prompt="Update input table?"}
+bool	refitcat = no		{prompt="Recompute XYs for uncentered sources?"}
+bool	verbose = yes		{prompt="Print verbose progress messages?\n"}
+
+bool	dssheader = yes		{prompt="Read plate center from DSS header?"}
+string	ra_ref = ""		{prompt="Plate center RA (hours)"}
+string	dec_ref = ""		{prompt="Plate center Dec (degrees)"}
+real	eq_ref = INDEF		{prompt="Plate center coordinate equinox\n"}
+
+string	insystem = "j2000"	{prompt="Input celestial coordinate system\n"}
+
+string	projection = "tan"	{prompt="Sky projection geometry",
+				    enum="|lin|tan|sin|arc"}
+string	fitgeometry = "general" {prompt="Fitting geometry",
+			enum="|shift|xyscale|rotate|rscale|rxyscale|general"}
+string	function = "polynomial" {prompt="Surface type\n",
+				    enum="|chebyshev|legendre|polynomial"}
+
+int	xxorder = 2		{prompt="Order of xi fit in x", min=2}
+int	xyorder = 2		{prompt="Order of xi fit in y", min=2}
+bool	xxterms = no		{prompt="Include cross-terms in xi fit?\n"}
+
+int	yxorder = 2		{prompt="Order of eta fit in x", min=2}
+int	yyorder = 2		{prompt="Order of eta fit in y", min=2}
+bool	yxterms = no		{prompt="Include cross-terms in eta fit?\n"}
+
+real	reject = INDEF		{prompt="Rejection limit in sigma units\n"}
+
+bool	interactive = yes	{prompt="Fit the transformation interactively?"}
+string	graphics = "stdgraph"	{prompt="Default graphics device"}
+gcur	cursor = ""		{prompt="Graphics cursor"}
+
+pset	catpars	= ""		{prompt="Catalog description pset\n"}
+
+string	*list
+
+begin
+	string	a1=""#"
+	string	a2, a3, a4, a5, a6, a7, a8
+	string	limage, ltable, ldatabase, lresults, decsign
+	string	tmp1, tmp2, tmpresults, buf, lrewrite
+	real	rah, ram, ras, decd, decm, decs, ra, dec, pltequinox
+	real	xpred, ypred
+	int	xsize, ysize, rowno, index
+
+	cache ("tinfo", "tabpar")
+
+	tmp1 = mktemp ("tmp$tmp")
+	tmp2 = mktemp ("tmp$tmp")
+	tmpresults = mktemp ("tmp$tmp")
+
+	limage = image
+	ltable = table
+	ldatabase = database
+	lresults = results
+
+	if (access(ldatabase)) {
+	    printf ("Output database %s exists", ldatabase)
+            lrewrite = _qpars.rewrite
+            if (lrewrite == "replace") {
+                delete (ldatabase, ver-, >& "dev$null")
+            } else if (lrewrite != "append") {
+                printf ("\nChoose another filename and try again.\n")
+                return
+            }
+	}
+
+	if (access (lresults)) {
+            printf ("Results file %s exists", lresults)
+            lrewrite = _qpars.rewrite
+            if (lrewrite == "replace") {
+                delete (lresults, ver-, >& "dev$null")
+            } else if (lrewrite != "append") {
+                printf ("\nChoose another filename and try again.\n")
+                return
+            }
+        }
+
+        if (lresults == "" && ! tabupdate)
+	    tmpresults = ""
+
+	hselect (limage, "NAXIS1,NAXIS2", yes) | scan (xsize, ysize)
+
+	if (dssheader) {
+	    hselect (limage, "PLTRAH,PLTRAM,PLTRAS", yes) | scan (rah, ram, ras)
+	    ra = rah + ((ram + int(ras)/60.0) / 60.0)
+
+	    hselect (limage, "PLTDECSN,PLTDECD,PLTDECM,PLTDECS", yes) |
+		scan (decsign, decd, decm, decs)
+	    dec = decd + ((decm + int(decs)/60.0) / 60.0)
+	    if (decsign == "-")
+		dec = -dec
+
+	    hselect (limage, "EQUINOX", yes) | scan (pltequinox)
+
+	} else {
+#	    ra = real (ra_ref)
+#	    dec = real (dec_ref)
+	    printf ("%13.1h\n", real(ra_ref)) | scan (ra)
+	    printf ("%13.0h\n", real(dec_ref)) | scan (dec)
+	    pltequinox = eq_ref
+
+	}
+
+	tcopy (ltable, tmp2, verbose-)
+	tcalc (tmp2, "rowno", "rownum", datatype="int", colunits="",
+	    colfmt="%5d")
+
+	buf =	catpars.sub_col // " == 1 && " //
+		catpars.cen_col // " == 1 && " //
+		catpars.obj_col // " == 0"
+
+	tselect (tmp2, tmp1, buf)
+	tdelete (tmp2, ver-, >& "dev$null")
+
+	tinfo (tmp1, ttout-)
+	if (tinfo.nrows <= 0) {
+	    printf ("No centered sources in input table\n")
+	    return
+	}
+
+	tcalc (tmp1, "RA_HRS", "RA_DEG / 15.", datatype="real",
+	    colunits="", colfmt="%13.3h")
+
+	tchcol (tmp1, "X_CENTER", "", "%8.2f", "", verbose=no)
+	tchcol (tmp1, "Y_CENTER", "", "%8.2f", "", verbose=no)
+	tchcol (tmp1, "DEC_DEG", "", "%12.2h", "", verbose=no)
+
+	tprint (tmp1, columns="x_center,y_center,ra_hrs,dec_deg",
+	    prparam-, prdata+, pwidth=80, plength=0, showrow-, showhdr-,
+	    rows="-", option="plain", sp_col="", lgroup=0, > tmp2)
+
+#copy (tmp2, "tpltsol.coords")
+
+	ccmap (tmp2, ldatabase, images=limage, results=tmpresults,
+	    xcolumn=1, ycolumn=2, lngcolumn=3, latcolumn=4,
+	    xmin=1.0, xmax=xsize, ymin=1.0, ymax=ysize,
+	    lngunits="hours", latunits="degrees",
+	    insystem=insystem, refpoint="user", lngref=ra, latref=dec,
+	    refsystem="equinox "//pltequinox, lngrefunits="hours",
+	    latrefunits="degrees", projection=projection,
+	    fitgeometry=fitgeometry, function=function,
+	    xxorder=xxorder, xyorder=xyorder, xxterms=xxterms,
+	    yxorder=yxorder, yyorder=yyorder, yxterms=yxterms,
+	    reject=reject, update=imupdate, verbose=verbose,
+	    interactive=interactive, graphics=graphics, cursor=cursor)
+
+	delete (tmp2, ver-, >& "dev$null")
+
+	if (tabupdate) {
+	    printf (" \ntransferring deletions to the table...")
+
+	    index = 0
+	    list = tmpresults
+	    while (fscan (list, a1, a2, a3, a4, a5, a6, a7, a8) != EOF) {
+		if (nscan() != 8 || substr(a1,1,1) == "#")
+		    next
+
+		index += 1
+
+		if (a5=="INDEF" && a6=="INDEF" && a7=="INDEF" && a8=="INDEF") {
+		    tabpar (tmp1, "rowno", index)
+		    partab (0, ltable, catpars.cen_col, int(tabpar.value))
+		}
+	    }
+
+	    list = ""
+
+	    tdelete (tmp1, ver-, >& "dev$null")
+
+	    printf ("done\n")
+
+	    if (refitcat) {
+		tcopy (ltable, tmp1, verbose-)
+		tcalc (tmp1, "rowno", "rownum", datatype="int", colunits="",
+		    colfmt="%5d")
+
+
+		buf =	catpars.cen_col // " == 0 && " //
+			catpars.obj_col // " == 0"
+		tselect (tmp1, tmp2, buf)
+		tdelete (tmp1, ver-, >& "dev$null")
+
+		tinfo (tmp2, ttout-)
+		if (tinfo.nrows >= 1) {
+		    printf ("calculating coords for uncentered sources...")
+
+		    tcalc (tmp2, "RA_HRS", "RA_DEG / 15.", datatype="real",
+			colunits="", colfmt="%13.3h")
+
+#		    tchcol (tmp2, "X_CENTER", "", "%8.2f", "", verbose=no)
+#		    tchcol (tmp2, "Y_CENTER", "", "%8.2f", "", verbose=no)
+		    tchcol (tmp2, "DEC_DEG", "", "%12.2h", "", verbose=no)
+
+		    tprint (tmp2, columns="rowno,RA_HRS,DEC_DEG",
+			prparam-, prdata+, pwidth=80, plength=0, showrow-,
+			showhdr-, rows="-", option="plain", sp_col="",
+			lgroup=0, > tmp1)
+
+		    tdelete (tmp2, ver-, >& "dev$null")
+
+		    cctran (tmp1, tmp2, ldatabase, limage, geometry="geometric",
+			forward-, xcolumn=2, ycolumn=3, lngformat="%10.3f",
+			latformat="%10.3f", min_sigdigits=7)
+
+		    delete (tmp1, ver-, >& "dev$null")
+
+		    printf ("done\n")
+
+		printf ("transferring new predicted catalog coords to table...")
+
+		    list = tmp2
+		    while (fscan (list, rowno, xpred, ypred) != EOF) {
+			partab (xpred, ltable, "X_CENTER", rowno)
+			partab (ypred, ltable, "Y_CENTER", rowno)
+		    }
+
+		    list = ""
+		    delete (tmp2, ver-, >& "dev$null")
+
+		    printf ("done\n")
+
+		} else {
+		    tdelete (tmp1, ver-, >& "dev$null")
+
+		}
+
+	    } else {
+		tcopy (ltable, tmp1, verbose-)
+		tcalc (tmp1, "rowno", "rownum", datatype="int", colunits="",
+		    colfmt="%5d")
+
+		buf =	catpars.obj_col // " == 1"
+		tselect (tmp1, tmp2, buf)
+		tdelete (tmp1, ver-, >& "dev$null")
+
+		tinfo (tmp2, ttout-)
+		if (tinfo.nrows >= 1) {
+		    printf ("calculating object coordinates...")
+
+		    tchcol (tmp2, "X_CENTER", "", "%8.2f", "", verbose=no)
+		    tchcol (tmp2, "Y_CENTER", "", "%8.2f", "", verbose=no)
+
+		    tprint (tmp2, columns="rowno,x_center,y_center",
+			prparam-, prdata+, pwidth=80, plength=0, showrow-,
+			showhdr-, rows="-", option="plain", sp_col="",
+			lgroup=0, > tmp1)
+
+		    tdelete (tmp2, ver-, >& "dev$null")
+
+		    cctran (tmp1, tmp2, ldatabase, limage, geometry="geometric",
+			forward+, xcolumn=2, ycolumn=3, lngformat="%11.1h",
+			latformat="%11.1h", min_sigdigits=7)
+
+		    delete (tmp1, ver-, >& "dev$null")
+
+		    printf ("done\n")
+
+		    printf ("transferring object coordinates to table...")
+
+		    list = tmp2
+		    while (fscan (list, rowno, ra, dec) != EOF) {
+			ra = ra * 15.
+			partab (ra, ltable, "RA_DEG", rowno)
+			partab (dec, ltable, "DEC_DEG", rowno)
+		    }
+
+		    list = ""
+		    delete (tmp2, ver-, >& "dev$null")
+
+		    printf ("done\n")
+
+		} else {
+		    tdelete (tmp1, ver-, >& "dev$null")
+
+		}
+
+	    }
+
+	} else {
+	    tdelete (tmp1, ver-, >& "dev$null")
+
+	}
+
+	if (lresults != "")
+	    rename (tmpresults, lresults, field="all")
+	else
+	    delete (tmpresults, ver-, >& "dev$null")
+end

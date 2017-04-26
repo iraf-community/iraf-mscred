@@ -1,0 +1,47 @@
+imageid(im1)	1
+ampid(im1)	11
+datasec(im1)	!DSEC11
+biassec(im1)	!BSEC11
+trimsec(im1)	!TSEC11
+ccdsec(im1)	!CSEC11
+detsec(im1)	!CSEC11
+ccdname(im1)	!DETECTOR
+ampname(im1)	Amp11
+rdnoise(im1)	!GTRON11
+gain(im1)	!GTGAIN11
+
+imageid(im2)	2
+ampid(im2)	12
+datasec(im2)	!DSEC12
+biassec(im2)	!BSEC12
+trimsec(im2)	!TSEC12
+ccdsec(im2)	!CSEC12
+detsec(im2)	!CSEC12
+ccdname(im2)	!DETECTOR
+ampname(im2)	Amp12
+rdnoise(im2)	!GTRON12
+gain(im2)	!GTGAIN12
+
+imageid(im3)	3
+ampid(im3)	21
+datasec(im3)	!DSEC21
+biassec(im3)	!BSEC21
+trimsec(im3)	!TSEC21
+ccdsec(im3)	!CSEC21
+detsec(im3)	!CSEC21
+ccdname(im3)	!DETECTOR
+ampname(im3)	Amp21
+rdnoise(im3)	!GTRON21
+gain(im3)	!GTGAIN21
+
+imageid(im4)	4
+ampid(im4)	22
+datasec(im4)	!DSEC22
+biassec(im4)	!BSEC22
+trimsec(im4)	!TSEC22
+ccdsec(im4)	!CSEC22
+detsec(im4)	!CSEC22
+ccdname(im4)	!DETECTOR
+ampname(im4)	Amp22
+rdnoise(im4)	!GTRON22
+gain(im4)	!GTGAIN22

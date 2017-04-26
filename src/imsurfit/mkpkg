@@ -1,0 +1,13 @@
+# Library for the IMAGES IMFIT Subpackage Tasks
+
+$checkout libmscred.a mscbin$
+$update   libmscred.a
+$checkin  libmscred.a mscbin$
+$exit
+
+libmscred.a:
+	imsurfit.x	<imhdr.h> imsurfit.h <mach.h> <math/surfit.h>
+	pixlist.x	pixlist.h
+	ranges.x	<ctype.h> <mach.h>
+	t_imsurfit.x	<error.h> <imhdr.h> <imset.h> imsurfit.h <plset.h>
+	;

@@ -1,0 +1,33 @@
+# Parameter file for MSCRTDISPLAY
+
+image,f,a,,,,root name for image to be displayed
+zero,f,h,"",,,root name for zero subtraction
+frame,i,a,1,1,16,frame to be written into
+check,b,h,no,,,check if image is loaded
+mimpars,pset,h,"",,,"mosaic image parameters (extensions, gaps, processing)"
+bpmask,f,h,"BPM",,,bad pixel mask
+bpdisplay,s,h,"none","none|overlay|interpolate",,bad pixel display (none|overlay|interpolate)
+bpcolors,s,h,"red",,,bad pixel colors
+overlay,f,h,"",,,overlay mask
+ocolors,s,h,"green",,,overlay colors
+erase,b,h,yes,,,erase frame
+border_erase,b,h,no,,,erase unfilled area of window
+select_frame,b,h,yes,,,display frame being loaded
+repeat,b,h,no,,,repeat previous display parameters
+fill,b,h,no,,,scale image to fit display window
+zscale,b,h,yes,,,display range of greylevels near median
+contrast,r,h,0.25,,,contrast adjustment for zscale algorithm
+zrange,b,h,yes,,,display full image intensity range
+zmask,f,h,"",,,sample mask
+zcombine,s,h,"auto","|none|auto|minmax|average|median|",,Algorithm for combining z1 and z2 values for each image
+nsample,i,h,1000,100,,maximum number of sample pixels to use
+order,i,h,0,0,1,"spatial interpolator order (0=replicate, 1=linear)"
+z1,r,h,0.,,,minimum greylevel to be displayed
+z2,r,h,1000.,,,maximum greylevel to be displayed
+ztrans,s,h,linear,,,greylevel transformation (linear|log|none|user)
+lutfile,f,h,"",,,"file containing user defined look up table
+
+# DCA DISPLAY PARAMETERS"
+wait,i,h,0,0,,Initial wait before executing
+sleep,i,h,5,0,,Sleep between incremental displays
+niterate,i,h,5,1,,Iterations between scaling

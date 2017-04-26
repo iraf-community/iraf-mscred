@@ -1,0 +1,46 @@
+# IMEXAMINE
+
+update:
+	$call	limexam
+	;
+
+limexam:
+	$checkout libimexam.a mscbin$
+	$update   libimexam.a
+	$checkin  libimexam.a mscbin$
+	;
+
+libimexam.a:
+	iecimexam.x	imexam.h mscexam.h <error.h> <imhdr.h>
+	iecolon.x	imexam.h <error.h> <imhdr.h>
+	iedisplay.x	mscexam.h <error.h>
+	ieeimexam.x	imexam.h mscexam.h <config.h> <error.h> <fset.h>\
+			<gset.h> <imhdr.h> <mach.h> <xwhen.h>
+	iegcur.x	imexam.h mscexam.h <ctype.h> <imhdr.h> <mach.h>
+	iegdata.x	mscexam.h <imhdr.h>
+	iegimage.x	imexam.h mscexam.h <error.h> <imhdr.h>
+	iegnfr.x	imexam.h <imhdr.h>
+	iegraph.x	imexam.h <gset.h>
+	iehimexam.x	imexam.h mscexam.h <error.h> <imhdr.h>
+	ieimname.x	
+	iejimexam.x	imexam.h mscexam.h <error.h> <gset.h> <imhdr.h> <mach.h>
+	ielimexam.x	imexam.h mscexam.h <error.h> <imhdr.h>
+	iemw.x		imexam.h mscexam.h <imhdr.h> <mwset.h>
+	ieopenlog.x	imexam.h mscexam.h <error.h> <imhdr.h>
+	iepos.x		imexam.h <error.h> <math.h>
+	ieprint.x	imexam.h <error.h>
+	ieqrimexam.x	imexam.h mscexam.h <error.h> <gset.h> <imhdr.h>\
+			<math.h> <math/gsurfit.h> <math/nlfit.h>
+	ierimexam.x	imexam.h mscexam.h <error.h> <gset.h> <imhdr.h>\
+			<math.h> <math/gsurfit.h> <math/nlfit.h>
+	iesimexam.x	imexam.h mscexam.h <error.h> <gset.h> <imhdr.h> <mach.h>
+	iestatistics.x	imexam.h <error.h>
+	ietimexam.x	imexam.h ../mosim.h <error.h> <imhdr.h>
+	ievimexam.x	imexam.h mscexam.h <error.h> <gset.h> <imhdr.h>\
+			<mach.h> <imset.h> <math.h> <math/iminterp.h>
+	stfmeasure.x	mscexam.h starfocus.h <error.h> <imhdr.h> <imset.h>\
+			<math/nlfit.h>
+	stfprofile.x	mscexam.h starfocus.h <imhdr.h> \
+			<mach.h> <math.h> <math/iminterp.h> <math/nlfit.h>
+	t_imexam.x	imexam.h mscexam.h <error.h> <gset.h> <imhdr.h>
+	;

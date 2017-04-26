@@ -1,0 +1,15 @@
+.help revisions Aug96 noao.imred.ccdred.ccdtest.demos
+.nf
+ccdred$ccdtest/demos/demos.cl	+
+ccdred$ccdtest/demos/demos.men	+
+ccdred$ccdtest/demos/demos.par	+
+ccdred$ccdtest/demos/badpix.dat	+
+ccdred$ccdtest/demos/ccdred.cl	+
+ccdred$ccdtest/demos/ccdred.dat	+
+ccdred$ccdtest/demos/qccdred.cl	+
+ccdred$ccdtest/demos/qccdred.dat	+
+    The initial "demos" are ccdred and qccdred.  The former is the same
+    as the earlier demo and the latter is a very shorttened version
+    which creates only a few images and skips the combining step.
+    (8/14/96, Valdes)
+.endhelp

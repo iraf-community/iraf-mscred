@@ -1,0 +1,21 @@
+# Parameters for the MSCMEDIAN task
+
+input,f,a,,,,Input mosaic images
+output,f,a,,,,Output mosaic images
+xwindow,i,a,,,,X window size of median filter
+ywindow,i,a,,,,Y window size of median filter
+outtype,s,h,"median","median|difference",,Output type (median|difference)
+zloreject,r,h,INDEF,,,Lowside pixel value cutoff
+zhireject,r,h,INDEF,,,High side pixel value cutoff
+verbose,b,h,yes,,,"Print messages about actions taken by the task
+
+# Fast median"
+fmedian,b,h,yes,,,Use fast median algorithm?
+hmin,i,h,-32768,,,Minimum histogram bin
+hmax,i,h,32767,,,Maximum histogram bin
+zmin,r,h,INDEF,,,Pixel value corresponding to hmin
+zmax,r,h,INDEF,,,"Pixel value corresponding to hmax
+
+"
+fd,*struct,h,""
+mode,s,h,'ql'

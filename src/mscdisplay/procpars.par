@@ -1,0 +1,6 @@
+# PROCESSING FLAGS
+trim,b,h,no,,,include only trim sections in tiled image 
+overscan,s,h,"none","|none|constant|average|",,Overscan subtraction method
+gain,b,h,no,,,Normalise gains
+dark,b,h,no,,,Subtract dark current
+blank,r,h,0.0,,,Fill value for empty portions of mosaic

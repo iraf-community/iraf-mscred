@@ -1,0 +1,49 @@
+# Make COMBINE Package.
+
+$call	lcombine
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$checkout x_combine.o mscbin$
+	$iffile (lib$libimc.a)
+	    $set LIBS1 = "-limc -lccdred -lmscred -lxtools -lcurfit -lsurfit"
+	    $set LIBS2 = "-lgsurfit -liminterp -lnlfit -lslalib -lncar -lgks"
+	$else
+	    $set LIBS1 = "-lccdred -lmscred -lxtools -lcurfit -lsurfit"
+	    $set LIBS2 = "-lgsurfit -liminterp -lnlfit -lslalib -lncar -lgks"
+	$endif
+	$omake	x_combine.x
+	$ifnewer (../../../plp2li.x, iraf$sys/plio/tf/plp2li.x)
+	    $link -z x_combine.o ../../../plp2li.o -lcombine\
+		$(LIBS1) $(LIBS2) -o xx_combine.e
+	$else
+	    $link x_combine.o -lcombine $(LIBS1) $(LIBS2) -o xx_combine.e
+	$endif
+	$checkin x_combine.o mscbin$
+	;
+
+install:
+	$move	xx_combine.e mscbin$x_combine.e
+	;
+
+lcombine:
+	$checkout libcombine.a mscbin$
+	$update libcombine.a
+	$checkin libcombine.a mscbin$
+	;
+
+libcombine.a:
+	$ifnfile (lib$libimc.a)
+	    @src
+	$endif
+
+	icmefscale.x	src/icombine.com src/icombine.h <imhdr.h>
+	t_combine.x	../ccdred.h src/icombine.com src/icombine.h <error.h>\
+			<imhdr.h> <mach.h> <pmset.h>
+	;

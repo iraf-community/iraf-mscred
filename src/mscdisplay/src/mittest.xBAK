@@ -1,0 +1,39 @@
+task	mittest = mittest
+
+procedure mittest()
+
+char	input[SZ_LINE]
+char	image[SZ_LINE]
+
+int	nimages, nch, index
+pointer mit
+
+pointer mitopen()
+int	mitgetim(), mitlen(), mitrgetim(), clgeti()
+
+begin
+	call clgstr ("input", input, SZ_LINE)
+
+	mit = mitopen (input)
+
+	nimages = mitlen (mit)
+	call eprintf ("nimages=%d\n")
+	    call pargi (nimages)
+
+	while (mitgetim (mit, image, SZ_LINE) != EOF) {
+	    call eprintf ("image:%s<--\n")
+		call pargstr (image)
+	}
+
+	repeat {
+	    index = clgeti ("index")
+	    if (index <= 0)
+		break
+	    nch = mitrgetim (mit, index, image, SZ_LINE)
+	    call eprintf ("image:%s<--\n")
+		call pargstr (image)
+	}
+
+	call mitclose (mit)
+
+end

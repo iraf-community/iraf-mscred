@@ -1,0 +1,9 @@
+	MENU of CCDRED Demonstrations
+
+       ccdred - Full demo of CCDRED
+
+      mkqdata - Make some quick test data for CCDPROC
+     qccdproc - Quick test of CCDPROC
+
+     mkmosaic - Make NOAO CCD Mosaic test data
+    mkmosaic1 - Make NOAO CCD Mosaic test data with ASCII and binary tables

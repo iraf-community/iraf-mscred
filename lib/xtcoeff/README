@@ -1,0 +1,15 @@
+This directory contains extension lists for use with the XTCOEFF task.
+The lists are paired with the 'v' files being for the victim and the
+'s' files being for the source.
+
+vnoao8/snoao8		NOAO Mosaics with 8 amplifiers
+			All pairs sharing the same Arcon box
+
+vnoao8ref/snoao8ref	NOAO Mosaics with 8 amplifiers
+			All pairs not sharing the same Arcon box
+
+vnoao16/snoao16		NOAO Mosaics with 16 amplifiers
+			All pairs sharing the same Arcon box
+
+vnoao16ref/snoao16ref	NOAO Mosaics with 16 amplifiers
+			All pairs not sharing the same Arcon box

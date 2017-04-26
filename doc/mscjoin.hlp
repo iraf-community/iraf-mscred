@@ -1,0 +1,88 @@
+.help mscjoin Nov99 mscred
+.ih
+NAME
+mscjoin -- join separate images into MEF files
+.ih
+SYNOPSIS
+This task joins separate images into MEF files.  The input images must have
+names of the form rootname_N where rootname is a user specified input name
+and N an extension number.  A primary image or global header, extension
+number 0, is required.  The images to be joined into extensions must
+include the keyword "extname" containing the extension names to be
+created.  MSCSPLIT produces this format.
+.ih
+USAGE	
+mscjoin input
+.ih
+PARAMETERS
+.ls input
+List of input image rootnames to be joined.  Each rootname will be matched
+against images having the form rootname_N where N is the extension number.
+The numbers must be sequential beginning with 0 for the primary image
+or global header.  The images (other than the primary image) must also
+contain the keyword "extname" giving the extension name to be created
+.le
+.ls output = ""
+List of output MEF names.  If no output name is given then the input
+rootname is used.
+.le
+.ls delete = no
+Delete input images after joining?
+.le
+.ls verbose = no
+Print processing information?
+.le
+.ih
+DESCRIPTION
+MSCJOIN takes input images with names of the form rootname_N where rootname
+is a user specified input name and N is the extension number.  The
+extension numbers must be sequential beginning with 0 for the primary image
+or global header.  The output MEF file is created with the extensions in
+the order given by the extension numbers.  The input images must include
+the keyword "extname" with the desired extension name.  Typically this task
+is used with MSCSPLIT, which creates the required format, to recreate MEF
+files that were split in order to perform some processing on the image
+extensions.
+
+The output list of MEF names may be left blank.  In that case the input
+rootname is used as the name of the output MEF file.  If the input images
+are not found or the output MEF files exist then a warning is printed and
+the task proceeds to the next input rootname.  The \fIdelete\fR parameter
+may be used to delete the input images after joining.
+.ih
+EXAMPLES
+1. Split an MEF file and delete it after splitting.  Then do some
+operations that modify the images.  Finally recreate the MEF file.
+
+.nf
+    cl> mscsplit obj012 del+ verb+
+    obj012[0] -> obj012_0
+    obj012[im1] -> obj012_1
+    obj012[im2] -> obj012_2
+    obj012[im3] -> obj012_3
+    obj012[im4] -> obj012_4
+    obj012[im5] -> obj012_5
+    obj012[im6] -> obj012_6
+    obj012[im7] -> obj012_7
+    obj012[im8] -> obj012_8
+    cl> imedit obj012_3 ""
+    cl> mscjoin obj012 del+ verb+
+    obj012_0 -> obj012
+    obj012_1.fits -> obj012[append,inherit]
+    obj012_2.fits -> obj012[append,inherit]
+    obj012_3.fits -> obj012[append,inherit]
+    obj012_4.fits -> obj012[append,inherit]
+    obj012_5.fits -> obj012[append,inherit]
+    obj012_6.fits -> obj012[append,inherit]
+    obj012_7.fits -> obj012[append,inherit]
+    obj012_8.fits -> obj012[append,inherit]
+.fi
+.ih
+REVISIONS
+.ls MSCJOIN - V3.2
+First release.
+.le
+.ih
+SEE ALSO
+mscsplit, fitsutil
+.endhelp

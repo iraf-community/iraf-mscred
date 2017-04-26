@@ -1,0 +1,131 @@
+# Make MSCRED Package.
+
+$call	lmscred
+$call	relink
+$exit
+
+update:
+	$call	update@ccdred
+	$call	update@mscdisplay
+	$call	update@mscfinder
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$checkout x_mscred.o mscbin$
+	$omake	x_mscred.x
+	$ifnewer (plp2li.x, iraf$sys/plio/tf/plp2li.x)
+	    $omake plp2li.x
+	    $link  -z x_mscred.o plp2li.o -lmscred -lxtools -lcurfit \
+		-lgsurfit -lslalib -lsurfit -liminterp -o xx_mscred.e
+	$else
+	    $link  x_mscred.o -lmscred -lxtools -lcurfit \
+		-lgsurfit -lslalib -lsurfit -liminterp -o xx_mscred.e
+	$endif
+	$checkin x_mscred.o mscbin$
+	;
+
+install:
+	$move	xx_mscred.e mscbin$x_mscred.e
+	;
+
+lmscred:
+	$checkout libmscred.a mscbin$
+	$update libmscred.a
+	$checkin libmscred.a mscbin$
+	;
+
+lccdred:
+	$call	lccdred@ccdred
+	;
+
+lcombine:
+	$call	lcombine@ccdred
+	;
+
+lmscdisp:
+	$call	lmscdisp@mscdisplay
+	;
+
+limexam:
+	$call	limexam@mscdisplay
+	;
+
+lsf:
+	$call	lsf@mscdisplay
+	;
+
+lfinder:
+	$call	lfinder@mscfinder
+	;
+
+generic:
+	$set	GEN = "$$generic -k"
+
+	$ifolder (liststr.x, liststr.gx)
+	    $(GEN) liststr.gx -o liststr.x $endif
+	$ifolder (rgstr.x, rgstr.gx)
+	    $(GEN) rgstr.gx -o rgstr.x $endif
+	$ifolder (xtalk.x, xtalk.gx)
+	    $(GEN) xtalk.gx -o xtalk.x $endif
+	$ifolder (patblk.x, patblk.gx)
+	    $(GEN) patblk.gx -o patblk.x $endif
+	;
+
+libmscred.a:
+	@curfit
+	@imsurfit
+
+	$ifeq (USE_GENERIC, yes) $call generic $endif
+
+	ccdsection.x	<ctype.h>
+	ccsetwcs.x	<imhdr.h> <math/gsurfit.h> <math.h> <mwset.h> skywcs.h
+	liststr.x	<ctype.h>
+	mapio.x		<error.h> <imhdr.h>
+	mgs.x		<error.h> <imhdr.h> <imio.h> <math/gsurfit.h>
+	mim.x		<error.h> <imhdr.h> <imset.h> <math/iminterp.h>
+	mscwcs.x	<error.h>
+	patblk.x
+	rgstr.x		<ctype.h>
+	skywcs.x	<imhdr.h> <imio.h> <math.h> <mwset.h> skywcsdef.h\
+			skywcs.h
+	t_addkey.x	<fset.h> <imhdr.h> <imio.h>
+	t_fitscopy.x	<ctype.h> <error.h> <fset.h> <mach.h>
+	t_getcatalog.x	<fio.h> <fset.h> <imhdr.h> <mach.h> <math.h>
+	t_imext.x	<ctype.h> <error.h> <imhdr.h> <imset.h> <mach.h>
+	t_imstat.x	<imhdr.h> imstat.h <mach.h>
+	t_jlists.x	
+	t_mkmsc.x	<error.h> <imhdr.h>
+	t_msccmatch.x	<error.h> <fset.h> <imhdr.h> <imset.h> <math.h>
+	t_mscctran.x	<ctotok.h> <ctype.h> <error.h> <fset.h> <imhdr.h>\
+			<imio.h> <mwset.h>
+	t_mscext.x	<error.h> <imhdr.h> <imset.h>
+	t_mscgmask.x	<error.h> <imhdr.h>
+	t_mscimatch.x	<fset.h> <gset.h> <imhdr.h> <imset.h> <math/curfit.h>\
+			<pkg/gtools.h>
+	t_mscpmask.x	<imhdr.h>
+	t_msctmplt.x	<error.h> <imhdr.h> <imset.h> <mach.h> <math.h>
+	t_mscuniq.x	<error.h>
+	t_mscwcs.x	<error.h> <imhdr.h> <imset.h> <math.h>
+	t_patfit.x	<error.h> <imhdr.h>
+	t_pixarea.x	<error.h> <imhdr.h> <mach.h> <math/iminterp.h>
+	t_pupilfit.x	<error.h> <imhdr.h> <mach.h> <math/curfit.h> <math.h>\
+			<time.h>
+	t_toshort.x	<error.h> <imhdr.h> <mach.h>
+	t_xlog.x	<error.h> <time.h>
+	t_xtalkcor.x	<error.h> <imhdr.h> <imset.h> <time.h>
+	t_xtcoeff.x	<error.h> <fset.h> <gset.h> <imhdr.h> <mach.h>\
+			<math/iminterp.h> <pkg/gtools.h>
+	xtalk.x		<imhdr.h>
+	xtmaskname.x	
+	$ifnfile (xtools$xtextns.x)
+	    xtextns.x	<ctype.h> <error.h> <mach.h>
+	$else $ifnewer (xtextns.x, xtools$xtextns.x)
+	    xtextns.x	<ctype.h> <error.h> <mach.h>
+	$endif $endif
+	$ifnfile (xtools$fixpix/ytpmmap.x)
+	    xtpmmap.x	<ctype.h> <error.h> <imhdr.h> <imset.h> <mach.h>\
+			<mwset.h> <pmset.h>
+	endif
+	;

@@ -1,0 +1,25 @@
+input,s,a,"",,,List of input image root names
+output,s,h,"",,,"List of output images
+
+# PROCESSING FLAGS"
+trim,b,h,no,,,include only trim sections in tiled image 
+overscan,s,h,"none","|none|constant|average|line|fit|",,Overscan subtraction method
+gain,b,h,no,,,Normalise gains
+dark,b,h,no,,,Subtract dark current
+blank,r,h,0.0,,,"Fill value for empty portions of mosaic
+
+# PARAMETERS OF OVERSCAN FIT"
+interactive,b,h,no,,,Fit overscan interactively?
+function,s,h,"legendre",,,Fitting function
+order,i,h,1,1,,Number of polynomial terms or spline pieces
+sample,s,h,"*",,,Sample points to fit
+naverage,i,h,1,,,Number of sample points to combine
+niterate,i,h,1,0,,Number of rejection iterations
+low_reject,r,h,3.,0.,,Low sigma rejection factor
+high_reject,r,h,3.,0.,,High sigma rejection factor
+grow,r,h,0.,0.,,"Rejection growing radius
+
+# AMPLIFIER INFORMATION"
+ampinfo, pset, h, "",,,"Amplifier Information pset
+"
+mode,s,h,"a",,,

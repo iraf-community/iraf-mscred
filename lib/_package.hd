@@ -1,0 +1,13 @@
+# Help definitions for the package.
+
+mscred		men = mscred.men,
+		hlp = ..,
+		sys = mscguide.hlp,
+		pkg = mscred.hd,
+		src = mscred.cl
+
+multampccd	men = multampccd.men,
+		hlp = ..,
+		sys = mscguide.hlp,
+		pkg = mscred.hd,
+		src = multampccd.cl

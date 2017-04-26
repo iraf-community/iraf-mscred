@@ -1,0 +1,5 @@
+image,f,a,,,,Image to edit
+keyword,s,a,,,,Keyword
+value,s,a,,,,Keyword value
+comment,s,a,,,,Keyowrd comment
+type,s,h,"c","|b|s|i|l|r|d|c|",,Keyword type

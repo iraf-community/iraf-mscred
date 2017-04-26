@@ -1,0 +1,29 @@
+.help mscctran Aug97 mscred
+.ih
+NAME
+mscctran -- Celestial coordinate transformaion using plate solution
+.ih
+SYNOPSIS
+Transform between pixel (logical) and celestial (world) coordinates
+based on an input image.  The transformation may use just the linear
+coordinate transformation in the image header or a plate solution
+from a database file with the file and entry specified in the image
+header keyword WCSSOL.
+.ih
+USAGE	
+mscctran input output image forward
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls MSCCTRAN - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+wcsctran
+.endhelp

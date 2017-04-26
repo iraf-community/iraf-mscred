@@ -1,0 +1,51 @@
+       ccdhedit - Mosaic header editor
+        ccdlist - List mosaic processing information
+        ccdproc - Process mosaic exposures
+        combine - Combine mosaic exposures
+    darkcombine - Combine and process mosaic dark count exposures
+    flatcombine - Combine and process mosaic flat field exposures
+  setinstrument - Set instrument parameters
+   sflatcombine - Combine and process mosaic sky flat field exposures
+    zerocombine - Combine and process mosaic zero level exposures
+
+      irmfringe - Remove fringe pattern, possibly interactively, by scaling
+       irmpupil - Remove pupil image, possibly interactively, by scaling
+        mimpars - Mosaic image parameters for display
+          mkmsc - Make multiextension mosaic format from flat formats
+       mscarith - Image arithmetic mosaic exposures
+      mscblkavg - Block average mosaic exposures with header keyword updating
+      msccmatch - Match coordinates from list by adjusting WCS
+         msccmd - Execute general command with image extension expansion
+       mscctran - Celestial coordinate transformation using plate solution
+     mscdisplay - Display mosaic exposures in single frames
+     mscexamine - Examine mosaic exposures displayed as single frames
+      mscfinder - Package to do astrometry on mosaic data 
+    mscfindgain - Calculate the gain and readout noise of a mosaic of CCD
+      mscmedian - Median filter mosaic exposures
+       mscfocus - Measure focus from mosaic focus exposures
+  mscgetcatalog - Get coordinates from a Web server covering mosaic exposures
+       mscimage - Reconstruct single images from a mosaic exposures
+      mscimatch - Match intensity scales in reconstructed mosaic images
+        mscjoin - Join separate images into MEF files
+     mscotfflat - Built on-the-fly flat field calibrations
+     mscpixarea - Compute and apply pixel area correction using WCS
+       mscpupil - Fit and remove pupil ghost from mosaic images
+       mscrfits - Read mosaic data from a FITS tape
+      mscsetwcs - Reset WCS using astrometry database and/or RA/DEC keywords
+     mscshutcor - Compute shutter correction from a set of mosaic exposures
+      mscskysub - Fit a sky surface and subtract all but the mean
+       mscsplit - Split MEF files into separate images
+       mscstack - Combine multiple reconstructed mosaic images
+        mscstat - Image statistics on mosaic image extensions
+      msctvmark - Mark coordinates from file on previous MSCDISPLAY
+         mscwcs - Set and adjust mosaic WCS
+       mscwfits - Write mosaic data to a FITS tape
+        msczero - Display, measure coordinates, set WCS zeropoint offsets
+       rmfringe - Remove fringe pattern
+	rmpupil - Remove pupil image
+       xtalkcor - Apply crosstalk corrections
+	xtcoeff - Compute crosstalk coefficients
+
+    	      ADDITIONAL HELP TOPICS
+
+       mscguide - Introductory guide to using the MSCRED package

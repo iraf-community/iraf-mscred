@@ -1,0 +1,124 @@
+.help mscwfits Aug97 mscred
+.ih
+NAME
+mscwfits -- write Mosaic data to a FITS tape
+.ih
+SYNOPSIS
+Mosaic data, in FITS format, as well as any other FITS format files are
+written to a FITS tape.  If a FILENAME keyword is present it is updated to
+the name of the disk file for use in later restoring the data with
+\fBmscrfits\fR.
+.ih
+USAGE	
+mscwfits input output newtape
+.ih
+PARAMETERS
+.ls input
+List of FITS files to write to tape.  This includes Mosaic multiextension
+FITS files as well as any other FITS format files.
+.le
+.ls output
+The output IRAF tape specification.  This may be a simple tape name, such
+as "mta", or include additional specifiers.  A tape file number may be
+specified, e.g. mta[5] or mta[EOT], to position the tape otherwise the
+\fInewtape\fR parameter defines the starting position.  Note that
+specifying any position other than the next tape file number (the number of
+files on the tape plus one) or EOT will cause data to be clobbered if the
+tape file position is less than the next file or behave in an unspecified
+way if it is greater than the next file.  However, specifying the next tape
+file number is the most efficient way to skip to the end of tape to begin
+writing.
+.le
+.ls newtape
+Is the tape a new or blank tape?  If "yes" and no file position
+is specified in the output tape name the FITS files will be written starting
+at the beginning of the tape.  If "no" and no file position  is specified
+the task will skip to the end of the tape to write the files.
+Note that this parameter is queried for if not given
+on the command line regardless of whether it is needed or not.
+.le
+.ls shortlist = yes
+List one line of information for each file written?  This includes the
+input filename, the tape specification with position, the filename
+stored in the FITS file for later restoration (the same as
+the input filename with path and extensions removed), the value of
+the NEXTEND keyword if present, and the value of the OBJECT keyword if
+present.
+.le
+.ls longlist = yes
+List the short listing information plus additional information about each
+FITS header?  The information includes the extension index, extension type,
+extension name, BITPIX, and NAXIS values.
+.le
+.ih
+DESCRIPTION
+A list of input FITS files are copied to tape.  The files are checked to
+make sure they appear to be FITS format (they must begin with a SIMPLE
+card) and then directly copied to the tape in FITS format blocking with a
+blocking factor of 10.  The only change made to the file is that if a
+FILENAME or IRAFNAME keyword is found then the value of the keyword is set
+to the input file name with any directory and extension removed.  Any FITS
+file can be written including multiextension files with any extension
+types.
+
+The files are written to the tape file position given by the output tape
+specification if one is given.  If only the tape name is given without
+a position specification then the files are either written to the beginning
+of the tape if \fInewtape\fR = yes or after the end of tape
+mark if \fInewtape\fR = no.
+
+A listing of the operations may be selected.  The listing information
+includes the input files and the tape position being written.  A short
+listing provides one line per input file written while the long listing
+includes additional lines for each FITS header block.  Keywords which
+will appear in the listing if found are NEXTEND and OBJECT in the
+first line and XTENSION, EXTNAME, EXTVER, BITPIX, and the NAXIS# in
+the long listing for each FITS header.  Note that there is no attempt
+to check that NEXTEND matches the actual number of extensions.
+.ih
+EXAMPLES
+1. Write a set of files, given by an @file, to a new tape with the default
+short listing.
+
+.nf
+    cl> mscwfits @data1 mta yes
+    abc.fits  ->  mta[1]: abc     nextend=8 NGC ABC
+    def.fits  ->  mta[EOT]: def   nextend=8 NGC DEF
+    ...
+.fi
+
+2. Write a set of Mosaic files, given by a wildcard template, to the end of
+a tape with the long listing.
+
+.nf
+    cl> mscwfits @data1 mta no long+
+    efg.fits  ->  mta[EOT]: efg   nextend=8 NGC EFG
+       0 PRIMARY
+       1   IMAGE im1  16 2044x4096
+       2   IMAGE im2  16 2044x4096
+       3   IMAGE im3  16 2044x4096
+       4   IMAGE im4  16 2044x4096
+       5   IMAGE im5  16 2044x4096
+       6   IMAGE im6  16 2044x4096
+       7   IMAGE im7  16 2044x4096
+       8   IMAGE im8  16 2044x4096
+    hij.fits  ->  mta[EOT]: hij   nextend=8 NGC HIJ
+    ...
+.fi
+
+3. Given that you know a tape has 40 files on it and you want to append
+to the file and save the listing information to a file:
+
+.nf
+    cl> mscwfits @data2 mta[41] no >> fitslog
+.fi
+
+.ih
+REVISIONS
+.ls MSCWFITS - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+mscrfits
+.endhelp

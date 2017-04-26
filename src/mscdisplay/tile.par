@@ -1,0 +1,4 @@
+input,s,a,"",,,Root name for input images
+output,s,a,"",,,Name for output tiled image
+trim,b,h,no,,,include only trim sections in tiled image 
+blank,r,h,0.0,,,Fill value for empty protions of mosaic

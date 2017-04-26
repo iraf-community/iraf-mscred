@@ -1,0 +1,4 @@
+amplist,s,h,"11 12 21 22",,,List of amplifier names or keyword containing this
+offset,s,h,"",,,List of Zero offset values (ADU) or keyword
+gain,s,h,"",,,List of gain values (e-/ADU) or keyword
+dark,s,h,"",,,List of dark count rates (ADU/sec) or keyword

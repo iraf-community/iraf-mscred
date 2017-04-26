@@ -1,0 +1,27 @@
+.help mscwcs Aug97 mscred
+.ih
+NAME
+mscwcs -- set and adjust Mosaic WCS
+.ih
+SYNOPSIS
+The Mosaic WCS is set by assigning a plate solution database and
+updating the zero point with specified offsets.  The offset values
+may be set with \fBmsczero\fR.
+.ih
+USAGE	
+mscwcs images
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls MSCWCS - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+msczero
+.endhelp

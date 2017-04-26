@@ -1,0 +1,66 @@
+# MSCDISPLAY
+
+$call	lmscdisp
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	mscexam
+	$call	install
+	;
+
+relink:
+	$call	mscdisplay
+	;
+
+mscdisplay:
+	$set    LIBS1 = "-lccdred -lmscred -lds -lxtools -lcurfit -lgsurfit"
+	$set	LIBS2 = "-lnlfit -liminterp -lncar -lgks -lllsq"
+
+	$checkout x_mscdisplay.o mscbin$
+	$omake	x_mscdisplay.x
+	$iffile (pkg$images/tv/display/imdwcsver.x)
+	    $link x_mscdisplay.o -lsf -lmscdisp\
+		$(LIBS1) $(LIBS2) -o xx_mscdisplay.e
+	$else
+	    $omake imdwcsver.x
+	    $link x_mscdisplay.o imdwcsver.o -lsf -lmscdisp\
+		$(LIBS1) $(LIBS2) -o xx_mscdisplay.e
+	$endif
+	$checkin x_mscdisplay.o mscbin$
+	;
+
+mscexam:
+	$set    LIBS1 = "-lccdred -lmscred -lslalib -lds -lxtools -lcurfit"
+	$set	LIBS2 = "-lgsurfit -lnlfit -liminterp -lncar -lgks -lllsq"
+
+	$checkout x_mscexam.o mscbin$
+	$omake	x_mscexam.x
+	$iffile (pkg$images/tv/display/imdwcsver.x)
+	    $link x_mscexam.o -limexam -lmscdisp\
+		$(LIBS1) $(LIBS2) -o xx_mscexam.e
+	$else
+	    $omake imdwcsver.x
+	    $link x_mscexam.o imdwcsver.o -limexam -lmscdisp\
+		$(LIBS1) $(LIBS2) -o xx_mscexam.e
+	$endif
+	$checkin x_mscexam.o mscbin$
+	;
+
+install:
+	$move	xx_mscdisplay.e mscbin$x_mscdisplay.e
+	$move	xx_mscexam.e mscbin$x_mscexam.e
+	;
+
+lmscdisp:
+	$call	lmscdisp@src
+	;
+
+limexam:
+	$call	limexam@src
+	;
+
+lsf:
+	$call	lsf@src
+	;

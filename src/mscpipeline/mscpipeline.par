@@ -1,0 +1,7 @@
+# MSCPIPELINE package parameter file
+
+pipeuser,s,h,"",,,Local user definition script
+pipelog,s,h,"",,,Pipeline log file
+logfile,s,h,"",,,Logfile
+plotfile,s,h,"",,,Plotfile
+version,s,h,"V3.1: May 1999"

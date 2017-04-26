@@ -1,0 +1,371 @@
+.help mscotfflat Aug00 mscred
+.sp 3
+.ce
+\fBOn-The-Fly (OTF) Calibration\fR
+
+.sh
+Overview
+
+MSCDISPLAY and the real-time display based on this task applies an
+on-the-fly (OTF) calibration to raw mosaic exposures as they are being
+displayed.  This does not change the actual data files and the calibration
+is intended to be quick and approximate.  The calibration steps performed
+are a line-by-line bias subtraction using the overscan region of the data
+and a division by a flat field.  If the data have been overscan corrected
+or flat field corrected by CCDPROC then the task will automatically skip
+those steps.  The title of the display will indicate if the data have been
+calibrated by adding "[bias]" for bias subtraction and "[bias,flat=XXX]"
+for bias subtraction and flat fielding using an OTF flat field called XXX.
+
+The bias subtraction is performed by averaging the overscan pixels in a
+line and subtracting this average from all the pixels in the line.  This
+removes the amplifier bias and line-by-line patterns.
+
+The flat field or response calibration is performed by reading special flat
+field calibration data which provides an approximate relative response for
+each pixel in each amplifier readout.  Depending on how the calibration
+file is derived this will approximately correct for pixel sensitivity
+variations, gain variations between the amplifiers, sky illumination
+variations, and any pupil ghost pattern (as occurs with NOAO Mosaic data
+from the KPNO 4meter telescope).  Note that this is not the correct way to
+remove the pupil ghost but for the purposes of flattening the display in
+order to see faint objects this is useful.
+
+The other display related tasks, MSCEXAMINE and MSCFOCUS, must perform the
+same correction when the display and cursor are used to select data to
+measure.  Currently they do not know if the data have been calibrated in
+the display.  Instead, one must make sure to use the same parameters
+relating to the display in the MIMPARS parameter set.
+
+.sh
+Creating and Installing OTF Flat Fields at NOAO
+
+1.  Take one or more flat fields.  The count levels have to be below 30000.
+If not divide the values by a number either before or after processing
+using MSCARITH.  Since the OTF flats are spatially binned and digitized to
+reduce size it probably is not very useful to create a high quality flat
+from multiple exposures, a single exposure should be fine.
+
+2. Process the flat(s).  The processing should be only overscan and trim.
+If combining multiple flats with FLATCOMBINE set the processing as noted.
+The processing should save the raw exposures in the Raw subdirectory (or
+whatever is set for the "backup" parameter in MSCRED).
+
+3. Run MSCOTFFLAT with the default values.  The output name must be one
+word (that is an acceptible directory name) and should be the standard
+identifier for the filter.  Typically this would be the first word of the
+filter name recorded in the header (with any characters which are not
+letters, numbers, or '.' replaced with '_').  The template name is one of
+the raw exposures.
+
+.nf
+    ms> mscotfflat flat001 B Raw/flat001
+.fi
+
+This will create a subdirectory, B in this example, with the number of
+pl files equal to the number of extensions.
+
+3a. You can check if things make sense by the size of the pl files being
+approximately 0.6-1.6Mb.  You can also display the files and compare
+with the original data using:
+
+.nf
+    ms> display B/flat1 1 fill+ ...
+    ms> display flat00[1] 2 fill+ ...
+.fi
+
+They should be very similar to the flat from which they were derived.
+
+4. To use during your run with the real-time DCA display you would set
+the calibration directory in the DCA GUI to point to the parent
+directory containing the subdirectories of pl files (the directory you
+were in when you ran MSCOTFFLAT).  This is done from the "Edit" menu,
+selecting "Path Params", editing the "Calibration Dir" field, and
+finally clicking "Apply".  Also if you are going to use MSCDISPLAY with
+"process=yes" then go to the "mimpars" parameters and set the "caldir"
+directory parameter there too.  Remember that directories in IRAF must
+end with '/' (or '$' for logical directories).
+
+If you do nothing else the software will look in the specified calibration
+directory for a subdirectory which matches the first word of the filter
+string in the image header (with any characters that are not letters,
+numbers, or '.' changed to '_').  If you want to translate the header
+filter name to some other (directory) name you can add a "cal.men" file
+where the first column is the filter name (quoted if there are blanks) and
+the second column is the directory name.  This file is also used to set the
+override choices for the filter in the DCA GUI.
+
+
+The following is done to install the OTF directory for general use and
+requires the IRAF login.
+
+5. Login as IRAF and go to the standard calibration directory:
+
+.nf
+/iraf/extern/mscdb/noao/ctio/4meter/caldir/Mosaic2A     # CTIO 4m (8 A amps)
+/iraf/extern/mscdb/noao/ctio/4meter/caldir/Mosaic2B     # CTIO 4m (8 B amps)
+/iraf/extern/mscdb/noao/ctio/4meter/caldir/Mosaic2      # CTIO 4m (16 amps)
+/iraf/extern/mscdb/noao/kpno/4meter/caldir              # KPNO 4m
+/iraf/extern/mscdb/noao/kpno/36inch/caldir              # KPNO 36inch
+/iraf/extern/mscdb/noao/kpno/wiyn/caldir                # KPNO WIYN
+.fi
+
+Transfer the OTF directory to that calibration directory.  One way is
+
+.nf
+    % (cd /md1/4meter/nite1; wtar B) | rtar -xv
+.fi
+
+6.  Edit the cal.men file.  The first column is the filter name as
+given in the data files under the FILTER keyword.  The second name is
+the directory name.  The order of the entries in the order in which the
+filters will appear in the DCA list.  Note the DCA list is only used to
+override the automatic filter selection based on the filter keyword.
+
+7. Remove the OTF directory in your data area.  One way is with "!rm -rf
+<dir>".  You can also restore the original raw flats for taping by moving
+the files from the Raw subdirectory back to the data directory.
+
+8.  I am maintaining a master MSCDB directory that includes current
+OTF flats.  This serves the purpose of a backup, the source to generate
+installation files, and the source to generate distribution files for
+users who might want them.  So if you create OTF files please notify
+me.
+
+.sh
+OTF Flat Field Calibration Format
+
+The flat field calibration is a special, more compact format than a regular
+mosaic flat field.  The small size is important both to save disk space in a
+standard calibration directory with lots of filters and to allow more
+efficient I/O and in-memory storage of the flat field data.  For instance,
+the NOAO Mosaic has 14 filters and two telescopes.
+
+The compression relies on two factors.  First is that pixel values can be
+quantized and still produce a good approximate calibration.  The second is
+that the quantized values often have the same values over contiguous
+regions.  These factors allow use of the IRAF pixel list format which
+represents integer values which are constant over segments of each line by
+fewer bytes than the individual values.
+
+The algorithm for creating the compressed flat field format consists of two
+simple steps with two parameters.  The first step is to block average the
+original real-valued flat field specified by a block average factor.
+This brings neighboring values to the same value which aids the pixel
+list representation.  Then the quantization is performed using the
+equation:
+
+.nf
+    quantized integer value = int (nint (value / scale) * scale)
+.fi
+
+where "value" is the real flat field pixel value and "scale" is
+a quantization factor.  The nint function takes the nearest integer value
+of its argument and the int function truncates its argument to an integer.
+The scale factor is defined by
+
+.nf
+    scale = <value> * resolution
+.fi
+
+where "<value>" is the mean flat field value and "resolution" is a parameter
+of the algorithm.  The resolution is then a fractional resolution of the
+mean flat field.
+
+For example, suppose the mean flat field value is 5001.23 and the
+resolution is 0.5%.  The digitization quantum is then 25.006.  A flat field
+value of 5123.45 would be quantized to 5126 and all values between 5113.8
+to 5138.8 also quantize to 5126.
+
+The NOAO Mosaic has significant flat field variations, which prompted the
+development of the OTF calibration.  The variations are on the order of
+10%.  The size of a full flat field exposure, reduced to real values, is
+256 Mb.  Applying the algorithm above with a 2x2 block average and a
+0.5% resolution produces an IRAF pixel list format, OTF flat field which
+is ~5 Mb.  Application of this OTF flat field shows virtually no artifacts.
+
+.sh
+MIMPARS Parameters
+
+The parameters controlling the OTF calibration are set in the MIMPARS
+parameter set.  This parameter set is a subset of the MSCDISPLAY,
+MSCEXAMINE, and MSCFOCUS tasks.  As such they can be edited from EPAR
+on these task by typing ":e" when over the "mimpars" parameter or the
+values can be given on the command line for those tasks.  Typing "mimpars"
+or "epar mimpars" will also let you edit these parameters and "lpar mimpars"
+will display the parameters.  The EPAR display looks like
+
+.nf
+    ms> mimpars
+			       I R A F  
+		Image Reduction and Analysis Facility
+    PACKAGE = mscred
+       TASK = mimpars
+
+    (extname=             ) extension name pattern
+    (exttmpl= _![1-9]![1-9]![1-9].*) extension template for ...
+
+    (xgap   =           72) minimum X gap between images
+    (ygap   =           36) minimum Y gap between images
+
+    (process=           no) do calibration processing?
+    (oversca=          yes) do line-by-line overscan subtraction?
+    (flatfie=          yes) do flat field correction?
+    (caldir =             ) calibration directory
+    (filter =             ) filter
+.fi
+
+The first two groups of parameters have to do with selecting data to be
+displayed and the gaps between the mosaic pieces added during display.  It
+is the last set of parameters that deal with the OTF calibration.
+
+For the NOAO Mosaic, running SETINSTRUMENT or using the parameters set at
+the  telescope will set some of these parameters appropriately to reference
+a calibration directory supplied by the instrument team.  For example, at
+the Kitt Peak 4meter telescope the parameters would be
+
+.nf
+    (caldir = mscdb$noao/kpno/4meter/caldir/) cal...
+    (filter =              !filter) filter
+.fi
+
+The \fIprocess\fR parameter selects whether to turn on or off the OTF
+processing.  If it is no then regardless of the \fIoverscan\fR or
+\fIflatfield\fR values no calibration will be done.  If it is yes then
+one or both calibration operations can be selected.
+
+The flat field calibration requires special calibration files.  The
+\fIcaldir\fR parameter defines a directory containing the calibration
+files.  This can be a standard directory or a user directory.  Note
+that if a directory is specified it must end with $ or /.  In this directory,
+which could include other files, the calibrations are given by some
+set of names.  Currently these are the names of directories containing
+pixel list files for each amplifier.  Creating these files is done with
+the task MSCOTFFLAT which is described below.  The \fIfilter\fR parameter
+can be set to one of these names.
+
+For more automatic selection of calibrations, the calibrations can be
+selected by the filter string in the header (or by giving the same filter
+string in the \fIfilter\fR parameter).  To use the filter string in the
+header the value of the filter parameter is set to "!<keyword>" where
+<keyword> is the keyword for the filter string.  The filter string often
+contains some general description.  The OTF calibration software goes
+through the following steps to resolve the string to a calibration file in
+the calibration directory.
+
+.ls 4 1.
+If the file "cal.men" is present in the calibration directory it
+is read to find translations between the filter string and the calibration
+name.  The translations consist of two columns with the full filter string
+and the calibration name.  If either contains spaces then it must be
+quoted.  For example:
+
+.nf
+    "OIII Mosaic N2"    O3
+.fi
+.le
+.ls 4 2.
+If the file is not present or a match to the filter string is not
+found then the first word of the filter string is used with non-alphanumeric
+characters replaced by '_'.  For example, "OIII Mosaic N2" is mapped to
+OIII.
+.le
+.ls 4 3.
+If the name arrived at by the first two methods fails then a calibration
+called "default" in the calibration directory is sought.
+.le
+
+Note that one may use the "cal.men" file or not and one can use logical
+links to provide explicit mappings between filters for which a calibration
+has been generated and those which have not in addition to making "default"
+link to some particular filter calibration.
+
+.sh
+Real-time Display with the DCA
+
+At the telescope with the NOAO Mosaic, the data capture agent (DCA) has
+controls to select processing during the readout automatic display.  One
+toggle is equivalent to the \fIprocess\fR parameter.  If the processing is
+turned on the DCA automatically selects only overscan bias subtraction for
+non-object exposures and selects both bias subtraction and flat field
+division for object exposures.  The \fIfilter\fR parameter is set by
+passing through the filter string from the data acquisition system or by
+overriding this and using the filter menu to select one of the available
+calibrations.
+
+.sh
+Creation of OTF Flat Fields
+
+Begin by reducing the flat field data.  This could be from combining a
+sequence of dome flat exposures or it could be more ambitious super sky
+flat field.  The reduced flat field would normally be trimmed to remove the
+bias.  A template raw flat field exposure needs to be kept to define the
+final OTF flat field size and keywords.  The OTF flat field needs to be
+the same size as the common raw exposures for efficiency since if the OTF
+flat field is a different size it will be adjusted to match the
+data being calibrated but at some computation expense.
+
+The OTF flat field is prepared from a real flat field using the task
+MSCOTFFLAT.  The parameters are
+
+.nf
+			       I R A F  
+		Image Reduction and Analysis Facility
+    PACKAGE = mscred
+       TASK = mscotfflat
+
+    input   =               Input processed mosaic flat field
+    output  =               Output OTF flat field
+    template=               Template raw mosaic flat field
+    (bin    =            2) Binning size
+    (resolut=        0.005) Resolution
+.fi
+
+The input is the name of the reduced flat field exposure.  The output
+name is typically an abbreviated version of the filter name though
+it could be anything.  The template parameter is the name of a raw
+exposure.  Finally the two algorithm parameters described previously.
+
+An example showing the reduction of a sequence of flat field exposures
+to an OTF flat field for the "V Mosaic" filter follows.  This assumes the
+MSCRED, CCDPROC, and FLATCOMBINE parameters have been set as desired (
+basically the default values).
+
+.nf
+    ms> flatcombine flat*
+    ms> mscotfflat FlatV V Raw/flat001
+    ms> dir V
+    flat1.pl     flat3.pl     flat5.pl     flat7.pl     
+    flat2.pl     flat4.pl     flat6.pl     flat8.pl     
+.fi
+
+Note that the individual pixel list (pl files) can be examined using IRAF
+image tasks.  In particular, they can be display with \fBdisplay\fR.
+
+To use this OTF flat field in the current directory
+
+.nf
+    ms> mscdisplay obj123 1 proc+ caldir="" filter=V
+.fi
+
+To use a standard directory and setup the filter name translation create
+or move the OTF directory and contents in the desired standard directory.
+In that directory create a file "cal.men" which has the filter name followed
+by the OTF calibration directory names.
+
+To place the OTF flat field in a standard directory and setup the filter
+name translation
+
+.nf
+    ms> dir home$otfdir
+    V       B       cal.men
+    ms> page home$otfdir/cal.men
+    "V Mosaic"      V
+    "B Mosaic"      B
+    ms> mscdisplay obj123 1 proc+ caldir=home$otfdir/ filter=!filter
+.fi
+
+If you are creating OTF flat field for users of the NOAO Mosaic at
+Kitt Peak the calibration directories are mscdb$noao/kpno/4meter/caldir/
+and mscdb$noao/kpno/36inch/caldir/.
+.endhelp

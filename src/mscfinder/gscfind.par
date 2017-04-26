@@ -1,0 +1,28 @@
+ra,r,a,,0.,24.,'Right Ascension of the field center (hours)'
+dec,r,a,,-90.,90.,'Declination of the field center (degrees)'
+epoch,r,a,INDEF,,,'Epoch of the field center coordinates'
+width,r,a,,0.,180.,'Width of the field (degrees)\n'
+
+north,s,h,'orion!/cdrom0',,,'Name (and node) for Northern CDrom (vol. 1)'
+south,s,h,'orion!/cdrom1',,,'Name (and node) for Southern CDrom (vol. 2)'
+index,f,h,finder$index,,,'Guide Star Catalog index table name'
+verbose,b,h,no,,,'Print verbose output on the STDERR?'
+nregions,i,h,0,0,,'Number of regions found [output]\n'
+
+region,s,h,'REG_NO',,,'Region number column name\n'
+
+rahlow,s,h,'RA_H_LOW',,,'Lower limit  RA hours   column name'
+ramlow,s,h,'RA_M_LOW',,,'                minutes'
+raslow,s,h,'RA_S_LOW',,,'                seconds\n'
+
+rahhi,s,h,'RA_H_HI',,,'Upper limit  RA hours   column name'
+ramhi,s,h,'RA_M_HI',,,'                minutes'
+rashi,s,h,'RA_S_HI',,,'                seconds\n'
+
+decsilow,s,h,'DECSI_LO',,,'Lower limit Dec sign    column name'
+decdlow,s,h,'DEC_D_LO',,,'                degrees'
+decmlow,s,h,'DEC_M_LO',,,'                minutes\n'
+
+decsihi,s,h,'DECSI_HI',,,'Upper limit Dec sign    column name'
+decdhi,s,h,'DEC_D_HI',,,'                degrees'
+decmhi,s,h,'DEC_M_HI',,,'                minutes\n'

@@ -1,0 +1,1962 @@
+Only in /u2/valdes/iraf/nfextern/src/combine: .t_combine.x.swp
+Only in /u2/valdes/iraf/nfextern/src/combine: CVS
+Only in /u2/valdes/iraf/nfextern/src/combine: _mstkhide.par
+Only in /u2/valdes/iraf/nfextern/src/combine: cgroup.par
+diff ./combine.par /u2/valdes/iraf/nfextern/src/combine/combine.par
+3,11c3,12
+< input,s,a,,,,List of images to combine
+< output,s,a,,,,List of output images
+< headers,s,h,"",,,List of header files (optional)
+< bpmasks,s,h,"",,,List of bad pixel masks (optional)
+< rejmasks,s,h,"",,,List of rejection masks (optional)
+< nrejmasks,s,h,"",,,List of number rejected masks (optional)
+< expmasks,s,h,"",,,List of exposure masks (optional)
+< sigmas,s,h,"",,,List of sigma images (optional)
+< imcmb,s,h,"$I",,,"Keyword for IMCMB keywords
+---
+> input,s,a,,,,List of input files to combine
+> output,s,a,,,,Output rootname
+> logfile,s,h,"STDOUT",,,Log output
+> headers,s,h,"",,,Header rootname (optional)
+> bpmasks,s,h,"",,,Bad pixel mask rootname (optional)
+> rejmasks,s,h,"",,,Rejection mask rootname (optional)
+> nrejmasks,s,h,"",,,Number rejected mask rootname (optional)
+> expmasks,s,h,"",,,Exposure mask rootname (optional)
+> sigmas,s,h,"",,,Sigma image rootname (optional)
+> imcmb,s,h,"$I",,,"Keyword for the IMCMB keywords
+13,16c14,19
+< ccdtype,s,h,"",,,CCD image type to combine (optional)
+< amps,b,h,yes,,,Combine images by amplifier?
+< subsets,b,h,no,,,Combine images by subset?
+< delete,b,h,no,,,"Delete input images after combining?
+---
+> select,s,h,"",,,Selection expression
+> group,s,h,"mkid(filter,1,1)",,,Group expression
+> seqval,s,h,"",,,Sequence value expression
+> seqgap,r,h,INDEF,,,Maximum gap in sequence value
+> extension,s,h,"mkid(extname,1,1)",,,Extension expression
+> delete,b,h,no,,,"Delete input files after combining?
+20d22
+< project,b,h,no,,,Project highest dimension of input images?
+diff ./coutput.par /u2/valdes/iraf/nfextern/src/combine/coutput.par
+1c1
+< # COUTPUT
+---
+> # COUTPUT -- List output of combine.
+3,11c3,11
+< input,s,a,,,,List of images to combine
+< output,s,a,,,,List of output images
+< list,f,a,,,,Output file for list of output names
+< headers,s,h,"",,,List of header files (optional)
+< bpmasks,s,h,"",,,List of bad pixel masks (optional)
+< rejmasks,s,h,"",,,List of rejection masks (optional)
+< nrejmasks,s,h,"",,,List of number rejected masks (optional)
+< expmasks,s,h,"",,,List of exposure masks (optional)
+< sigmas,s,h,"",,,"List of sigma images (optional)
+---
+> input,s,a,,,,List of input files to combine
+> output,s,a,,,,Output rootname
+> logfile,s,h,"STDOUT",,,Log output
+> headers,s,h,"",,,Header rootname (optional)
+> bpmasks,s,h,"",,,Bad pixel mask rootname (optional)
+> rejmasks,s,h,"",,,Rejection mask rootname (optional)
+> nrejmasks,s,h,"",,,Number rejected mask rootname (optional)
+> expmasks,s,h,"",,,Exposure mask rootname (optional)
+> sigmas,s,h,"",,,"Sigma image rootname (optional)
+13,19c13,17
+< ccdtype,s,h,"",,,CCD image type to combine (optional)
+< amps,b,h,yes,,,Combine images by amplifier?
+< subsets,b,h,yes,,,"Combine images by subset?
+< "
+< scale,s,h,"none",,,Image scaling
+< zero,s,h,"none",,,Image zero point offset
+< weight,s,h,"none",,,Image weights
+---
+> select,s,h,"",,,Selection expression
+> group,s,h,"mkid(filter,1,1)",,,Group expression
+> seqval,s,h,"",,,Sequence value expression
+> seqgap,r,h,INDEF,,,Maximum gap in sequence value
+> extension,s,h,"mkid(extname,1,1)",,,Extension expression
+Only in /u2/valdes/iraf/nfextern/src/combine: dcombine.par
+Only in .: diff
+Only in /u2/valdes/iraf/nfextern/src/combine: doc
+Only in /u2/valdes/iraf/nfextern/src/combine: expr.x
+diff ./fcombine.par /u2/valdes/iraf/nfextern/src/combine/fcombine.par
+1c1
+< # ZCOMBINE -- Image combine parameters for zeros
+---
+> # FCOMBINE -- Image combine parameters for flats
+3,11c3,12
+< input,s,a,,,,List of images to combine
+< output,s,a,,,,List of output images
+< headers,s,h,"",,,List of header files (optional)
+< bpmasks,s,h,"",,,List of bad pixel masks (optional)
+< rejmasks,s,h,"",,,List of rejection masks (optional)
+< nrejmasks,s,h,"",,,List of number rejected masks (optional)
+< expmasks,s,h,"",,,List of exposure masks (optional)
+< sigmas,s,h,"",,,List of sigma images (optional)
+< imcmb,s,h,"$I",,,"Keyword for IMCMB keywords
+---
+> input,s,a,,,,List of input files to combine
+> output,s,a,,,,Output rootname
+> logfile,s,h,"STDOUT",,,Log output
+> headers,s,h,"",,,Header rootname (optional)
+> bpmasks,s,h,"",,,Bad pixel mask rootname (optional)
+> rejmasks,s,h,"",,,Rejection mask rootname (optional)
+> nrejmasks,s,h,"",,,Number rejected mask rootname (optional)
+> expmasks,s,h,"",,,Exposure mask rootname (optional)
+> sigmas,s,h,"",,,Sigma image rootname (optional)
+> imcmb,s,h,"$I",,,"Keyword for the IMCMB keywords
+13,16c14,19
+< ccdtype,s,h,"flat",,,CCD image type to combine (optional)
+< amps,b,h,yes,,,Combine images by amplifier?
+< subsets,b,h,no,,,Combine images by subset?
+< delete,b,h,no,,,"Delete input images after combining?
+---
+> select,s,h,"obstype='flat'",,,Selection expression
+> group,s,h,"mkid(filter,1,1)",,,Group expression
+> seqval,s,h,"",,,Sequence value expression
+> seqgap,r,h,INDEF,,,Maximum gap in sequence value
+> extension,s,h,"mkid(extname,1,1)",,,Extension expression
+> delete,b,h,no,,,"Delete input files after combining?
+20d22
+< project,b,h,no,,,Project highest dimension of input images?
+35c37
+< nlow,i,h,0,0,,minmax: Number of low pixels to reject
+---
+> nlow,i,h,1,0,,minmax: Number of low pixels to reject
+41,42c43,44
+< rdnoise,s,h,"rdnoise",,,ccdclip: CCD readout noise (electrons)
+< gain,s,h,"gain",,,ccdclip: CCD gain (electrons/DN)
+---
+> rdnoise,s,h,"0.",,,ccdclip: CCD readout noise (electrons)
+> gain,s,h,"1.",,,ccdclip: CCD gain (electrons/DN)
+Only in .: mergeamps.par
+diff ./mkpkg /u2/valdes/iraf/nfextern/src/combine/mkpkg
+3d2
+< $call	lcombine
+13,14c12
+< 	$checkout x_combine.o mscbin$
+< 	$set LIBS1 = "-lccdred -lmscred -lxtools -lcurfit -lsurfit -lgsurfit"
+---
+> 	$set LIBS1 = "-lnfe -lxtools -lcurfit -lsurfit -lgsurfit"
+15a14
+> 	$update libpkg.a
+17,23c16
+< 	$ifnewer (../../../plp2li.x, iraf$sys/plio/tf/plp2li.x)
+< 	    $link -z x_combine.o ../../../plp2li.o -lcombine\
+< 		$(LIBS1) $(LIBS2) -o xx_combine.e
+< 	$else
+< 	    $link x_combine.o -lcombine $(LIBS1) $(LIBS2) -o xx_combine.e
+< 	$endif
+< 	$checkin x_combine.o mscbin$
+---
+> 	$link x_combine.o libpkg.a $(LIBS1) $(LIBS2) -o xx_combine.e
+27c20
+< 	$move	xx_combine.e mscbin$x_combine.e
+---
+> 	$move	xx_combine.e nfebin$x_combine.e
+30,36c23
+< lcombine:
+< 	$checkout libcombine.a mscbin$
+< 	$update libcombine.a
+< 	$checkin libcombine.a mscbin$
+< 	;
+< 
+< libcombine.a:
+---
+> libpkg.a:
+39,41c26,29
+< 	icmefscale.x	src/icombine.com src/icombine.h <imhdr.h>
+< 	t_combine.x	../ccdred.h src/icombine.com src/icombine.h <error.h>\
+< 			<imhdr.h> <mach.h> <pmset.h>
+---
+> 	expr.x		<ctype.h> <evvexpr.h> <lexnum.h>
+> 	icmefscale.x	<imhdr.h> src/icombine.com src/icombine.h
+> 	t_combine.x	<error.h> <imhdr.h> <mach.h> <pmset.h>\
+> 			src/icombine.com src/icombine.h
+Only in /u2/valdes/iraf/nfextern/src/combine: mscstack.par
+Only in /u2/valdes/iraf/nfextern/src/combine: oldsrc
+diff ./scombine.par /u2/valdes/iraf/nfextern/src/combine/scombine.par
+1c1
+< # SCOMBINE -- Image combine parameters for sky flats
+---
+> # SCOMBINE -- Image combine parameters
+3,11c3,12
+< input,s,a,,,,List of images to combine
+< output,s,a,,,,List of output images
+< headers,s,h,"",,,List of header files (optional)
+< bpmasks,s,h,"",,,List of bad pixel masks (optional)
+< rejmasks,s,h,"",,,List of rejection masks (optional)
+< nrejmasks,s,h,"",,,List of number rejected masks (optional)
+< expmasks,s,h,"",,,List of exposure masks (optional)
+< sigmas,s,h,"",,,List of sigma images (optional)
+< imcmb,s,h,"$I",,,"Keyword for IMCMB keywords
+---
+> input,s,a,,,,List of input files to combine
+> output,s,a,,,,Output rootname
+> logfile,s,h,"STDOUT",,,Log output
+> headers,s,h,"",,,Header rootname (optional)
+> bpmasks,s,h,"",,,Bad pixel mask rootname (optional)
+> rejmasks,s,h,"",,,Rejection mask rootname (optional)
+> nrejmasks,s,h,"",,,Number rejected mask rootname (optional)
+> expmasks,s,h,"",,,Exposure mask rootname (optional)
+> sigmas,s,h,"",,,Sigma image rootname (optional)
+> imcmb,s,h,"$I",,,"Keyword for the IMCMB keywords
+13,16c14,19
+< ccdtype,s,h,"object",,,CCD image type to combine (optional)
+< amps,b,h,yes,,,Combine images by amplifier?
+< subsets,b,h,no,,,Combine images by subset?
+< delete,b,h,no,,,"Delete input images after combining?
+---
+> select,s,h,"",,,Selection expression
+> group,s,h,"mkid(filter,1,1)",,,Group expression
+> seqval,s,h,"",,,Sequence value expression
+> seqgap,r,h,INDEF,,,Maximum gap in sequence value
+> extension,s,h,"mkid(extname,1,1)",,,Extension expression
+> obstype,s,h,"",,,Observation type selection expression (optional)
+20d22
+< project,b,h,no,,,Project highest dimension of input images?
+26c28
+< blank,r,h,1.,,,"Value if there are no pixels
+---
+> blank,r,h,0.,,,"Value if there are no pixels
+35c37
+< nlow,i,h,0,0,,minmax: Number of low pixels to reject
+---
+> nlow,i,h,1,0,,minmax: Number of low pixels to reject
+41,42c43,44
+< rdnoise,s,h,"rdnoise",,,ccdclip: CCD readout noise (electrons)
+< gain,s,h,"gain",,,ccdclip: CCD gain (electrons/DN)
+---
+> rdnoise,s,h,"0.",,,ccdclip: CCD readout noise (electrons)
+> gain,s,h,"1.",,,ccdclip: CCD gain (electrons/DN)
+Common subdirectories: ./src and /u2/valdes/iraf/nfextern/src/combine/src
+diff ./t_combine.x /u2/valdes/iraf/nfextern/src/combine/t_combine.x
+6c6
+< include	"../ccdred.h"
+---
+> include	<evvexpr.h>
+22,24d21
+< define	GRPAMP		1	# Group by amplifier
+< define	GRPCCD		2	# Group by ccd
+< 
+36,38d32
+< int	grp
+< common	/grpcom/ grp
+< 
+43,49c37
+< 	# Get the list of images and open the header translation which
+< 	# is needed to determine the amps, ccds, subsets and ccdtypes.
+< 
+< 	call clgstr ("instrument", Memc[fname], SZ_FNAME)
+< 	call hdmopen (Memc[fname])
+< 	grp = GRPAMP
+< 
+---
+> 	# Get the list of images.
+54c42
+< 	iferr (call cmbine (list, Memc[fname], YES, outnames, nout))
+---
+> 	iferr (call cmbine (list, Memc[fname], YES, outnames, nout, NO))
+61d48
+< 	call hdmclose ()
+66c53
+< # T_COUTPUT -- List of output images.
+---
+> # T_CGROUP -- List combine groupings.
+68,71c55
+< procedure t_coutput ()
+< 
+< int	list, imtopenp()
+< pointer	sp, fname
+---
+> procedure t_cgroup ()
+73,74c57,59
+< int	grp
+< common	/grpcom/ grp
+---
+> int	i, list, nout, imtopenp()
+> pointer	sp, fname, outnames
+> errchk	cmbine
+80,86c65
+< 	# Get the list of images and open the header translation which
+< 	# is needed to determine the amps, ccds, subsets and ccdtypes.
+< 
+< 	call clgstr ("instrument", Memc[fname], SZ_FNAME)
+< 	call hdmopen (Memc[fname])
+< 	grp = GRPAMP
+< 
+---
+> 	# Get the list of images.
+89c68
+< 	call xt_stripwhite (Memc[fname])
+---
+> 	call xt_imroot (Memc[fname], Memc[fname], SZ_FNAME)
+91c70
+< 	iferr (call coutput (list, Memc[fname]))
+---
+> 	iferr (call cmbine (list, Memc[fname], YES, outnames, nout, YES))
+93a73,75
+> 	do i = 1, nout
+> 	    call mfree (Memi[outnames+i-1], TY_CHAR)
+> 	call mfree (outnames, TY_POINTER)
+95,330d76
+< 	call hdmclose ()
+< 	call sfree (sp)
+< end
+< 
+< 
+< # T_AMPMERGE -- Merge amplifiers from multiple amp per CCD data.
+< #
+< # It merges extensions with the same ccd.
+< # If all extensions merge to a single image then a single image format is
+< # produced.
+< 
+< procedure t_ampmerge ()
+< 
+< int	i, j, fd, nout, nmerge, inlist, outlist, bplist, list1
+< real	c1, c2, c3, c4, l1, l2, l3, l4, ltm[2,2], ltv[2]
+< pointer	sp, outnames, fname, input, output, outmask, outputs
+< pointer	im, mw, ct
+< 
+< bool	ccdflag()
+< int	imtopenp(), imtopen(), imtgetim(), imtlen(), imgeti()
+< int	open(), errcode(), nowhite()
+< real	imgetr()
+< pointer	immap(),  mw_openim(), mw_sctran()
+< errchk	open, cmbine, immap, imgetr, maskmerge
+< 
+< int	grp
+< common	/grpcom/ grp
+< 
+< define	skip_	10
+< 
+< begin
+< 	call smark (sp)
+< 	call salloc (outnames, SZ_FNAME, TY_CHAR)
+< 	call salloc (fname, SZ_FNAME, TY_CHAR)
+< 	call salloc (input, SZ_FNAME, TY_CHAR)
+< 	call salloc (output, SZ_FNAME, TY_CHAR)
+< 	call salloc (outmask, SZ_FNAME, TY_CHAR)
+< 
+< 	# Get the list of images and open the header translation which
+< 	# is needed to determine the amps, ccds, subsets and ccdtypes.
+< 
+< 	call clgstr ("instrument", Memc[fname], SZ_FNAME)
+< 	call hdmopen (Memc[fname])
+< 	grp = GRPCCD
+< 
+< 	# Do each image separately.
+< 	inlist = imtopenp ("input")
+< 	outlist = imtopenp ("output")
+< 	bplist = imtopenp ("outmasks")
+< 	if (imtlen (inlist) != imtlen (outlist) && imtlen (outlist) != 1)
+< 	    call error (1, "Input and output lists don't match")
+< 	if (imtlen (bplist) != 0 && imtlen (bplist) != imtlen (outlist))
+< 	    call error (1, "Output data and mask lists don't match")
+< 	call clgstr ("outnames", Memc[outnames], SZ_FNAME)
+< 	i = nowhite (Memc[outnames], Memc[outnames], SZ_FNAME)
+< 	fd = NULL
+< 	while (imtgetim (outlist, Memc[output], SZ_FNAME) != EOF) {
+< 	    call xt_imroot (Memc[output], Memc[output], SZ_FNAME)
+< 	    if (imtgetim (inlist, Memc[input], SZ_FNAME) == EOF)
+< 		break
+< 	    if (imtlen (outlist) == 1) {
+< 		call imtrew (inlist)
+< 		list1 = inlist
+< 	    } else
+< 		list1 = imtopen (Memc[input])
+< 	    if (imtgetim (bplist, Memc[outmask], SZ_FNAME) == EOF)
+< 		Memc[outmask] = EOS
+< 	    outputs = NULL
+< 
+< 	    iferr {
+< 		# Check processing.
+< 		call sprintf (Memc[fname], SZ_FNAME, "%s[1]")
+< 		    call pargstr (Memc[input])
+< 		iferr (im = immap (Memc[fname], READ_ONLY, 0))
+< 		    im = immap (Memc[input], READ_ONLY, 0)
+< 		if (ccdflag (im, "ampmerge")) {
+< 		    call imunmap (im)
+< 		    goto skip_
+< 		}
+< 
+< 		if (!ccdflag (im, "trim")) {
+< 		    call imunmap (im)
+< 		    call sprintf (Memc[fname], SZ_FNAME,
+< 		"Data must be overscan corrected and trimmed for merging (%s)")
+< 			call pargstr (Memc[input])
+< 		    call error (1, Memc[fname])
+< 		}
+< 		call imunmap (im)
+< 
+< 		# Merge the amplifier images.
+< 		iferr (call cmbine (list1, Memc[output], NO, outputs, nout)) {
+< 		    if (errcode() == ONEIMAGE)
+< 			goto skip_
+< 		    call erract (EA_ERROR)
+< 		}
+< 
+< 		# Update the headers.
+< 		do i = 1, nout {
+< 		    do j = 0, ARB {
+< 			call sprintf (Memc[fname], SZ_FNAME, "%s[%d]")
+< 			    call pargstr (Memc[Memi[outputs+i-1]])
+< 			    call pargi (j)
+< 			iferr (im = immap (Memc[fname], READ_WRITE, 0)) {
+< 			    switch (errcode()) {
+< 			    case SYS_FXFRFEOF, SYS_IKIOPEN:
+< 				break
+< 			    case SYS_IKIEXTN:
+< 				next
+< 			    default:
+< 				call erract (EA_ERROR)
+< 			    }
+< 			}
+< 
+< 			# Write names if desired.
+< 			if (fd == NULL && Memc[outnames] != EOS)
+< 			    fd = open (Memc[outnames], NEW_FILE, TEXT_FILE)
+< 			if (j == 0 && fd != NULL) {
+< 			    call fprintf (fd, "%s\n")
+< 				call pargstr (Memc[Memi[outputs+i-1]])
+< 			}
+< 
+< 			iferr (call imdelf (im, "nextend"))
+< 			    ;
+< 			if (IM_NDIM(im) == 0) {
+< 			    call imunmap (im)
+< 			    next
+< 			}
+< 
+< 			# Remove NEXTEND,  NCOMBINE and put in AMPMERGE flag.
+< 			iferr (call imdelf (im, "nextend"))
+< 			    ;
+< 			iferr (nmerge = imgeti (im, "ncombine"))
+< 			    nmerge = 0
+< 			iferr (call imdelf (im, "ncombine"))
+< 			    ;
+< 			call sprintf (Memc[fname], SZ_FNAME, "Merged %d amps")
+< 			    call pargi (nmerge)
+< 			call timelog (Memc[fname], SZ_FNAME)
+< 			call imastr (im, "ampmerge", Memc[fname])
+< 
+< 			# Update CCDSEC.
+< 			mw = mw_openim (im)
+< 			ct = mw_sctran (mw, "logical", "physical", 3)
+< 			call mw_c2tranr (ct, 0.501, 0.501, c1, l1)
+< 			call mw_c2tranr (ct, real(IM_LEN(im,1)+0.499),
+< 			    real(IM_LEN(im,2)+0.499), c2, l2)
+< 			call sprintf (Memc[fname], SZ_FNAME, "[%d:%d,%d:%d]")
+< 			    call pargi (nint(c1))
+< 			    call pargi (nint(c2))
+< 			    call pargi (nint(l1))
+< 			    call pargi (nint(l2))
+< 			call imastr (im, "ccdsec", Memc[fname])
+< 			call mw_ctfree (ct)
+< 
+< 			# Update DETSEC.
+< 			iferr {
+< 			    ltv[1] = imgetr (im, "dtv1")
+< 			    ltv[2] = imgetr (im, "dtv2")
+< 			    ltm[1,1] = imgetr (im, "dtm1_1")
+< 			    ltm[1,2] = 0.
+< 			    ltm[2,1] = 0.
+< 			    ltm[2,2] = imgetr (im, "dtm2_2")
+< 			    call mw_sltermr (mw, ltm, ltv, 2)
+< 			    ct = mw_sctran (mw, "physical", "logical", 3)
+< 			    call mw_c2tranr (ct, c1, l1, c3, l3)
+< 			    call mw_c2tranr (ct, c2, l2, c4, l4)
+< 			    call sprintf (Memc[fname], SZ_FNAME,
+< 				"[%d:%d,%d:%d]")
+< 				call pargi (nint(c3))
+< 				call pargi (nint(c4))
+< 				call pargi (nint(l3))
+< 				call pargi (nint(l4))
+< 			    call imastr (im, "detsec", Memc[fname])
+< 			} then
+< 			    ;
+< 
+< 			# Update AMPSEC.
+< 			iferr {
+< 			    ltv[1] = imgetr (im, "atv1")
+< 			    ltv[2] = imgetr (im, "atv2")
+< 			    ltm[1,1] = imgetr (im, "atm1_1")
+< 			    ltm[1,2] = 0.
+< 			    ltm[2,1] = 0.
+< 			    ltm[2,2] = imgetr (im, "atm2_2")
+< 			    call mw_sltermr (mw, ltm, ltv, 2)
+< 			    ct = mw_sctran (mw, "physical", "logical", 3)
+< 			    call mw_c2tranr (ct, c1, l1, c3, l3)
+< 			    call mw_c2tranr (ct, c2, l2, c4, l4)
+< 			    call sprintf (Memc[fname], SZ_FNAME,
+< 				"[%d:%d,%d:%d]")
+< 				call pargi (nint(c3))
+< 				call pargi (nint(c4))
+< 				call pargi (nint(l3))
+< 				call pargi (nint(l4))
+< 			    call imastr (im, "ampsec", Memc[fname])
+< 			} then
+< 			    ;
+< 
+< 			call mw_close (mw)
+< 
+< 			# Merge masks.
+< 			if (Memc[outmask] != EOS) {
+< 			    ifnoerr (call imgstr (im, "EXTNAME",
+< 				Memc[input], SZ_FNAME)) {
+< 				if (nowhite (Memc[input], Memc[input],
+< 				    SZ_FNAME)==0)
+< 				    ;
+< 				call sprintf (Memc[fname], SZ_FNAME,
+< 				    "bpmm_%s.pl")
+< 				    call pargstr (Memc[input])
+< 				call maskmerge (im, Memc[outmask], Memc[fname])
+< 			    } else
+< 				call maskmerge (im, "", Memc[outmask])
+< 			}
+< 			call imunmap (im)
+< 		    }
+< 		}
+< 
+< skip_		i = 0
+< 
+< 	    } then
+< 		call erract (EA_WARN)
+< 
+< 	    if (imtlen (outlist) != 1)
+< 		call imtclose (list1)
+< 	    if (outputs != NULL) {
+< 		do i = 1, nout
+< 		    call mfree (Memi[outputs+i-1], TY_CHAR)
+< 		call mfree (outputs, TY_POINTER)
+< 	    }
+< 	}
+< 
+< 	if (fd != NULL)
+< 	    call close (fd)
+< 	call imtclose (inlist)
+< 	call hdmclose ()
+335,341c81
+< # MASKMERGE -- Merge masks.
+< 
+< procedure maskmerge (in, dir, output)
+< 
+< pointer	in			#I Input merged image pointer
+< char	dir[ARB]		#I Output directory name
+< char	output[ARB]		#I Ouput mask name
+---
+> # T_COUTPUT -- List of output images.
+343,344c83
+< int	i, j, n, nc
+< pointer	sp, outname, key, fname, fnames, im, ims, out, outbuf
+---
+> procedure t_coutput ()
+346,349c85,86
+< bool	streq(), pm_empty()
+< int	access()
+< pointer	pm_open(), immap(), yt_pmmap(), impl2i(), imgl2i()
+< errchk	pm_loadim, immap, yt_pmmap, imgstr, imdelete, imrename, fmkdir
+---
+> int	list, imtopenp()
+> pointer	sp, fname
+352,355d88
+< 
+< 	if (output[1] == EOS)
+< 	    return
+< 
+357,358d89
+< 	call salloc (outname, SZ_FNAME, TY_CHAR)
+< 	call salloc (key, 8, TY_CHAR)
+361,470c92,95
+< 	# Set the output name.
+< 	call sprintf (Memc[outname], SZ_FNAME, "%s%s")
+< 	    call pargstr (dir)
+< 	    call pargstr (output)
+< 
+< 	# Get the masks from the output image and the headers of the parent
+< 	# images given by the IMCMB keywords.  Get only unique and
+< 	# non-empty masks.
+< 
+< 	n = 0
+< 	do i = 0, ARB {
+< 	    if (i == 0) {
+< 		iferr (call imgstr (in, "BPM", Memc[fname], SZ_FNAME))
+< 		    next
+< 	    } else {
+< 		call sprintf (Memc[key], 8, "IMCMB%03d")
+< 		    call pargi (i)
+< 		iferr (call imgstr (in, Memc[key], Memc[fname], SZ_FNAME))
+< 		    break
+< 		im = immap (Memc[fname], READ_ONLY, 0)
+< 		iferr (call imgstr (im, "BPM", Memc[fname], SZ_FNAME)) {
+< 		    call imunmap (im)
+< 		    next
+< 		}
+< 		call imunmap (im)
+< 	    }
+< 
+< 	    # Check if the mask has already been seen.
+< 	    do j = 0, n-1
+< 		if (streq (Memc[fname], Memc[Memi[fnames+j]]))
+< 		    break
+< 	    if (j < n)
+< 		next
+< 
+< 	    # Check for an empty mask.
+< 	    im = pm_open (NULL)
+< 	    call pm_loadim (im, Memc[fname], Memc[key], 8)
+< 	    if (pm_empty (im)) {
+< 		call pm_close (im)
+< 		if (i == 0) {
+< 		    iferr {
+< 			call imdelete (Memc[fname])
+< 			call imdelf (in, "BPM")
+< 		    } then
+< 			;
+< 		}
+< 		next
+< 	    } else
+< 		call pm_close (im)
+< 
+< 	    # Save the name.
+< 	    if (fnames == NULL)
+< 		call malloc (fnames, 10, TY_POINTER)
+< 	    else if (mod (n, 10) == 0)
+< 		call realloc (fnames, n, TY_POINTER)
+< 	    Memi[fnames+n] = fname
+< 	    n = n + 1
+< 	    call salloc (fname, SZ_FNAME, TY_CHAR)
+< 	}
+< 
+< 	# If there are no masks just return.
+< 	if (n == 0) {
+< 	    call sfree (sp)
+< 	    return
+< 	}
+< 
+< 	# If there is only one mask just set the BPM keyword.
+< 	if (n == 1) {
+< 	    iferr (call imgstr (in, "BPM", Memc[fname], SZ_FNAME))
+< 		Memc[fname] = EOS
+< 	    if (streq (Memc[fname], Memc[Memi[fnames]])) {
+< 		if (dir[1] != EOS && access (dir, 0, 0) == NO)
+< 		    call fmkdir (dir)
+< 		call imrename (Memc[fname], Memc[outname])
+< 		call imastr (in, "BPM", Memc[outname])
+< 	    } else
+< 		call imastr (in, "BPM", Memc[Memi[fnames]])
+< 	    call mfree (fnames, TY_POINTER)
+< 	    call sfree (sp)
+< 	    return
+< 	}
+< 
+< 	# Combine the masks.
+< 	call salloc (ims, n, TY_POINTER)
+< 	call aclri (Memi[ims], n)
+< 	iferr {
+< 	    # Map the masks and register them to the input image.
+< 	    do i = 0, n-1 {
+< 		im = yt_pmmap (Memc[Memi[fnames+i]], in, Memc[fname], SZ_FNAME)
+< 		Memi[ims+i] = im
+< 	    }
+< 
+< 	    # Map the output.
+< 	    if (dir[1] != EOS && access (dir, 0, 0) == NO)
+< 		call fmkdir (dir)
+< 	    out = immap (Memc[outname], NEW_COPY, in)
+< 
+< 	    # Merge the masks using a maximum.
+< 	    nc = IM_LEN(in,1)
+< 	    do j = 1, IM_LEN(in,2) {
+< 		outbuf = impl2i (out, j)
+< 		call aclri (Memi[outbuf], nc)
+< 		do i = 0, n-1 {
+< 		    im = Memi[ims+i]
+< 		    call amaxi (Memi[imgl2i(im,j)], Memi[outbuf], Memi[outbuf],
+< 			nc)
+< 		}
+< 	    }
+< 
+< 	    call imunmap (out)
+---
+> 	# Get the list of images.
+> 	list = imtopenp ("input")
+> 	call clgstr ("output", Memc[fname], SZ_FNAME)
+> 	call xt_stripwhite (Memc[fname])
+472,479c97
+< 	    # Delete any existing BPM and set keyword to new BPM.
+< 	    iferr {
+< 		call imgstr (in, "BPM", Memc[fname], SZ_FNAME)
+< 		call imdelete (Memc[fname])
+< 	    } then
+< 		;
+< 	    call imastr (in, "BPM", Memc[outname])
+< 	} then {
+---
+> 	iferr (call coutput (list, Memc[fname]))
+481,486d98
+< 	    if (out != NULL) {
+< 		call imunmap (out)
+< 		iferr (call imdelete (Memc[outname]))
+< 		    ;
+< 	    }
+< 	}
+488,494c100
+< 	# Finish up.
+< 	do i = 0, n-1 {
+< 	    im = Memi[ims+i]
+< 	    if (im != NULL)
+< 		call imunmap (im)
+< 	}
+< 	call mfree (fnames, TY_POINTER)
+---
+> 	call imtclose (list)
+501,502c107,108
+< # This is a version of IMCOMBINE which groups data by CCD types, subsets
+< # (such as filter), and amplifier.  It also uses header keyword translation.
+---
+> # This is a version of IMCOMBINE which groups data by extensions and subsets
+> # (such as filter).
+508c114
+< procedure cmbine (list, outroot, oneimage, outnames, nsubsets)
+---
+> procedure cmbine (list, outroot, oneimage, outnames, nsubsets, listonly)
+514c120,121
+< pointer	subsets			# Subsets
+---
+> int	nsubsets		# Number of subsets
+> int	listonly		# List output only?
+527a135
+> pointer	seqvals			# Sequence values
+528a137
+> pointer	subsets			# Subsets
+530d138
+< int	nsubsets		# Number of subsets
+565,566c173,174
+< 	call cmb_images (list, images, scales, zeros, wts, extns, subsets,
+< 	    nimages, nsubsets, mef)
+---
+> 	call cmb_images (list, images, scales, zeros, wts, seqvals, extns,
+> 	    subsets, nimages, nsubsets, mef, listonly)
+568,569c176,177
+< 	    call cmb_images_free (images, scales, zeros, wts, extns, subsets,
+< 		nimages, nsubsets)
+---
+> 	    call cmb_images_free (images, scales, zeros, wts, seqvals,
+> 	        extns, NULL, subsets, nimages, nsubsets)
+580,581c188,189
+< 		call cmb_images_free (images, scales, zeros, wts, extns,
+< 		    subsets, nimages, nsubsets)
+---
+> 		call cmb_images_free (images, scales, zeros, wts, seqvals,
+> 		    extns, NULL, subsets, nimages, nsubsets)
+587,660c195,268
+< 	# Get task parameters.  Some additional parameters are obtained later.
+< 	call clgstr ("headers", Memc[hroot], SZ_FNAME)
+< 	call clgstr ("bpmasks", Memc[broot], SZ_FNAME)
+< 	call clgstr ("rejmasks", Memc[rroot], SZ_FNAME)
+< 	call clgstr ("nrejmasks", Memc[nrroot], SZ_FNAME)
+< 	call clgstr ("expmasks", Memc[eroot], SZ_FNAME)
+< 	call clgstr ("sigmas", Memc[sigroot], SZ_FNAME)
+< 	call clgstr ("logfile", Memc[logfile], SZ_FNAME)
+< 	call xt_stripwhite (Memc[hroot])
+< 	call xt_stripwhite (Memc[broot])
+< 	call xt_stripwhite (Memc[rroot])
+< 	call xt_stripwhite (Memc[nrroot])
+< 	call xt_stripwhite (Memc[eroot])
+< 	call xt_stripwhite (Memc[sigroot])
+< 	call xt_stripwhite (Memc[logfile])
+< 
+< 	project = clgetb ("project")
+< 	combine = clgwrd ("combine", Memc[statsec], SZ_FNAME, COMBINE)
+<         reject = clgwrd ("reject", Memc[statsec], SZ_FNAME, REJECT)
+<         blank = clgetr ("blank")
+< 	call strcpy ("exptime", Memc[expkeyword], SZ_FNAME)
+< 	call clgstr ("statsec", Memc[statsec], SZ_FNAME)
+<         call clgstr ("gain", Memc[gain], SZ_FNAME)
+<         call clgstr ("rdnoise", Memc[rdnoise], SZ_FNAME)
+<         call clgstr ("snoise", Memc[snoise], SZ_FNAME)
+<         lthresh = clgetr ("lthreshold")
+<         hthresh = clgetr ("hthreshold")
+<         lsigma = clgetr ("lsigma")
+< 	pclip = clgetr ("pclip")
+< 	flow = clgetr ("nlow")
+< 	fhigh = clgetr ("nhigh")
+< 	nkeep = clgeti ("nkeep")
+<         hsigma = clgetr ("hsigma")
+<         grow = clgetr ("grow")
+<         mclip = clgetb ("mclip")
+<         sigscale = clgetr ("sigscale")
+< 	verbose = clgetb ("verbose")
+< 	delete = btoi (clgetb ("delete"))
+< 
+< 	# Translate keywords.
+< 	call hdmname (Memc[expkeyword], Memc[expkeyword], SZ_FNAME)
+< 	call hdmname (Memc[gain], Memc[gain], SZ_FNAME)
+< 	call hdmname (Memc[rdnoise], Memc[rdnoise], SZ_FNAME)
+< 	call hdmname (Memc[snoise], Memc[snoise], SZ_FNAME)
+< 
+<         # Check parameters, map INDEFs, and set threshold flag
+< 	if (pclip == 0. && reject == PCLIP)
+< 	    call error (1, "Pclip parameter may not be zero")
+<         if (IS_INDEFR (blank))
+<             blank = 0.
+<         if (IS_INDEFR (lsigma))
+<             lsigma = MAX_REAL
+<         if (IS_INDEFR (hsigma))
+<             hsigma = MAX_REAL
+< 	if (IS_INDEFR (pclip))
+< 	    pclip = -0.5
+< 	if (IS_INDEFR (flow))
+< 	    flow = 0.
+< 	if (IS_INDEFR (fhigh))
+< 	    fhigh = 0.
+<         if (IS_INDEFR (grow))
+<             grow = 0.
+<         if (IS_INDEF (sigscale))
+<             sigscale = 0.
+< 
+<         if (IS_INDEF(lthresh) && IS_INDEF(hthresh))
+<             dothresh = false
+<         else {
+<             dothresh = true
+<             if (IS_INDEF(lthresh))
+<                 lthresh = -MAX_REAL
+<             if (IS_INDEF(hthresh))
+<                 hthresh = MAX_REAL
+<         }
+---
+> 	# Set task parameters.  Additional parameters are obtained later.
+> 	if (listonly == YES) {
+> 	    call strcpy ("STDOUT", Memc[logfile], SZ_FNAME)
+> 	    Memc[hroot] = EOS; Memc[broot] = EOS; Memc[rroot] = EOS
+> 	    Memc[nrroot] = EOS; Memc[eroot] = EOS; Memc[sigroot] = EOS
+> 	} else {
+> 	    call clgstr ("headers", Memc[hroot], SZ_FNAME)
+> 	    call clgstr ("bpmasks", Memc[broot], SZ_FNAME)
+> 	    call clgstr ("rejmasks", Memc[rroot], SZ_FNAME)
+> 	    call clgstr ("nrejmasks", Memc[nrroot], SZ_FNAME)
+> 	    call clgstr ("expmasks", Memc[eroot], SZ_FNAME)
+> 	    call clgstr ("sigmas", Memc[sigroot], SZ_FNAME)
+> 	    call clgstr ("logfile", Memc[logfile], SZ_FNAME)
+> 	    call xt_stripwhite (Memc[hroot])
+> 	    call xt_stripwhite (Memc[broot])
+> 	    call xt_stripwhite (Memc[rroot])
+> 	    call xt_stripwhite (Memc[nrroot])
+> 	    call xt_stripwhite (Memc[eroot])
+> 	    call xt_stripwhite (Memc[sigroot])
+> 	    call xt_stripwhite (Memc[logfile])
+> 
+> 	    #project = clgetb ("project")
+> 	    project = false
+> 	    combine = clgwrd ("combine", Memc[statsec], SZ_FNAME, COMBINE)
+> 	    reject = clgwrd ("reject", Memc[statsec], SZ_FNAME, REJECT)
+> 	    blank = clgetr ("blank")
+> 	    call strcpy ("exptime", Memc[expkeyword], SZ_FNAME)
+> 	    call clgstr ("statsec", Memc[statsec], SZ_FNAME)
+> 	    call clgstr ("gain", Memc[gain], SZ_FNAME)
+> 	    call clgstr ("rdnoise", Memc[rdnoise], SZ_FNAME)
+> 	    call clgstr ("snoise", Memc[snoise], SZ_FNAME)
+> 	    lthresh = clgetr ("lthreshold")
+> 	    hthresh = clgetr ("hthreshold")
+> 	    lsigma = clgetr ("lsigma")
+> 	    pclip = clgetr ("pclip")
+> 	    flow = clgetr ("nlow")
+> 	    fhigh = clgetr ("nhigh")
+> 	    nkeep = clgeti ("nkeep")
+> 	    hsigma = clgetr ("hsigma")
+> 	    grow = clgetr ("grow")
+> 	    mclip = clgetb ("mclip")
+> 	    sigscale = clgetr ("sigscale")
+> 	    delete = btoi (clgetb ("delete"))
+> 
+> 	    # Check parameters, map INDEFs, and set threshold flag
+> 	    if (pclip == 0. && reject == PCLIP)
+> 		call error (1, "Pclip parameter may not be zero")
+> 	    if (IS_INDEFR (blank))
+> 		blank = 0.
+> 	    if (IS_INDEFR (lsigma))
+> 		lsigma = MAX_REAL
+> 	    if (IS_INDEFR (hsigma))
+> 		hsigma = MAX_REAL
+> 	    if (IS_INDEFR (pclip))
+> 		pclip = -0.5
+> 	    if (IS_INDEFR (flow))
+> 		flow = 0.
+> 	    if (IS_INDEFR (fhigh))
+> 		fhigh = 0.
+> 	    if (IS_INDEFR (grow))
+> 		grow = 0.
+> 	    if (IS_INDEF (sigscale))
+> 		sigscale = 0.
+> 
+> 	    if (IS_INDEF(lthresh) && IS_INDEF(hthresh))
+> 		dothresh = false
+> 	    else {
+> 		dothresh = true
+> 		if (IS_INDEF(lthresh))
+> 		    lthresh = -MAX_REAL
+> 		if (IS_INDEF(hthresh))
+> 		    hthresh = MAX_REAL
+> 	    }
+> 	}
+672a281,282
+> 	    if (listonly == NO)
+> 	        call strcat (".fits", Memc[output], SZ_FNAME)
+729,732c339,343
+< 			Memr[Memi[wts+i-1]], Memi[nimages+i-1],
+< 			Memc[output], Memc[headers], Memc[bmask], Memc[rmask],
+< 			Memc[nrmask], Memc[emask], Memc[sigma],
+< 			Memc[logfile], NO, delete, oneimage)
+---
+> 			Memr[Memi[wts+i-1]], Memd[Memi[seqvals+i-1]],
+> 			Memi[nimages+i-1], Memc[output], Memc[headers],
+> 			Memc[bmask], Memc[rmask], Memc[nrmask],
+> 			Memc[emask], Memc[sigma], Memc[logfile], NO,
+> 			delete, oneimage, listonly)
+734,735c345
+< 		    list1 = ic_mklist (Memc[Memi[images+i-1]],
+< 			Memi[nimages+i-1])
+---
+> 		    list1 = ic_mklist (Memi[images+i-1], Memi[nimages+i-1], NO)
+741c351
+< 			Memr[Memi[wts+i-1]], NO)
+---
+> 			Memr[Memi[wts+i-1]], NO, NO, listonly)
+743c353
+< 		    if (!project && delete == YES) {
+---
+> 		    if (!project && delete == YES && listonly == NO) {
+746c356
+< 			    call ccddelete (Memc[output])
+---
+> 			    call imdelete (Memc[output])
+755,760d364
+< 	    call mfree (Memi[images+i-1], TY_CHAR)
+< 	    call mfree (Memi[scales+i-1], TY_REAL)
+< 	    call mfree (Memi[zeros+i-1], TY_REAL)
+< 	    call mfree (Memi[wts+i-1], TY_REAL)
+< 	    call mfree (Memi[extns+i-1], TY_CHAR)
+< 	    call mfree (Memi[subsets+i-1], TY_CHAR)
+764,765c368,369
+< 	call cmb_images_free (images, scales, zeros, wts, extns, subsets,
+< 	    nimages, nsubsets)
+---
+> 	call cmb_images_free (images, scales, zeros, wts, seqvals,
+> 	    extns, NULL, subsets, nimages, nsubsets)
+772,773c376,377
+< procedure cmb_images_free (images, scales, zeros, wts, extns, subsets, nimages,
+< 	nsubsets)
+---
+> procedure cmb_images_free (images, scales, zeros, wts, seqvals,
+> 	extns, iimage, subsets, nimages, nsubsets)
+778a383
+> pointer	seqvals			#U Pointer to sequence values in subset
+779a385
+> pointer	iimage			#U Pointer to extension index in subset
+792c398,402
+< 	    call mfree (Memi[extns+i-1], TY_CHAR)
+---
+> 	    call mfree (Memi[seqvals+i-1], TY_DOUBLE)
+> 	    if (extns != NULL)
+> 		call mfree (Memi[extns+i-1], TY_CHAR)
+> 	    if (iimage != NULL)
+> 		call mfree (Memi[iimage+i-1], TY_INT)
+799c409,413
+< 	call mfree (extns, TY_POINTER)
+---
+> 	call mfree (seqvals, TY_POINTER)
+> 	if (extns != NULL)
+> 	    call mfree (extns, TY_POINTER)
+> 	if (iimage != NULL)
+> 	    call mfree (iimage, TY_POINTER)
+820d433
+< pointer	list			# Output list of names
+824a438
+> pointer	seqvals			# Sequence values
+830c444
+< int	i, mef, fd, open()
+---
+> int	i, mef
+845d458
+< 	call salloc (list, SZ_FNAME, TY_CHAR)
+848,849c461,462
+< 	call cmb_images (inlist, images, scales, zeros, wts, extns, subsets,
+< 	    nimages, nsubsets, mef)
+---
+> 	call cmb_images (inlist, images, scales, zeros, wts, seqvals,
+> 	    extns, subsets, nimages, nsubsets, mef, YES)
+851,852c464,465
+< 	    call cmb_images_free (images, scales, zeros, wts, extns, subsets,
+< 		nimages, nsubsets)
+---
+> 	    call cmb_images_free (images, scales, zeros, wts, seqvals,
+> 	        extns, NULL, subsets, nimages, nsubsets)
+864d476
+< 	call clgstr ("list", Memc[list], SZ_FNAME)
+873d484
+< 	fd = open (Memc[list], NEW_FILE, TEXT_FILE)
+875c486
+< 	    call fprintf (fd, "%s%s")
+---
+> 	    call printf ("%s%s")
+879c490
+< 		call fprintf (fd, " %s%s")
+---
+> 		call printf (" %s%s")
+884c495
+< 		call fprintf (fd, " %s%s")
+---
+> 		call printf (" %s%s")
+891c502
+< 		call fprintf (fd, " %s%s")
+---
+> 		call printf (" %s%s")
+898c509
+< 		call fprintf (fd, " %s%s")
+---
+> 		call printf (" %s%s")
+905c516
+< 		call fprintf (fd, " %s%s")
+---
+> 		call printf (" %s%s")
+912c523
+< 		call fprintf (fd, " %s%s")
+---
+> 		call printf (" %s%s")
+916,923c527
+< 	    call fprintf (fd, "\n")
+< 
+< 	    call mfree (Memi[images+i-1], TY_CHAR)
+< 	    call mfree (Memi[scales+i-1], TY_REAL)
+< 	    call mfree (Memi[zeros+i-1], TY_REAL)
+< 	    call mfree (Memi[wts+i-1], TY_REAL)
+< 	    call mfree (Memi[extns+i-1], TY_CHAR)
+< 	    call mfree (Memi[subsets+i-1], TY_CHAR)
+---
+> 	    call printf ("\n")
+925d528
+< 	call close (fd)
+928,929c531,532
+< 	call cmb_images_free (images, scales, zeros, wts, extns, subsets,
+< 	    nimages, nsubsets)
+---
+> 	call cmb_images_free (images, scales, zeros, wts, seqvals,
+> 	    extns, NULL, subsets, nimages, nsubsets)
+935c538
+< # The images are filtered by ccdtype and sorted by amplifier and subset.
+---
+> # The images are filtered by type and sorted by group.
+938,939c541,542
+< procedure cmb_images (list, images, scales, zeros, wts, extns, subsets,
+< 	nimages, nsubsets, mef)
+---
+> procedure cmb_images (list, images, scales, zeros, wts, seqvals, extns, subsets,
+> 	nimages, nsubsets, mef, listonly)
+945a549
+> pointer	seqvals		# Pointer to array of sequence values (allocated)
+950a555
+> int	listonly	# List input and output only?
+952,956c557,561
+< bool	doamps		# Divide input into subsets by amplifier?
+< bool	dosubsets	# Divide input into subsets by subset parameter?
+< 
+< int	i, j, nims, nimage, ccdtype, fd
+< pointer	sp, type, image, extn, subset, str, scale, zero, wt, ptr, im
+---
+> int	i, j, nims, nimage, fd
+> double	seqval, gap
+> pointer	sp, group, seqexpr, type, image, extn, subset, str
+> pointer	scale, zero, wt
+> pointer	ptr, im, o
+958,962c563,569
+< int	imtlen(), imtgetim(), errcode(), ccdtypecl(), ccdtypes()
+< int	nowhite(), open(), fscan(), nscan()
+< pointer	immap()
+< bool	clgetb(), streq()
+< errchk	immap, open
+---
+> bool	streq()
+> int	imtlen(), imtgetim(), errcode(), locpr()
+> int	nowhite(), open(), fscan(), nscan(), strlen()
+> double	clgetd()
+> pointer	immap(), evvexpr()
+> extern	getkey, getkeys, getfunc
+> errchk	immap, open, evvexpr
+971,974d577
+< 	# Determine whether to divide images into subsets and append extensions.
+< 	doamps = clgetb ("amps")
+< 	dosubsets = clgetb ("subsets")
+< 
+975a579,580
+> 	call salloc (group, SZ_LINE, TY_CHAR)
+> 	call salloc (seqexpr, SZ_LINE, TY_CHAR)
+984a590,595
+> 	# Determine whether to divide images into subsets and append extensions.
+> 	call clgstr ("group", Memc[group], SZ_LINE)
+> 	call xt_stripwhite (Memc[group])
+> 	call clgstr ("seqval", Memc[seqexpr], SZ_LINE)
+> 	call xt_stripwhite (Memc[seqexpr])
+> 
+989,1074c600,687
+< 	call clgstr ("scale", Memc[str], SZ_FNAME)
+< 	j = nowhite (Memc[str], Memc[str], SZ_FNAME)
+< 	if (Memc[str] == '@') {
+< 	    fd = open (Memc[str+1], READ_ONLY, TEXT_FILE)
+< 	    j = 0
+< 	    while (fscan (fd) != EOF) {
+< 		call gargr (Memr[scale+j])
+< 		if (nscan() != 1)
+< 		    next
+< 		if (j == nims) {
+<                   call eprintf (
+<                        "Warning: Ignoring additional %s values in %s\n")
+<                        call pargstr ("scale")
+<                        call pargstr (Memc[str+1])
+<                    break
+<                 }
+<                 j = j + 1
+< 	    }
+< 	    call close (fd)
+< 
+< 	    if (j < nims) {
+< 		call sprintf (Memc[type], SZ_FNAME,
+< 		    "Insufficient scale values in %s")
+< 		    call pargstr (Memc[str+1])
+< 		call error (1, Memc[type])
+< 	    }
+< 	} else
+< 	    call amovkr (INDEFR, Memr[scale], nims)
+< 
+< 	call clgstr ("zero", Memc[str], SZ_FNAME)
+< 	j = nowhite (Memc[str], Memc[str], SZ_FNAME)
+< 	if (Memc[str] == '@') {
+< 	    fd = open (Memc[str+1], READ_ONLY, TEXT_FILE)
+< 	    j = 0
+< 	    while (fscan (fd) != EOF) {
+< 		call gargr (Memr[zero+j])
+< 		if (nscan() != 1)
+< 		    next
+< 		if (j == nims) {
+<                   call eprintf (
+<                        "Warning: Ignoring additional %s values in %s\n")
+<                        call pargstr ("zero")
+<                        call pargstr (Memc[str+1])
+<                    break
+<                 }
+<                 j = j + 1
+< 	    }
+< 	    call close (fd)
+< 
+< 	    if (j < nims) {
+< 		call sprintf (Memc[type], SZ_FNAME,
+< 		    "Insufficient zero values in %s")
+< 		    call pargstr (Memc[str+1])
+< 		call error (1, Memc[type])
+< 	    }
+< 	} else
+< 	    call amovkr (INDEFR, Memr[zero], nims)
+< 
+< 	call clgstr ("weight", Memc[str], SZ_FNAME)
+< 	j = nowhite (Memc[str], Memc[str], SZ_FNAME)
+< 	if (Memc[str] == '@') {
+< 	    fd = open (Memc[str+1], READ_ONLY, TEXT_FILE)
+< 	    j = 0
+< 	    while (fscan (fd) != EOF) {
+< 		call gargr (Memr[wt+j])
+< 		if (nscan() != 1)
+< 		    next
+< 		if (j == nims) {
+<                   call eprintf (
+<                        "Warning: Ignoring additional %s values in %s\n")
+<                        call pargstr ("weight")
+<                        call pargstr (Memc[str+1])
+<                    break
+<                 }
+<                 j = j + 1
+< 	    }
+< 	    call close (fd)
+< 
+< 	    if (j < nims) {
+< 		call sprintf (Memc[type], SZ_FNAME,
+< 		    "Insufficient weight values in %s")
+< 		    call pargstr (Memc[str+1])
+< 		call error (1, Memc[type])
+< 	    }
+< 	} else
+< 	    call amovkr (INDEFR, Memr[wt], nims)
+---
+> 	if (listonly == NO) {
+> 	    call clgstr ("scale", Memc[str], SZ_FNAME)
+> 	    j = nowhite (Memc[str], Memc[str], SZ_FNAME)
+> 	    if (Memc[str] == '@') {
+> 		fd = open (Memc[str+1], READ_ONLY, TEXT_FILE)
+> 		j = 0
+> 		while (fscan (fd) != EOF) {
+> 		    call gargr (Memr[scale+j])
+> 		    if (nscan() != 1)
+> 			next
+> 		    if (j == nims) {
+> 		      call eprintf (
+> 			   "Warning: Ignoring additional %s values in %s\n")
+> 			   call pargstr ("scale")
+> 			   call pargstr (Memc[str+1])
+> 		       break
+> 		    }
+> 		    j = j + 1
+> 		}
+> 		call close (fd)
+> 
+> 		if (j < nims) {
+> 		    call sprintf (Memc[type], SZ_FNAME,
+> 			"Insufficient scale values in %s")
+> 			call pargstr (Memc[str+1])
+> 		    call error (1, Memc[type])
+> 		}
+> 	    } else
+> 		call amovkr (INDEFR, Memr[scale], nims)
+> 
+> 	    call clgstr ("zero", Memc[str], SZ_FNAME)
+> 	    j = nowhite (Memc[str], Memc[str], SZ_FNAME)
+> 	    if (Memc[str] == '@') {
+> 		fd = open (Memc[str+1], READ_ONLY, TEXT_FILE)
+> 		j = 0
+> 		while (fscan (fd) != EOF) {
+> 		    call gargr (Memr[zero+j])
+> 		    if (nscan() != 1)
+> 			next
+> 		    if (j == nims) {
+> 		      call eprintf (
+> 			   "Warning: Ignoring additional %s values in %s\n")
+> 			   call pargstr ("zero")
+> 			   call pargstr (Memc[str+1])
+> 		       break
+> 		    }
+> 		    j = j + 1
+> 		}
+> 		call close (fd)
+> 
+> 		if (j < nims) {
+> 		    call sprintf (Memc[type], SZ_FNAME,
+> 			"Insufficient zero values in %s")
+> 			call pargstr (Memc[str+1])
+> 		    call error (1, Memc[type])
+> 		}
+> 	    } else
+> 		call amovkr (INDEFR, Memr[zero], nims)
+> 
+> 	    call clgstr ("weight", Memc[str], SZ_FNAME)
+> 	    j = nowhite (Memc[str], Memc[str], SZ_FNAME)
+> 	    if (Memc[str] == '@') {
+> 		fd = open (Memc[str+1], READ_ONLY, TEXT_FILE)
+> 		j = 0
+> 		while (fscan (fd) != EOF) {
+> 		    call gargr (Memr[wt+j])
+> 		    if (nscan() != 1)
+> 			next
+> 		    if (j == nims) {
+> 		      call eprintf (
+> 			   "Warning: Ignoring additional %s values in %s\n")
+> 			   call pargstr ("weight")
+> 			   call pargstr (Memc[str+1])
+> 		       break
+> 		    }
+> 		    j = j + 1
+> 		}
+> 		call close (fd)
+> 
+> 		if (j < nims) {
+> 		    call sprintf (Memc[type], SZ_FNAME,
+> 			"Insufficient weight values in %s")
+> 			call pargstr (Memc[str+1])
+> 		    call error (1, Memc[type])
+> 		}
+> 	    } else
+> 		call amovkr (INDEFR, Memr[wt], nims)
+> 	}
+1077c690
+< 	# CCD image type.  Separate into subsets if desired.  Create image,
+---
+> 	# observation type.  Separate into subsets if desired.  Create image,
+1081c694
+< 	ccdtype = ccdtypecl ("ccdtype", Memc[type], SZ_FNAME)
+---
+> 	call clgstr ("select", Memc[type], SZ_FNAME)
+1113,1115c726,739
+< 	    ccdtype = ccdtypes (im, Memc[str], SZ_FNAME)
+< 	    if (Memc[type] != EOS && !streq (Memc[str], Memc[type]))
+< 		next
+---
+> 
+> 	    # Check observation type if desired.
+> 	    if (Memc[type] != EOS) {
+> 	        o = evvexpr (Memc[type], locpr(getkeys), im,
+> 		    locpr(getfunc), im, O_FREEOP)
+> 		if (O_TYPE(o) != TY_BOOL)
+> 		    call xvverror1 ("selection expression not boolean (%s)",
+> 		        Memc[type])
+> 		if (O_VALI(o) == NO) {
+> 		    call evvfree (o)
+> 		    next
+> 		}
+> 		call evvfree (o)
+> 	    }
+1119,1128c743,774
+< 	    if (doamps) {
+< 		call ic_grp (im, Memc[str], SZ_FNAME)
+< 		if (mef == NO)
+< 		    call strcat (Memc[str], Memc[extn], SZ_FNAME)
+< 		call strcat (Memc[str], Memc[subset], SZ_FNAME)
+< 	    }
+< 	    if (dosubsets) {
+< 		call ccdsubset (im, Memc[str], SZ_FNAME)
+< 		call strcat (Memc[str], Memc[extn], SZ_FNAME)
+< 		call strcat (Memc[str], Memc[subset], SZ_FNAME)
+---
+> 	    seqval = INDEFD
+> 	    if (Memc[group] != EOS) {
+> 		o = evvexpr (Memc[group], locpr(getkeys), im, locpr(getfunc),
+> 		    im, O_FREEOP)
+> 		call strcat (O_VALC(o), Memc[extn], SZ_FNAME)
+> 		call strcat (O_VALC(o), Memc[subset], SZ_FNAME)
+> 		call evvfree (o)
+> 		i = strlen (Memc[extn])
+> 		if (Memc[extn+i-1] == '.')
+> 		    Memc[extn+i-1] = EOS
+> 		i = strlen (Memc[subset])
+> 		if (Memc[subset+i-1] == '.')
+> 		    Memc[subset+i-1] = EOS
+> 	    }
+> 	    if (Memc[seqexpr] != EOS) {
+> 		o = evvexpr (Memc[seqexpr], locpr(getkey), im,
+> 		    locpr(getfunc), im, O_FREEOP)
+> 		switch (O_TYPE(o)) {
+> 		case TY_SHORT:
+> 		    seqval = O_VALS(o)
+> 		case TY_INT:
+> 		    seqval = O_VALI(o)
+> 		case TY_LONG:
+> 		    seqval = O_VALL(o)
+> 		case TY_REAL:
+> 		    seqval = O_VALR(o)
+> 		case TY_DOUBLE:
+> 		    seqval = O_VALD(o)
+> 		default:
+> 		    call error (1, "Sequence expression must be numeric")
+> 		}
+> 		call evvfree (o)
+1129a776,777
+> 	    i = nowhite (Memc[extn], Memc[extn], SZ_FNAME)
+> 	    i = nowhite (Memc[subset], Memc[subset], SZ_FNAME)
+1139a788
+> 		    call malloc (seqvals, nims, TY_POINTER)
+1147a797
+> 		    call realloc (seqvals, nsubsets+nims, TY_POINTER)
+1158a809
+> 		call malloc (Memi[seqvals+i-1], nimage, TY_DOUBLE)
+1170a822
+> 		call realloc (Memi[seqvals+i-1], nimage, TY_DOUBLE)
+1178a831
+> 	    Memd[Memi[seqvals+i-1]+nimage-1] = seqval
+1181a835,843
+> 
+> 	# Break up into sequences if desired.
+> 	if (Memc[seqexpr] != EOS) {
+> 	    gap = clgetd ("seqgap")
+> 	    if (!IS_INDEFD(gap))
+> 		call cmb_sequences (images, seqvals, scales, zeros, wts, extns,
+> 		    subsets, nimages, nsubsets, gap)
+> 	}
+> 
+1185a848
+> 	call realloc (seqvals, nsubsets, TY_POINTER)
+1188a852
+> 
+1200c864
+< # any CCDMEAN keywords so that there is a common value for all the extensions.
+---
+> # any PROCMEAN keywords so that there is a common value for all the extensions.
+1204,1205c868,870
+< procedure mefcombine (ims, scale, zero, wt, nims, output, headers, broot,
+< 	rroot, nrroot, eroot, sigma, logfile, stack, delete, oneimage)
+---
+> procedure mefcombine (ims, scale, zero, wt, seqval, nims, output, headers,
+> 	broot, rroot, nrroot, eroot, sigma, logfile, stack, delete, oneimage,
+> 	listonly)
+1210a876
+> double	seqval[nims]			# Sequence values
+1222a889
+> int	listonly			# List input and output only?
+1225,1227c892,894
+< real	ccdmean, sum
+< pointer	sp, image, subset, bmask, rmask, nrmask, emask, im, ptr
+< pointer	images, iimage, scales, zeros, wts, subsets, nimages
+---
+> real	procmean, sum
+> pointer	sp, extension, image, subset, bmask, rmask, nrmask, emask, im, ptr
+> pointer	images, iimage, scales, zeros, wts, seqvals, subsets, nimages, o
+1231,1233c898,901
+< int	errcode(), imaccess(), ic_mklist()
+< pointer	immap()
+< errchk	immap, imcopy, icombine, mefscales, ic_mklist
+---
+> int	errcode(), errget(), imaccess(), ic_mklist(), locpr()
+> pointer	immap(), evvexpr()
+> extern	getkeys, getfunc
+> errchk	immap, imcopy, icombine, mefscales, ic_mklist, evvexpr
+1244a913,916
+> 	call salloc (extension, SZ_LINE, TY_CHAR)
+> 
+> 	call clgstr ("extension", Memc[extension], SZ_LINE)
+> 	call xt_stripwhite (Memc[extension])
+1246c918
+< 	# Expand MEF files and group by amplifier.
+---
+> 	# Expand MEF files and group by extension.
+1271,1274c943,948
+< 		call ic_grp (im, Memc[subset], SZ_FNAME)
+< 		if (Memc[subset] == EOS) {
+< 		    call sprintf (Memc[subset], SZ_FNAME, "%d")
+< 			call pargi (j)
+---
+> 		Memc[subset] = EOS
+> 		if (Memc[extension] != EOS) {
+> 		    o = evvexpr (Memc[extension], locpr(getkeys), im,
+> 			locpr(getfunc), im, O_FREEOP)
+> 		    call strcat (O_VALC(o), Memc[subset], SZ_FNAME)
+> 		    call evvfree (o)
+1275a950,957
+> 
+> 		# Following forces combining by extensions if not requested
+> 		# explicitly.
+> 		#if (Memc[subset] == EOS) {
+> 		#    call sprintf (Memc[subset], SZ_FNAME, "%d")
+> 		#	call pargi (j)
+> 		#}
+> 
+1286a969
+> 			call malloc (seqvals, nims, TY_POINTER)
+1294a978
+> 			call realloc (seqvals, nsubsets+nims, TY_POINTER)
+1305a990
+> 		    call malloc (Memi[seqvals+i-1], nimage, TY_DOUBLE)
+1317a1003
+> 		    call realloc (Memi[seqvals+i-1], nimage, TY_DOUBLE)
+1326a1013
+> 		Memd[Memi[seqvals+i-1]+nimage-1] = seqval[k]
+1330a1018
+> 
+1335a1024
+> 	call realloc (seqvals, nsubsets, TY_POINTER)
+1346,1360c1035,1036
+< 		do i = 1, nsubsets {
+< 		    call mfree (Memi[images+i-1], TY_CHAR)
+< 		    call mfree (Memi[iimage+i-1], TY_INT)
+< 		    call mfree (Memi[scales+i-1], TY_REAL)
+< 		    call mfree (Memi[zeros+i-1], TY_REAL)
+< 		    call mfree (Memi[wts+i-1], TY_REAL)
+< 		    call mfree (Memi[subsets+i-1], TY_CHAR)
+< 		}
+< 		call mfree (images, TY_POINTER)
+< 		call mfree (iimage, TY_POINTER)
+< 		call mfree (scales, TY_POINTER)
+< 		call mfree (zeros, TY_POINTER)
+< 		call mfree (wts, TY_POINTER)
+< 		call mfree (subsets, TY_POINTER)
+< 		call mfree (nimages, TY_INT)
+---
+> 		call cmb_images_free (images, scales, zeros, wts, seqvals,
+> 		    NULL, iimage, subsets, nimages, nsubsets)
+1365,1373c1041,1051
+< 	# Compute scaling factors if needed.
+< 	call mefscales (Memi[images], Memi[iimage], Memi[nimages], nsubsets,
+< 	    scale, zero, wt, nims)
+< 	do i = 1, nsubsets {
+< 	    do j = 1, Memi[nimages+i-1] {
+< 		k = Memi[Memi[iimage+i-1]+j-1]
+< 		Memr[Memi[scales+i-1]+j-1] = scale[k]
+< 		Memr[Memi[zeros+i-1]+j-1] = zero[k]
+< 		Memr[Memi[wts+i-1]+j-1] = wt[k]
+---
+> 	if (listonly == NO) {
+> 	    # Compute scaling factors if needed.
+> 	    call mefscales (Memi[images], Memi[iimage], Memi[nimages], nsubsets,
+> 		scale, zero, wt, nims)
+> 	    do i = 1, nsubsets {
+> 		do j = 1, Memi[nimages+i-1] {
+> 		    k = Memi[Memi[iimage+i-1]+j-1]
+> 		    Memr[Memi[scales+i-1]+j-1] = scale[k]
+> 		    Memr[Memi[zeros+i-1]+j-1] = zero[k]
+> 		    Memr[Memi[wts+i-1]+j-1] = wt[k]
+> 		}
+1375d1052
+< 	}
+1377,1392c1054,1064
+< 	# Create the global headers.
+< 	if (ghdr == YES && nsubsets > 1) {
+< 	    if (imaccess (output, 0) == YES) {
+< 		call sprintf (Memc[image], SZ_FNAME,
+< 		    "Output `%s' already exists")
+< 		    call pargstr (output)
+< 		call error (1, Memc[image])
+< 	    }
+< 	    call sprintf (Memc[image], SZ_FNAME, "%s[0]")
+< 		call pargstr (ims[1,1])
+< 	    im = immap (Memc[image], READ_ONLY, 0)
+< 	    call sprintf (Memc[image], SZ_FNAME, "%s[noappend]")
+< 		call pargstr (output)
+< 	    ptr = immap (Memc[image], NEW_COPY, im)
+< 	    call imunmap (ptr)
+< 	    if (sigma[1] != EOS) {
+---
+> 	    # Create the global headers.
+> 	    if (ghdr == YES && nsubsets > 1) {
+> 		if (imaccess (output, 0) == YES) {
+> 		    call sprintf (Memc[image], SZ_FNAME,
+> 			"Output `%s' already exists")
+> 			call pargstr (output)
+> 		    call error (1, Memc[image])
+> 		}
+> 		call sprintf (Memc[image], SZ_FNAME, "%s[0]")
+> 		    call pargstr (ims[1,1])
+> 		im = immap (Memc[image], READ_ONLY, 0)
+1394c1066
+< 		    call pargstr (sigma)
+---
+> 		    call pargstr (output)
+1396a1069,1075
+> 		if (sigma[1] != EOS) {
+> 		    call sprintf (Memc[image], SZ_FNAME, "%s[noappend]")
+> 			call pargstr (sigma)
+> 		    ptr = immap (Memc[image], NEW_COPY, im)
+> 		    call imunmap (ptr)
+> 		}
+> 		call imunmap (im)
+1398d1076
+< 	    call imunmap (im)
+1402a1081
+> 
+1404,1405c1083,1088
+< 	    if (nsubsets > 1) {
+< 		call sprintf (Memc[image], SZ_FNAME, "%s[inherit]")
+---
+> 	    if (listonly == YES) {
+> 		call sprintf (Memc[image], SZ_FNAME, "%s%s")
+> 		    call pargstr (output)
+> 		    call pargstr (Memc[Memi[subsets+i-1]])
+> 	    } else if (nsubsets > 1) {
+> 		call sprintf (Memc[image], SZ_FNAME, "%s[append,inherit]")
+1443c1126
+< 	    list = ic_mklist (Memc[Memi[images+i-1]], Memi[nimages+i-1])
+---
+> 	    list = ic_mklist (Memi[images+i-1], Memi[nimages+i-1], NO)
+1448,1451c1131,1137
+< 		Memr[Memi[wts+i-1]], stack)) {
+< 		iferr (call imdelete (output))
+< 		    ;
+< 		call erract (EA_ERROR)
+---
+> 		Memr[Memi[wts+i-1]], stack, NO, listonly)) {
+> 		i = errget (Memc[image], SZ_FNAME)
+> 		if (listonly == NO) {
+> 		    iferr (call imdelete (output))
+> 			;
+> 		}
+> 		call error (1, Memc[image])
+1453d1138
+< 
+1455,1460d1139
+< 	    call mfree (Memi[images+i-1], TY_CHAR)
+< 	    call mfree (Memi[iimage+i-1], TY_INT)
+< 	    call mfree (Memi[scales+i-1], TY_REAL)
+< 	    call mfree (Memi[zeros+i-1], TY_REAL)
+< 	    call mfree (Memi[wts+i-1], TY_REAL)
+< 	    call mfree (Memi[subsets+i-1], TY_CHAR)
+1462,1468d1140
+< 	call mfree (images, TY_POINTER)
+< 	call mfree (iimage, TY_POINTER)
+< 	call mfree (scales, TY_POINTER)
+< 	call mfree (zeros, TY_POINTER)
+< 	call mfree (wts, TY_POINTER)
+< 	call mfree (subsets, TY_POINTER)
+< 	call mfree (nimages, TY_INT)
+1470,1484c1142,1164
+< 	# Reset MEF header.
+< 	# Set global ccdmean.
+< 	if (nsubsets > 1) {
+< 	    sum = 0
+< 	    i = 0.
+< 	    do j = nsubsets, 0, -1 {
+< 		call sprintf (Memc[image], SZ_FNAME, "%s[%d]")
+< 		    call pargstr (output)
+< 		    call pargi (j)
+< 		im = immap (Memc[image], READ_WRITE, 0)
+< 		if (j > 0) {
+< 		    ifnoerr (ccdmean = imgetr (im, "ccdmean")) {
+< 			sum = sum + ccdmean
+< 			i = i + 1
+< 			call imdelf (im, "ccdmean")
+---
+> 	call cmb_images_free (images, scales, zeros, wts, seqvals, NULL,
+> 	    iimage, subsets, nimages, nsubsets)
+> 
+> 	if (listonly == NO) {
+> 	    # Reset MEF header.
+> 	    # Set global procmean.
+> 	    if (nsubsets > 1) {
+> 		sum = 0
+> 		i = 0.
+> 		do j = nsubsets, 0, -1 {
+> 		    call sprintf (Memc[image], SZ_FNAME, "%s[%d]")
+> 			call pargstr (output)
+> 			call pargi (j)
+> 		    im = immap (Memc[image], READ_WRITE, 0)
+> 		    if (j > 0) {
+> 			ifnoerr (procmean = imgetr (im, "procmean")) {
+> 			    sum = sum + procmean
+> 			    i = i + 1
+> 			    call imdelf (im, "procmean")
+> 			}
+> 		    } else if (i > 0) {
+> 			procmean = sum / i
+> 			call imaddr (im, "procmean", procmean)
+1486,1488c1166
+< 		} else if (i > 0) {
+< 		    ccdmean = sum / i
+< 		    call imaddr (im, "ccdmean", ccdmean)
+---
+> 		    call imunmap (im)
+1490d1167
+< 		call imunmap (im)
+1495c1172
+< 	if (delete == YES) {
+---
+> 	if (delete == YES && listonly == NO) {
+1497c1174
+< 		call ccddelete (ims[1,i])
+---
+> 		call imdelete (ims[1,i])
+1504,1524d1180
+< procedure ic_grp (im, amp, maxchar)
+< 
+< pointer	im		#I IMIO pointer
+< char	amp[ARB]	#O Grouping string
+< int	maxchar		#I Size of grouping string
+< 
+< int	grp
+< common	/grpcom/ grp
+< 
+< begin
+< 	switch (grp) {
+< 	case GRPAMP:
+< 	    call ccdamp (im, amp, maxchar)
+< 	case GRPCCD:
+< 	    call ccdname (im, amp, maxchar)
+< 	default:
+< 	    call ccdamp (im, amp, maxchar)
+< 	}
+< end
+< 
+< 
+1525a1182,1183
+> #
+> # The list may be sorted because image templates are not sorted.
+1527c1185
+< int procedure ic_mklist (images, nimages)
+---
+> int procedure ic_mklist (images, nimages, sort)
+1529,1531c1187,1190
+< char	images[SZ_FNAME-1,nimages]		#I Image names
+< int	nimages					#I Number of images
+< int	list					#O Image list
+---
+> pointer	images			#I Image names (SZ_FNAME-1xnimages)
+> int	nimages			#I Number of images
+> int	sort			#I Sort list?
+> int	list			#O Image list
+1534c1193
+< pointer	sp, str
+---
+> pointer	sp, ptrs, str
+1538a1198
+> 	call salloc (ptrs, nimages, TY_POINTER)
+1540a1201,1207
+> 	# Sort the list.
+> 	do i = 0, nimages-1
+> 	    Memi[ptrs+i] = 1 + i * SZ_FNAME
+> 	if (sort == YES)
+> 	    call strsrt (Memi[ptrs], Memc[images], nimages)
+> 
+> 	# Write a list.
+1542c1209
+< 	do i = 1, nimages {
+---
+> 	do i = 0, nimages-1 {
+1544c1211
+< 		call pargstr (images[1,i])
+---
+> 		call pargstr (Memc[images+Memi[ptrs+i]-1])
+1546a1214,1215
+> 
+> 	# Open list.
+1551a1221,1425
+> 
+> 
+> # CMB_SEQUENCES -- Break up into sequences defined by a minimum gap.
+> #
+> # This reallocates all the arrays and changes the number of subsets.
+> 
+> procedure cmb_sequences (images, seqvals, scales, zeros, wts, extns,
+> 	subsets, nimages, nsubsets, gap)
+> 
+> pointer images		#U Pointer to lists of subsets (reallocated)
+> pointer seqvals		#U Pointer to array of sequence values (reallocated)
+> pointer scales		#U Pointer to array of scales (reallocated)
+> pointer zeros		#U Pointer to array of zeros (reallocated)
+> pointer wts		#U Pointer to array of weights (reallocated)
+> pointer extns		#U Image extensions for each subset (reallocated)
+> pointer subsets		#U Subset names (reallocated)
+> pointer nimages		#U Number of images in subset (reallocated)
+> int	nsubsets	#U Number of subsets (reset)
+> double	gap		#I Sequence value gap
+> 
+> int	i, j, k, n, ns, nseq, nalloc
+> pointer ims, ses, scs, zes, wss, exs, sus, nis, seqoff
+> pointer	im, se, sc, ze, ws, ex, su, ni
+> 
+> begin
+> 	ns = 0
+> 	do i = 0, nsubsets-1 {
+> 
+> 	    im = Memi[images+i]
+> 	    se = Memi[seqvals+i]
+> 	    sc = Memi[scales+i]
+> 	    ze = Memi[zeros+i]
+> 	    ws = Memi[wts+i]
+> 	    ex = Memi[extns+i]
+> 	    su = Memi[subsets+i]
+> 	    ni = Memi[nimages+i]
+> 
+> 	    # Find sequences.
+> 	    call cmb_sequences1 (se, im, sc, ze, ws, ni, nseq, seqoff, gap)
+> 
+> 	    do j = 1, nseq {
+> 		if (ns == 0) {
+> 		    nalloc = nseq * nsubsets
+> 		    call malloc (ims, nalloc, TY_POINTER)
+> 		    call malloc (ses, nalloc, TY_POINTER)
+> 		    call malloc (scs, nalloc, TY_POINTER)
+> 		    call malloc (zes, nalloc, TY_POINTER)
+> 		    call malloc (wss, nalloc, TY_POINTER)
+> 		    call malloc (exs, nalloc, TY_POINTER)
+> 		    call malloc (sus, nalloc, TY_POINTER)
+> 		    call malloc (nis, nalloc, TY_POINTER)
+> 		} else if (mod (ns, nalloc) == 0) {
+> 		    call realloc (ims, ns+nalloc, TY_POINTER)
+> 		    call realloc (ses, ns+nalloc, TY_POINTER)
+> 		    call realloc (scs, ns+nalloc, TY_POINTER)
+> 		    call realloc (zes, ns+nalloc, TY_POINTER)
+> 		    call realloc (wss, ns+nalloc, TY_POINTER)
+> 		    call realloc (exs, ns+nalloc, TY_POINTER)
+> 		    call realloc (sus, ns+nalloc, TY_POINTER)
+> 		    call realloc (nis, ns+nalloc, TY_POINTER)
+> 		}
+> 
+> 		k = Memi[seqoff+j-1]
+> 		n = Memi[seqoff+j] - k
+> 		call malloc (Memi[ims+ns], n*SZ_FNAME, TY_CHAR)
+> 		call malloc (Memi[ses+ns], n, TY_DOUBLE)
+> 		call malloc (Memi[scs+ns], n, TY_REAL)
+> 		call malloc (Memi[zes+ns], n, TY_REAL)
+> 		call malloc (Memi[wss+ns], n, TY_REAL)
+> 		call malloc (Memi[sus+ns], SZ_FNAME, TY_CHAR)
+> 		call malloc (Memi[exs+ns], SZ_FNAME, TY_CHAR)
+> 		call amovc (Memc[im+k*SZ_FNAME], Memc[Memi[ims+ns]], n*SZ_FNAME)
+> 		call amovd (Memd[se+k], Memd[Memi[ses+ns]], n)
+> 		call amovr (Memr[sc+k], Memr[Memi[scs+ns]], n)
+> 		call amovr (Memr[ze+k], Memr[Memi[zes+ns]], n)
+> 		call amovr (Memr[ws+k], Memr[Memi[wss+ns]], n)
+> 		if (nseq > 1) {
+> 		    call sprintf (Memc[Memi[exs+ns]], SZ_FNAME, "%s_%d")
+> 			call pargstr (Memc[ex])
+> 			call pargi (j)
+> 		    call sprintf (Memc[Memi[sus+ns]], SZ_FNAME, "%s_%d")
+> 			call pargstr (Memc[su])
+> 			call pargi (j)
+> 		} else {
+> 		    call strcpy (Memc[ex], Memc[Memi[exs+ns]], SZ_FNAME)
+> 		    call strcpy (Memc[su], Memc[Memi[sus+ns]], SZ_FNAME)
+> 		}
+> 		Memi[nis+ns] = n
+> 		ns = ns + 1
+> 	    }
+> 	}
+> 
+> 	# Free old memory.
+> 	call cmb_images_free (images, scales, zeros, wts, seqvals, extns,
+> 	    NULL, subsets, nimages, nsubsets)
+> 
+> 	# Reset new memory.
+> 	images = ims
+> 	seqvals = ses
+> 	scales = scs
+> 	zeros = zes
+> 	wts = wss
+> 	extns = exs
+> 	subsets = sus
+> 	nimages = nis
+> 	nsubsets = ns
+> end
+> 
+> 
+> # CMB_SEQUENCES1 -- Break a single subset into sequences.
+> # This sorts the images by sequence value and defines sequences by a
+> # minimum gap in the sequence values.  Note that this sorts the input arrays.
+> # The returned values are the number of sequences and the offsets in
+> # the sorted input arrays.
+> 
+> procedure cmb_sequences1 (se, im, sc, ze, ws, ni, nseq, seqoff, gap)
+> 
+> pointer	se			#I Pointer to sequence values
+> pointer	im			#I Pointer image names
+> pointer	sc			#I Pointer to sc
+> pointer	ze			#I Pointer to ze
+> pointer	ws			#I Pointer to weights
+> int	ni			#I Number of im
+> int	nseq			#O Number of sequences
+> pointer	seqoff			#O Sequence offsets
+> double	gap			#I Sequence value gap
+> 
+> int	i
+> pointer	sp, indices, rtmp, dtmp, ctmp
+> 
+> int	cmb_compare()
+> extern	cmb_compare()
+> 
+> begin
+> 	call malloc (seqoff, ni+1, TY_INT)
+> 
+> 	# Check for valid sequence values.
+> 	do i = 0, ni-1 {
+> 	    if (IS_INDEFD(Memd[se+i]))
+> 		break
+> 	}
+> 	if (i < ni) {
+> 	    Memi[seqoff] = 0
+> 	    Memi[seqoff+1] = ni
+> 	    nseq = 1
+> 	    return
+> 	}
+> 
+> 	call smark (sp)
+> 	call salloc (indices, ni, TY_INT)
+> 	call salloc (rtmp, ni, TY_REAL)
+> 	call salloc (dtmp, ni, TY_DOUBLE)
+> 	call salloc (ctmp, ni*SZ_FNAME, TY_CHAR)
+> 
+> 	# Sort arrays by the sequence values.
+> 	do i = 0, ni-1
+> 	    Memi[indices+i] = i
+> 	call gqsort (Memi[indices], ni, cmb_compare, se)
+> 	do i = 0, ni-1
+> 	    call strcpy (Memc[im+Memi[indices+i]*SZ_FNAME],
+> 	        Memc[ctmp+i*SZ_FNAME], SZ_FNAME-1)
+> 	call amovc (Memc[ctmp], Memc[im], ni*SZ_FNAME)
+> 	do i = 0, ni-1
+> 	    Memd[dtmp+i] = Memd[se+Memi[indices+i]]
+> 	call amovd (Memd[dtmp], Memd[se], ni)
+> 	do i = 0, ni-1
+> 	    Memr[rtmp+i] = Memr[sc+Memi[indices+i]]
+> 	call amovr (Memr[rtmp], Memr[sc], ni)
+> 	do i = 0, ni-1
+> 	    Memr[rtmp+i] = Memr[ze+Memi[indices+i]]
+> 	call amovr (Memr[rtmp], Memr[ze], ni)
+> 	do i = 0, ni-1
+> 	    Memr[rtmp+i] = Memr[ws+Memi[indices+i]]
+> 	call amovr (Memr[rtmp], Memr[ws], ni)
+> 
+> 	# Find gaps between sequences.
+> 	Memi[seqoff] = 0
+> 	nseq = 1
+> 	do i = 1, ni-1 {
+> 	    if (Memd[se+i] - Memd[se+i-1] > gap) {
+> 		Memi[seqoff+nseq] = i
+> 		nseq = nseq + 1
+> 	    }
+> 	}
+> 	Memi[seqoff+nseq] = ni
+> 
+> 	call sfree (sp)
+> end
+> 
+> 
+> # CMB_COMPARE -- GQSORT comparison function for sequence values.
+> 
+> int procedure cmb_compare (se, i, j)
+> 
+> pointer	se			#I Pointer to sequence values
+> int	i, j			#I Comparison indices (zero indexed)
+> 
+> begin
+> 	if (Memd[se+i] < Memd[se+j])
+> 	    return (-1)
+> 	else if (Memd[se+i] > Memd[se+j])
+> 	    return (1)
+> 	else
+> 	    return (0)
+> end
+diff ./x_combine.x /u2/valdes/iraf/nfextern/src/combine/x_combine.x
+1c1,2
+< task	combine		= t_combine,
+---
+> task	cgroup		= t_cgroup,
+> 	combine		= t_combine,
+3c4
+< 	mergeamps	= t_ampmerge,
+---
+> 	dcombine	= t_combine,
+4a6
+> 	mscstack	= t_combine,
+Only in .: xx_combine.e
+diff ./zcombine.par /u2/valdes/iraf/nfextern/src/combine/zcombine.par
+3,11c3,12
+< input,s,a,,,,List of images to combine
+< output,s,a,,,,List of output images
+< headers,s,h,"",,,List of header files (optional)
+< bpmasks,s,h,"",,,List of bad pixel masks (optional)
+< rejmasks,s,h,"",,,List of rejection masks (optional)
+< nrejmasks,s,h,"",,,List of number rejected masks (optional)
+< expmasks,s,h,"",,,List of exposure masks (optional)
+< sigmas,s,h,"",,,List of sigma images (optional)
+< imcmb,s,h,"$I",,,"Keyword for IMCMB keywords
+---
+> input,s,a,,,,List of input files to combine
+> output,s,a,,,,Output rootname
+> logfile,s,h,"STDOUT",,,Log output
+> headers,s,h,"",,,Header rootname (optional)
+> bpmasks,s,h,"",,,Bad pixel mask rootname (optional)
+> rejmasks,s,h,"",,,Rejection mask rootname (optional)
+> nrejmasks,s,h,"",,,Number rejected mask rootname (optional)
+> expmasks,s,h,"",,,Exposure mask rootname (optional)
+> sigmas,s,h,"",,,Sigma image rootname (optional)
+> imcmb,s,h,"$I",,,"Keyword for the IMCMB keywords
+13,16c14,19
+< ccdtype,s,h,"zero",,,CCD image type to combine (optional)
+< amps,b,h,yes,,,Combine images by amplifier?
+< subsets,b,h,no,,,Combine images by subset?
+< delete,b,h,no,,,"Delete input images after combining?
+---
+> select,s,h,"obstype='zero'",,,Selection expression
+> group,s,h,"mkid(filter,1,1)",,,Group expression
+> seqval,s,h,"",,,Sequence value expression
+> seqgap,r,h,INDEF,,,Maximum gap in sequence value
+> extension,s,h,"mkid(extname,1,1)",,,Extension expression
+> delete,b,h,no,,,"Delete input files after combining?
+20d22
+< project,b,h,no,,,Project highest dimension of input images?
+35c37
+< nlow,i,h,0,0,,minmax: Number of low pixels to reject
+---
+> nlow,i,h,1,0,,minmax: Number of low pixels to reject

@@ -1,0 +1,148 @@
+.help mscgetcatalog Aug00 mscred
+.ih
+NAME
+mscgetcatalog -- Get coordinates from a Web server covering mosaic exposures
+.ih
+SYNOPSIS
+MSCGETCATALOG is a task for getting coordinates and magnitudes from
+Web-based catalog servers.  The task returns a text file of coordinates and
+magnitudes for a field centered on the specified mosaic exposure(s).
+.ih
+USAGE
+mscgetcatalog input output
+.ih
+PARAMETERS
+.ls input
+List of mosaic exposures.
+.le
+.ls output
+Output text file containing catalog coordinates and magnitudes.
+.le
+.ls magmin = 0., magmax = 25.
+Range of magnitudes to select from the catalog.
+.le
+.ls catalog = "NOAO:USNO-A2"
+Catalog to be used.  With IRAF V2.11 and earlier the choices are:
+.ls NOAO:USNO-A2
+The USNO A2 catalog using a server from NOAO.
+.le
+.ls CADC:USNO-A2
+The USNO A2 catalog using a server from the CADC.
+.le
+
+With IRAF V2.12 the catalogs supported by the \fBastcat\fR package may
+also be used.  For a list of catalogs use the command:
+
+.nf
+    cl> aclist * verbose-
+.fi
+.le
+.ls rmin = 21.
+Minimum radius in arc minutes from the center of the input exposures
+to include in the output file.  The actual radius used is the maximum
+of this parameter and the maximum radius to the corners of all the
+input extensions.
+.le
+.ih
+DESCRIPTION
+\fBMscgetcatalog\fR is a task for getting coordinates and magnitudes from
+Web-based catalog servers.  This requires that you can make http requests
+from the system where this task is executed.  Proxy servers are not
+supported.  Note that if the server does not respond this task may
+not return and would need to be interupted.
+
+\fBMscgetcatalog\fR returns a text file, specified by the \fIoutput\fR
+parameter, of coordinates and magnitudes for a field centered on the mosaic
+exposure(s), specified by the \fIinput\fR .  This requires that the mosaic
+exposures have an approximate world coordinate system (WCS).  The catalog
+of sources is generally used to calibrate the WCS provided there is
+sufficient overlap between the field and the approximate WCS.  This file
+can be used with various \fBmscred\fR tasks such as \fBmsccmatch\fR,
+\fBmscimatch\fR, \fBmsczero\fR, and \fBmsctvmark\fR.
+
+Currently all coordinates, input and output, are J2000.
+
+The task \fBmsccmatch\fR may execute this task to generate the coordinates
+to use by specifying
+
+.nf
+!mscgetcatalog $I $C
+.fi
+
+for the \fIcoords\fR parameter.  The "$I" field is replaced by the
+mosaic exposure being calibrated and "$C" is replaced by a temporary
+filename used by the task.
+
+The center of the circular region to be extracted from the catalog is
+determined by the midpoint of the coordinates of all the extension corners
+in the list of input mosaic exposures.  The maximum radius from this point
+to all the corners determines a minimum radius for the region.  The
+\fIrmin\fR parameter may be used to force a minimum radius though if the
+radius including all the corners is larger then that radius is used.
+
+The currently supported catalogs include approximate magnitudes.  When
+magnitudes are available the \fImagmin\fR and \fImagmax\fR parameters may
+be used to restrict the output coordinates to a specified magnitude
+range.
+
+The selection of catalogs in IRAF V2.11 and earlier is limited to
+"NOAO:USNO-A2" and "CADC:USNO-A2".  In V2.12 the catalogs supported
+by the new catalog access package \fBastcat\fR may also be used.  A list
+of catalogs may be obtained using the command:
+
+.nf
+    cl> aclist * verbose-
+.fi
+
+The catalog names must be specified exactly as shown in the list.
+.ih
+EXAMPLES
+1.  This example illustrates getting coordinates for the brightest stars in an
+NOAO mosaic exposure using the default USNO-A2 server at NOAO.  This
+specifies the output as "STDOUT" to print to the terminally.  More commonly
+this would be a filename and the magnitude limit would include fainter
+stars.
+
+.nf
+    ms> mscgetcat obj110 STDOUT magmax=11 
+     15:23:19.94   -0:08:41.8 10.60 12.20
+     15:23:41.25   -0:16:17.8  8.60 11.60
+     15:24:57.69   -0:06:16.8 10.90 12.10
+     15:25:34.79   -0:01:02.8 10.60 12.30
+     15:25:40.38   -0:01:11.5 10.60 11.50
+     15:25:54.55   -0:17:02.8 10.40 11.80
+     15:22:58.95    0:05:55.9 10.40 13.90
+     15:23:05.07    0:04:17.0 11.00 12.10
+     15:24:09.96    0:03:04.2 11.00 11.90
+     15:26:00.73    0:17:46.3  8.60  9.40
+.fi
+
+2.  To use the Guide Star Catalog 2 (in IRAF V2.12):
+
+.nf
+    ms> mscgetcat obj110 STDOUT catalog=gsc2@stsci magmax=11 
+     15:23:19.94   -0:08:41.8 10.60 12.20
+     15:23:41.25   -0:16:17.8  8.60 11.60
+     15:24:57.69   -0:06:16.8 10.90 12.10
+     15:25:34.79   -0:01:02.8 10.60 12.30
+     15:25:40.38   -0:01:11.5 10.60 11.50
+     15:25:54.55   -0:17:02.8 10.40 11.80
+     15:22:58.95    0:05:55.9 10.40 13.90
+     15:23:05.07    0:04:17.0 11.00 12.10
+     15:24:09.96    0:03:04.2 11.00 11.90
+     15:26:00.73    0:17:46.3  8.60  9.40
+.fi
+
+.ih
+REVISIONS
+.ls MSCGETCATALOG - V4.7: April, 2002
+Modified to allow use of the ASTCAT package which provides access to
+a larger variety of catalogs.
+.le
+.ls MSCGETCATALOG - V4.0: August 22, 2000
+This task is new in this release.
+.le
+.ih
+SEE ALSO
+msccmatch, mscimatch, msczero, msctvmark
+.endhelp

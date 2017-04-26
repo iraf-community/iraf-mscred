@@ -1,0 +1,58 @@
+include	"mosgeom.h"
+
+# SET_LINEBIAS	-- Set up parameters for linebias routine in common /linebias/
+ 
+procedure set_linebias ()
+
+
+int	clgeti()
+real	clgetr()
+double	signorm()
+
+include "lbias.com"
+
+begin
+	itmax  = clgeti ("niterate")
+	ksigma = max (clgetr ("low_reject"), clgetr ("high_reject"))
+	sigcor = real (signorm (double (ksigma)))
+end
+
+$for (silrd)
+
+# LINEBIASx -- Calculate bias level for current line as k-clipped mean across
+# overscan strip
+ 
+real procedure linebias$t (data, npix)
+
+PIXEL	data[ARB]		#I Overscan vector
+int	npix			#I Number of overscan pixels
+real	bias			#O Computed Bias level.
+
+int	ngpix
+$if (datatype == dl)
+double	mean, sigma, kclip, corr
+$else
+real	mean, sigma, kclip, corr
+$endif
+
+int	akavr$t()
+errchk	akavr$t()
+
+include "lbias.com"
+
+begin
+	if (npix <=0)
+	    return (0.0)
+	$if (datatype == dl)
+	kclip = double(ksigma)
+	corr  = double(sigcor)
+	$else
+	kclip = ksigma
+	corr  = sigcor
+	$endif
+	ngpix = akavr$t (data, npix, mean, sigma, kclip, corr, itmax)
+	bias = real(mean)
+
+	return (bias)
+end
+$endfor

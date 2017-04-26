@@ -1,0 +1,42 @@
+.help mscblkavg Nov98 mscred
+.ih
+NAME
+mscblkavg -- block average mosaic exposures with header keyword updating
+.ih
+SYNOPSIS
+This task block averages mosaic exposures by specified block factors.
+It updates the RDNOISE, GAIN, CCDSUM, DATASEC, BIASSEC, TRIMSEC, and
+CCDSEC parameters.  The output pixel type is the same as the input
+pixel type.  For this reason block averaging of raw unsigned short
+data may lead to undersampling the noise.  The output name maybe the
+same as the input name to replace the input by the block average output.
+.ih
+USAGE	
+mscblkavg input output nc nl
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+1. Block average a set exposures.
+
+.nf
+    cl> mscblkavg obj*fits bav//obj*fits 2 2
+.fi
+
+2. Block average in place a set of exposures.
+
+.nf
+    cl> mscblkavg obj*fits obj*fits 2 2
+.fi
+
+.ih
+REVISIONS
+.ls MSCBLKAVG
+First release in MSCRED V2.0.
+.le
+.ih
+SEE ALSO
+msccmd, blkavg
+.endhelp

@@ -1,0 +1,109 @@
+.help subsets Aug96 noao.imred.ccdred
+.ih
+NAME
+subsets -- Description of CCD subsets
+.ih
+DESCRIPTION
+The \fBccdred\fR package groups observations into subsets based on matching
+image header keyword values.  There are currently two keywords used to
+group the CCD data.  One groups all CCD types (see \fBccdtypes\fR) while
+the other applies only to object, flat field, illumination, and fringe
+images.  The image header keywords used to identify the subsets are defined
+in the instrument translation file (see \fBinstruments\fR).  The names used
+by the \fBccdred\fR package for these keywords are "amp" and "subset" which
+may be translated to any desired keyword.  For example the translation file
+might contain the lines:
+
+.nf
+	amp	ampid
+	subset	filter
+.fi
+
+to group the observations by amplifier identification and by filter.
+
+The reason for grouping the observations is that the data may consists
+of multiple readouts from different amplifiers and CCDs as in a mosaic
+and there may be observations with different filters, apertures,
+grating settings, etc.  The combining and processing of such data
+must apply to like data; i.e. only matching amplifier/CCD data should
+be combined and the flat field calibration should use the same
+amplifier/CCD and filter or grating setting.  The \fBccdred\fR
+tasks allow specifying a large set of observations and provide the
+proper matching of the data.
+
+Each amp and subset value is assigned a short identifier.  These are listed
+when using \fBccdlist\fR and are appended to a root name when combining
+images or using \fBccdgroup\fR.  Because the keywords values in the image
+header may be any string there must be a mapping applied to generate unique
+identifiers.  This mapping is defined in the files given by the package
+parameters \fIccdred.ampfile\fR and \fIccdred.ssfile\fR.  The files
+consists of lines with two fields (except that comment lines may be
+included as a line by itself or following the second field):
+
+.nf
+	'keyword value'		id
+.fi
+
+where the keyword value is the image header string and the id is the
+identifier.  A field must be quoted if it contains blanks.  The user may
+create these files to provide specific identifiers but generally they are
+created by the tasks.  The tasks use the first word of the keyword value as
+the default identifier and a number is appended if the first word is not
+unique.  The following steps define the identifiers:
+
+.ls (1)
+Search the mapping file, if present, for a matching keyword value and
+use the defined identifier if found.
+.le
+.ls (2)
+If there is no matching keyword value use the first word of the
+image header keyword value and, if it is not unique within the file,
+add successive integers until it is unique.
+.le
+.ls (3)
+If the identifier is not in the mapping file create the file and add an
+entry if necessary.
+.le
+.ih
+EXAMPLES
+1. The subset file is "subsets" (the default).  The subset parameter is
+translated to "f1pos" in the image header (the old NOAO CCD parameter)
+which is an integer filter position.  After running a task, say
+"ccdlist *.imh" to cause all filters to be checked, the subset file contains:
+
+.nf
+	'2'	2
+	'5'	5
+	'3'	3
+.fi
+
+The order reflects the order in which the filters were encountered.
+Suppose the user wants to have more descriptive names then the subset
+file can be created or edited to the form:
+
+.nf
+	# Sample translation file.
+	'2'	U
+	'3'	B
+	'4'	V
+.fi
+
+(This is only an example and does not mean these are standard filters.)
+
+2. As another example suppose the image header parameter is "filter" and
+contains more descriptive strings.  The subset file might become:
+
+.nf
+	'GG 385 Filter'	GG
+	'GG 495 Filter'	GG1
+	'RG 610 Filter'	RG
+	'H-ALPHA'	H_ALPHA
+.fi
+
+In this case use of the first word was not very good but it is unique.
+It is better if the filters are encoded with the thought that the first
+word will be used by \fBccdred\fR; it should be short and unique.
+.ih
+SEE ALSO
+instruments
+.endhelp

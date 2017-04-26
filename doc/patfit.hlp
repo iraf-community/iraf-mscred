@@ -1,0 +1,451 @@
+.help patfit Jan02 mscred
+.ih
+NAME
+patfit -- fit and remove 2D pattern in images
+.ih
+PARAMETERS
+.ls input
+List of input images or multiextension files.
+.le
+.ls output
+List of output images or multiextension files.  This parameter is ignored
+if \fIouttype\fR is "none".  If no list is specified then the input list is
+used, otherwise the output list must match the input list.  If an input and
+output file are the same the output is created in a temporary file and the
+input is replaced after the output is completed.
+.le
+.ls pattern
+List of pattern images or multiextension files.  The list must either match
+the input list or be a single file to be used for all the input files.
+.le
+
+.ls weight = ""
+List of weight images or multiextension files.  The images will be
+linearly interpolated to the size of the data if needed.  If no weight
+list is specified then the pattern list is used.  Otherwise the list must
+either match the input list or be a single file to be used for all the
+input files.
+.le
+.ls masks = "", patmasks = ""
+List of masks identifying pixels to ignore in the input or pattern data.
+Pixels to ignore have non-zero mask values.  An empty list
+applies no bad pixel mask, a single mask applies to all input data, and a
+list is matched with the input or pattern list. A mask is specified
+by a filename or by reference to a filename given by the value of a header
+keyword in the input or pattern image.  A header keyword reference is made
+with the syntax "!<keyword>" where <keyword> is the desired keyword with
+case ignored.  For multiextension files the masks may be either a
+multiextension file with matching extension names or a directory of pixel
+list files with the extension names as the filenames.
+.le
+.ls background = "", bkgpattern = "", bkgweight = ""
+List of backgrounds for the input data, the patterns, and the weights.  If
+no list is given then the mean of the data, excluding masked pixels, is
+used.  The list may be either a single value which applies to all the input
+data or match the input list in number.  The backgrounds may be specifed as
+images or constant values.  Images are linearly interpolated to the size of
+the data images if the sizes do not match.
+.le
+.ls ncblk = 1, nlblk = 1
+Moving average block size for the input, pattern, and weight images.  The block
+average size for columns and for lines are specified separately.
+.le
+.ls extfit = "", extout = ""
+Extensions to use for the fit and for output when multiextension files
+are specified.  A null string matches all extension names.  Otherwise
+the parameters are comma separated lists of patterns which match the
+entire extension name.  Thus, a list of extension names may be given
+or the pattern matching characters '?' for any character or [] for
+a set of characters.  The set may include ranges in ascii order by using
+hyphens; i.e. 1-3 matches the characters 1, 2, and 3.  All the
+extensions selected for fitting must exist for the other input files and
+all the selected output extensions must exist in the pattern file.
+.le
+.ls outtype = "none"
+Output type from the choices "none", "fit", "diff", "flat", "ratio", "pfit",
+"pdiff", "pratio", "pflat", "sfit", "sdiff", "sratio" and "sflat".  See
+the DISCUSSION section for an explanation of the different output types.
+.le
+.ls logname = "PATFIT"
+Name to be used to identify the log output from the task.  This name is
+also used for a keyword in the output image header so it should
+conform to the FITS definition for a keyword.
+.le
+.ls logfile = ""
+Filename for appending log information.  If no name is specified then no
+log is written.  Note that there is no need to use "STDOUT" since the
+same information is written when the \fIverbose\fR parameter is set.
+.le
+.ls verbose = yes
+If set to yes log information is written to the standard output.  Note
+that this is the same information as written to the logfile specified
+by the \fIlogfile\fR parameter.
+.le
+.ih
+DESCRIPTION
+PATFIT determines the intensity scaling that minimizes the weighted mean
+difference between an input image and a pattern image given in equation 1.
+The input images, specified by the \fIinput\fR parameter, may be individual
+images (which includes images selected from multiextension files as
+explicit image extensions) or multiextension files specified by a root
+filename.  In the latter case the image extension names selected by the
+\fIextfit\fR parameter are used for computing a global pattern scale for
+all the extensions.
+
+The output of this task may include images of the scaled pattern or pattern
+corrected images.  files.  When the input is a multiextension file the
+output is a multiextension file of the extensions specified by the
+\fIextout\fR parameter.
+
+The statistic used to compute the scale is
+
+.nf
+    (1)  <(((A - B) - s (P - Q)) (W - V))> = 0
+.fi
+
+where
+
+.nf
+    A		Input image		  (\fIinput\fR parameter)
+    B		Input image background	  (\fIbackground\fR parameter)
+    P		Pattern image	 	  (\fIpattern\fR parameter)
+    Q		Pattern image background  (\fIbkgpattern\fR parameter)
+    W		Weight image		  (\fIweight\fR parameter)
+    V		Weight image background	  (\fIbkgweight\fR parameter)
+    s		Scale factor
+.fi
+
+The solution of equation 1 is determined over all pixels in the image or
+extensions selected by the \fIextfit\fR parameter which are not flagged in
+the pixel masks specified by the \fImasks\fR and \fIpatmasks\fR parameter.
+For multiextension files equation 1 is also solved separately for each
+extension and estimates of the scale are shown in the log output (see
+examples 2 and 3).  However, the final scale is not the average of these
+values but the solution over all pixels.  To treat image extensions as
+independent images the various file lists must be explicit images rather
+than multiextension file rootnames (see example 4).
+
+An additional option for the input, pattern, and weight images is to
+smooth the images by a moving average when accumulating the statistics.
+The block size of the moving average is given by the parameters \fIncblk\fR
+and \fInlblk\fR.  The smoothing feature is useful when the data has noise
+which is comparable in amplitude to the pattern.  The effect of noise on
+the pattern fitting is to reduce the scaling computed.
+
+There are three types of backgrounds which may be specified.  An image,
+a constant, and the mean value.  The image may be a
+fully sampled image of the same size as the image to which it applies or a
+smaller sampled image that is interpolated to match the size of the image.
+The mean value is specified by a null string, "".  In the common case
+where all of the background terms are given by mean values the fitting
+equation becomes
+
+.nf
+    (2)  <(((A - <A>) - s (P - <P>)) (W - <W>))> = 0
+.fi
+
+The weight image has the same options as the background images, namely a
+fully sampled image, a subsampled image, or a constant in which case the
+weight background is ignored.  If the weight image is given as the null
+string then the pattern image is used for the weight image.  Using the
+pattern image for the weight image (and the pattern background for the
+weight background) is a common case which which leads to the fitting
+statistic
+
+.nf
+    (3)  <(((A - B) - s (P - Q)) (P - Q))> = 0
+.fi
+
+Clearly the role of the weighting is to given greater weight to the
+regions where the pattern is most significant or noticible in the
+input data.  The peaks and valleys of a pattern is what people see in
+weak patterns contaminating data images and so equation 1 with the
+weighting is designed to best eliminate this part of the pattern.  In
+other words, the eye is very sensitive at seeing pattern correlations
+even in very weak contamination and this task optimally attempts to
+reduce these correlations.
+
+A key to obtaining the best match between the pattern and the input data
+is to use masks for the input and the pattern.  If the input consists of
+a pattern with a scene superposed, such as astronomical objects, then
+to avoid the scene/objects biasing the scale estimate, an input image mask
+identifies the scene/object pixels by non-zero values.  This is generally
+the most important factor in obtaining the best pattern fit and removal.
+
+If the pattern is localized in the input data, such as might be the case
+with scattered light or pupil ghosts, then a pattern mask with zero values
+where the pattern is located and non-zero values elsewhere should be used.
+The two masks can be combined into one mask but there are parameters,
+\fImasks\fR and \fIpatmasks\fR, to specify both separately since the
+pattern mask may be a fixed mask for many images while the object scene
+varies from input data to input data.
+
+The masks specified by the \fImasks\fR and \fIpatmasks\fR parameters may be
+in any of the supported masks formats.  As of IRAF V2.12 this includes
+pixel list (.pl) files and FITS "type=mask" extensions.  When the input is
+a multiextension file, the selected extension names are appended to the
+mask filename to select masks with the same extension name.  If a mask file
+of the form "name[ext]" is not found the task will treat the filename as a
+directory of pixel list files and select the filename corresponding to the
+extension name; i.e. "name/ext.pl".
+
+In addition to excluding non-pattern data with masks, the scale
+determined by equation 1 depends strongly on matching the data and
+pattern backgrounds.  In particular the input image background and the
+pattern background must correspond to the same feature of the pattern.
+So if the mean of the pattern is used as the background then the input
+image background must correspond to the mean of the pattern in the data.
+If the pattern has a zero background outside the pattern and zero is
+specified for the pattern background then the data background must be that
+unaffected by the pattern in the data.  In general, if one uses masks to
+isolate the regions of the pattern and to exclude scene objects then the
+mean backgrounds are appropriate.  The exception to this is if the pattern
+is not localized and there is a background gradient in the input data which
+is not part of the pattern.  In that case an input background image should
+be specified (though externally removing the gradient is also an option)
+which is is based on based on fitting the gradient including the pattern.
+The pattern background is the pattern mean value.
+
+The output of the task is defined by the parameter \fIouttype\fR.
+The choices are:
+
+.nf
+    fit		s * (P - Q) + B
+    diff	A - (s * (P - Q) + B)
+    ratio	A / (s * (P - Q) + B)
+    flat	A * B' / (s * (P - Q) + B)     where B'=<A-s(P-Q)>
+    		  = A / (s' * (P - Q) + B/B')  where s' = s / B'
+    pfit	s * (P - Q)
+    pdiff	A - (s * (P - Q))
+    pratio	A / (s * (P - Q))
+    pflat	A * B' / (s * (P - Q) + B')    where B'=<A-s(P-Q)>
+    		  = A / (s' * (P - Q) + 1)     where s' = s / B'
+    sfit	s * P
+    sdiff	A - (s * P)
+    sratio	A / (s * P)
+    sflat	A * B' / (s * P + B')          where B'=<A-sP>
+    		  = A / (s' * P + 1)	       where s' = s / B'
+    none	log output only
+.fi
+
+In addition, log output to the terminal is produced when \fIverbose\fR
+is "yes" and log output to a specified file is produced by setting
+\fIlogfile\fR.  The output is the same for both.  The EXAMPLE section
+shows the form of the log output.  The task identification, PATFIT in the
+examples, is set by the \fIlogname\fR parameter.  The ability to set the
+name is available for cases where this task is used in scripts.   In the
+examples the mean values of the pattern and weight images are used and
+are indicated by the values <pattern> and <weight> instead of filenames
+or constants.  Because the means are not known until the computation
+completes, the values are given later in the output.  The final lines of
+the log information describe the output images created.
+
+One less obvious piece of output is the "statwt" quantity.  This can
+be used to combine scales measured for different images or extensions
+in the optimal statistical way.  In other words, as if all the images
+had be measured together.  One application to be fit the pieces of
+a mosaic independently (typically with \fIouttype\fR = none) and then a
+global scale is computed using the statwt values:
+
+.nf
+     final scale = sum [statwt(i)*scale(i)] / sum [statwt(i)]
+.fi
+
+If an output image is created, the keyword specified by \fIlogname\fR
+is written with the output operation identifying the image names,
+scale factor, and background is added.  An example is
+
+.nf
+    PATFIT  = 'o262 - 0.80696 (fringe - 0.15538)'
+.fi
+
+.ih
+EXAMPLES
+1. Fringe removal from a single image, "o262".  The fringe image, "fringe",
+is created by combining many exposures during the night to eliminate the
+objects.  A smooth background, averaged on scales larger than the fringe
+pattern, is subtracted.  Note that alternatively one could specify the
+fringe pattern background separately in \fBpatfit\fR.  Because the fringing
+occurs everywhere in the image no pattern mask is used.  The input image is
+processed to produce a mask, "objmask262", of the objects and bad pixels
+(see nproto.objmasks) and also a low frequency sky map, "sky262", to
+account for gradients in the background.
+
+.nf
+    cl> patfit o262 fo262 fringe \
+    >>> background=sky262 masks=objmask262 outtype=pdiff
+    PATFIT: NOAO/IRAF V2.11EXPORT ... 18-Jan-2002
+      input = o262
+      pattern = fringe
+      weight = fringe
+      input background = sky262
+      pattern background = <pattern>
+      weight background = <weight>
+      input mask = objmask262
+      output = fo262
+      outtype = pdiff
+      <pattern> = 0.1554
+      <weight> = 0.1554
+      statwt = 41.2831
+      scale = 0.807
+	fo262 = o262 - 0.80696 (fringe - 0.15538)
+.fi
+
+2.  The same fringing example but with multiextension files.  In this
+case the object mask may either be a multiextension file of mask type
+extensions (V2.12 and later) or a directory "objmask262" with files im1.pl,
+im2.pl, etc.
+
+.nf
+    cl> patfit o262 fo262 fringe \
+    >>> background=sky262 masks=objmask262 outtype=pdiff
+    PATFIT: NOAO/IRAF V2.11EXPORT ... 15-Jan-2002
+      input = o262
+      pattern = fringe
+      weight = fringe
+      input background = sky262
+      pattern background = <pattern>
+      weight background = <weight>
+      input mask = objmask262
+      output = fo262
+      outtype = pdiff
+	o262[im1]: 0.8127
+	o262[im2]: 0.8103
+	o262[im3]: 0.8235
+	o262[im4]: 0.8177
+	o262[im5]: 0.8161
+	o262[im6]: 0.8365
+	o262[im7]: 0.7584
+	o262[im8]: 0.7979
+      <pattern> = 0.5208
+      <weight> = 0.5208
+      statwt = 21.0841
+      scale = 0.8095
+	fo262[im1] = o262[im1] - 0.80953 (fringe[im1]...
+	fo262[im2] = o262[im2] - 0.80953 (fringe[im2]...
+	fo262[im3] = o262[im3] - 0.80953 (fringe[im3]...
+	fo262[im4] = o262[im4] - 0.80953 (fringe[im4]...
+	fo262[im5] = o262[im5] - 0.80953 (fringe[im5]...
+	fo262[im6] = o262[im6] - 0.80953 (fringe[im6]...
+	fo262[im7] = o262[im7] - 0.80953 (fringe[im7]...
+	fo262[im8] = o262[im8] - 0.80953 (fringe[im8]...
+.fi
+
+3.  The same fringing example with multiextension files with fitting and
+output extensions specified.  This artificial example shows fitting one
+set of extensions and outputing a different set.  A more likely situation
+would be fitting a subset of extensions (for speed) but outputing all the
+extensions.
+
+.nf
+    cl> patfit o262 fo262 fringe background=sky262 \
+    >>> masks=objmask262 outtype=pdiff extfit=im[123] extout=im[456]
+    PATFIT: NOAO/IRAF V2.11EXPORT ... 18-Jan-2002
+      input = o262
+      pattern = fringe
+      weight = fringe
+      input background = sky262
+      pattern background = <pattern>
+      weight background = <weight>
+      input mask = objmask262
+      output = fo262
+      outtype = pdiff
+	o262[im1]: 0.8127
+	o262[im2]: 0.8103
+	o262[im3]: 0.8235
+      <pattern> = 0.1554
+      <weight> = 0.1554
+      statwt = 21.0841
+      scale = 0.8153
+	fo262[im4] = o262[im4] - 0.81534 (fringe[im4]...
+	fo262[im5] = o262[im5] - 0.81534 (fringe[im5]...
+	fo262[im6] = o262[im6] - 0.81534 (fringe[im6]...
+.fi
+
+4.  The same multextension fringing example treating the extensions as
+independent images.  Note that in this case the mask is actually
+objmask262/im1.pl but is referenced as objmask262[im1] (the other
+form could also be used).
+
+.nf
+    cl> dpar patfit
+    patfit.input = "o262[im1],o262[im2],o262[im3]"
+    patfit.output = "fo262[im1],fo262[im2,append],...
+    patfit.pattern = "fringe[im1],fringe[im2],...
+    patfit.weight = ""
+    patfit.masks = "objmask262[im1],objmask262[im2],objmask262[im3]"
+    patfit.patmasks = ""
+    patfit.background = ""
+    patfit.bkgpattern = ""
+    patfit.bkgweight = ""
+    patfit.ncblk = 1
+    patfit.nlblk = 1
+    patfit.extfit = ""
+    patfit.extout = ""
+    patfit.outtype = "pdiff"
+    patfit.logname = "PATFIT"
+    patfit.logfile = "logfile"
+    patfit.verbose = yes
+    patfit.mode = "ql"
+    # EOF
+    cl> patfit
+    List of input images (o262[im1],o262[im2],o262[im3]): 
+    List of output images (fo262[im1],fo262[im2,append],...
+    Pattern or list of patterns (fringe[im1],...
+    PATFIT: NOAO/IRAF V2.11EXPORT ... 18-Jan-2002
+      input = o262[im1]
+      pattern = fringe[im1]
+      weight = fringe[im1]
+      input background = <input>
+      pattern background = <pattern>
+      weight background = <weight>
+      input mask = objmask262[im1]
+      output = fo262[im1]
+      outtype = pdiff
+      <input> = 7340.
+      <pattern> = 0.1587
+      <weight> = 0.1587
+      statwt = 21.0841
+      scale = 0.8088
+	fo262[im1] = o262[im1] - 0.80883 (fringe[im1]...
+    PATFIT: NOAO/IRAF V2.11EXPORT ... 18-Jan-2002
+      input = o262[im2]
+      pattern = fringe[im2]
+      weight = fringe[im2]
+      input background = <input>
+      pattern background = <pattern>
+      weight background = <weight>
+      input mask = objmask262[im2]
+      output = fo262[im2,append]
+      outtype = pdiff
+      <input> = 7299.
+      <pattern> = -0.3147
+      <weight> = -0.3147
+      statwt = 21.0841
+      scale = 0.7948
+	fo262[im2,append] = o262[im2] - 0.79481 (fringe[im2]...
+    PATFIT: NOAO/IRAF V2.11EXPORT ... 18-Jan-2002
+      input = o262[im3]
+      pattern = fringe[im3]
+      weight = fringe[im3]
+      input background = <input>
+      pattern background = <pattern>
+      weight background = <weight>
+      input mask = objmask262[im3]
+      output = fo262[im3,append]
+      outtype = pdiff
+      <input> = 7260.
+      <pattern> = 0.634
+      <weight> = 0.634
+      statwt = 21.0841
+      scale = 0.8185
+	fo262[im3,append] = o262[im3] - 0.81849 (fringe[im3]...
+.fi
+
+Note that in this case an output multiextension file is built from the
+individual outputs by using the "append" syntax of the FITS image kernel.
+
+.ih
+SEE ALSO
+nproto.objmasks, rmfringe, rmpupil
+.endhelp

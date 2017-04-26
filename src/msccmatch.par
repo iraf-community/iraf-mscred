@@ -1,0 +1,30 @@
+input,s,a,,,,List of input mosaic exposures
+coords,s,a,"",,,Coordinate file (ra/dec)
+outcoords,f,h,"",,,List of updated coordinate files
+usebpm,b,h,yes,,,Use bad pixel masks?
+verbose,b,h,yes,,,"Verbose?
+
+# Coarse Search"
+nsearch,i,h,50,,,Maximum number of positions to use in search
+search,r,h,0.,0.,,Translation search radius (arcsec)
+rsearch,r,h,0.,0.,,"Rotation search radius (deg)
+
+# Fine Centroiding"
+cbox,i,h,11,5,,Centering box (pixels)
+maxshift,r,h,5,,,Maximum centering shift to accept (arcsec)
+csig,r,h,0.1,,,Maximum centering uncertainty to accept (arcsec)
+cfrac,r,h,0.5,0.,1.,Minimum fraction of accepted centers
+listcoords,b,h,yes,,,"List centered coordinates in verbose mode?
+
+# WCS Fitting"
+nfit,i,h,4,,,Min for fit (>0) or max not found (<=0)
+rms,r,h,2.,0.,,Maximum fit RMS to accept (arcsec)
+fitgeometry,s,h,"general","shift|xyscale|rotate|rscale|rxyscale|general",,Fitting geometry
+reject,r,h,3.,,,Fitting rejection limit (sigma)
+update,b,h,yes,,,Update coordinate systems?
+interactive,b,h,yes,,,Interactive?
+fit,b,h,yes,,,Interactive fitting?
+graphics,s,h,"stdgraph",,,Graphics device
+cursor,s,h,"",,,"Graphics cursor
+"
+accept,b,q,yes,,,Accept solution?

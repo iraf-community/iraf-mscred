@@ -1,0 +1,109 @@
+$for (ir)
+# PATBLK_INIT --  Initialize block averging buffers.
+# Memory is allocated with salloc assuming sfree won't be called until
+# done with the block averaging.
+
+procedure pblk_init$t (data, map, bufs, sumbuf, nc, nc1, nc2, nlbuf)
+
+pointer	data			#I I/O data pointer
+int	map			#I Use mapio?
+pointer	bufs			#O Pointer to pointers of data lines
+pointer	sumbuf			#O Pointer block summed data
+int	nc			#I Number of unblocked columns
+int	nc1			#I Column offset
+int	nc2			#I Column offset
+int	nlbuf			#I Number of lines to sum
+
+int	i, j
+pointer	buf, tmpbuf
+
+pointer	imgl2$t()
+$if (datatype == r)
+pointer	map_gl$t()
+$endif
+
+begin
+	# If no data is needed then return.
+	if (nc1 == nc2 && nlbuf == 1) {
+	    bufs = NULL
+	    return
+	}
+
+	# Allocate and clear block averaging buffers.
+	call salloc (bufs, nlbuf, TY_POINTER)
+	do i = 1, nlbuf {
+	    call salloc (Memi[bufs+i-1], nc, TY_PIXEL)
+	    tmpbuf = Memi[bufs+i-1]
+	    call aclr$t (Mem$t[tmpbuf], nc)
+	}
+	if (nlbuf > 1) {
+	    call salloc (sumbuf, nc, TY_PIXEL)
+	    call aclr$t (Mem$t[sumbuf], nc)
+	} else
+	    sumbuf = Memi[bufs]
+
+	# Initialize block average buffers.
+	do i = 1, nlbuf-1 {
+	    $if (datatype == r)
+	    if (map == YES)
+		buf = map_gl$t (data, i, READ_ONLY) - nc1
+	    else
+	    $endif
+		buf = imgl2$t (data, i) - nc1
+
+	    tmpbuf = Memi[bufs+mod(i,nlbuf)]
+	    call aclr$t (Mem$t[tmpbuf], nc)
+	    do j = nc1, nc2
+		call aadd$t (Mem$t[buf+j], Mem$t[tmpbuf], Mem$t[tmpbuf], nc)
+	    if (nlbuf > 1)
+		call aadd$t (Mem$t[tmpbuf], Mem$t[sumbuf], Mem$t[sumbuf], nc)
+	}
+end
+
+
+# PATBLK -- Return block average with specified end line.
+# A 1x1 block is allowed.
+# The various input pointers must be initialized by pblk_init and this
+# routine must be called sequencially through the lines.
+
+procedure patblk$t (data, line, map, buf, bufs, sumbuf, nc, nc1, nc2, nlbuf)
+
+pointer	data			#I I/O data pointer
+int	line			#I Next line to read
+int	map			#I Use mapio?
+pointer	buf			#U Pointer to line of data
+pointer	bufs			#I Pointer to pointers of data lines
+pointer	sumbuf			#I Pointer block summed data
+int	nc			#I Number of columns
+int	nc1			#I Column offset
+int	nc2			#I Column offset
+int	nlbuf			#I Number of lines to sum
+
+int	i
+pointer	tmpbuf, imgl2$t()
+$if (datatype == r)
+pointer	map_gl$t()
+$endif
+
+begin
+	# Get next line.
+	$if (datatype == r)
+	if (map == YES)
+	    buf = map_gl$t (data, line, READ_ONLY) - nc1
+	else
+	$endif
+	    buf = imgl2$t (data, line) - nc1
+
+	# Do block averaging if needed.
+	if (bufs != NULL) {
+	    tmpbuf = Memi[bufs+mod(line,nlbuf)]
+	    call asub$t (Mem$t[sumbuf], Mem$t[tmpbuf], mem$t[sumbuf], nc)
+	    call aclr$t (Mem$t[tmpbuf], nc)
+	    do i = nc1, nc2
+		call aadd$t (Mem$t[buf+i], Mem$t[tmpbuf], Mem$t[tmpbuf], nc)
+	    if (nlbuf > 1)
+		call aadd$t (Mem$t[tmpbuf], Mem$t[sumbuf], Mem$t[sumbuf], nc)
+	    buf = sumbuf
+	}
+end
+$endfor

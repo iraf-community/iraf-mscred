@@ -1,0 +1,28 @@
+.help mscfocus Aug97 mscred
+.ih
+NAME
+mscfocus -- measure focus from Mosaic focus exposures
+.ih
+SYNOPSIS
+This is a customized version of the \fBstarfocus\fR task which operates
+from NOAO Mosaic focus exposured displayed with \fBmscdisplay\fR.
+It uses keywords in the headers to determine focus values and
+sequence patterns.
+.ih
+USAGE	
+mscfocus images
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls MSCFOCUS - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+kpnofocus starfocus
+.endhelp

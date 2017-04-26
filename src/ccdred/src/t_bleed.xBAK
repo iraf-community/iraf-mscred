@@ -1,0 +1,149 @@
+include	<error.h>
+include	<mach.h>
+include	<imhdr.h>
+
+task	bleed = t_bleed
+
+define	BLDTRIM		10	# Number of lines and columns to trim in mean
+define	BLDSAMPLE	100	# Number of sample ines for the mean
+
+
+procedure t_bleed ()
+
+char	fname[SZ_FNAME], bthresh[SZ_LINE]
+int	btrail, svalue, bvalue, sgrow, bgrow, clgeti()
+real	sthresh, clgetr()
+pointer	in, out, omask, immap()
+
+begin
+	call clgstr ("input", fname, SZ_FNAME)
+	in = immap (fname, READ_ONLY, 0)
+	call clgstr ("output", fname, SZ_FNAME)
+	if (fname[1] == EOS)
+	    out = NULL
+	else
+	    out = immap (fname, NEW_COPY, in)
+	call clgstr ("mask", fname, SZ_FNAME)
+	if (fname[1] == EOS)
+	    omask = NULL
+	else
+	    omask = immap (fname, NEW_COPY, in)
+	sthresh = clgetr ("sthresh")
+	svalue = clgeti ("svalue")
+	call clgstr ("bthresh", bthresh, SZ_LINE)
+	bvalue = clgeti ("bvalue")
+	btrail = clgeti ("btrail")
+	sgrow = clgeti ("sgrow")
+	bgrow = clgeti ("bgrow")
+
+	iferr (call bld_image (in, out, omask, NULL, sthresh, svalue, sgrow,
+	    bthresh, bvalue, bgrow, btrail))
+	    call erract (EA_WARN)
+
+	if (out != NULL)
+	    call imunmap (out)
+	if (omask != NULL)
+	    call imunmap (omask)
+	call imunmap (in)
+end
+
+
+
+# BLD_IMAGE -- Find the saturated and bleed pixels and produce the output.
+
+procedure bld_image (in, out, omask, bp, sthresh, svalue, sgrow, bthresh,
+	bvalue, bgrow, btrail)
+
+pointer	in			#I Input image
+pointer	out			#I Output image
+pointer	omask			#I Output mask
+pointer	bp			#I Input mask
+real	sthresh			#I Saturation threshold
+int	svalue			#I Saturated pixel mask value
+int	sgrow			#I Number of pixels to grow saturated pixels
+char	bthresh[ARB]		#I Threshold for candidate bleed pixels
+int	bvalue			#I Bleed trail mask value
+int	bgrow			#I Number of pixels to grow bleed pixels
+int	btrail			#I Minimum bleed trail length
+
+int	i, l, nc, nl, nmean, sec[2,2]
+real	bth, mean, asumr()
+pointer	sp, str, data, imgl2r()
+int	nowhite(), strncmp(), ctor()
+errchk	imgl2r
+errchk	bld_open, bld_mask, bld_interp, bld_close
+
+begin
+	# Return if there is no output requested.
+	if (out == NULL && omask == NULL)
+	    return
+
+	call smark (sp)
+	call salloc (str, SZ_LINE, TY_CHAR)
+
+	nc = IM_LEN(in,1)
+	nl = IM_LEN(in,2)
+
+	# Parse the bleed threshold string.
+	if (btrail > 0) {
+	    bth = INDEFR
+	    i = nowhite (bthresh, Memc[str], SZ_LINE)
+	    call strlwr (Memc[str])
+	    if (strncmp (Memc[str], "mean", 4) == 0) {
+		i = 6
+		l = ctor (Memc[str], i, bth)
+		if (l == 0 || (Memc[str+4] != '*' && Memc[str+4] != '+'))
+		    call error (2, "Syntax error in bleed threshold")
+		 
+		# Compute sample mean.
+		mean = 0.
+		nmean = 0
+		i = (nl - 2 * BLDTRIM) / BLDSAMPLE
+		do l = 1+BLDTRIM, nl-BLDTRIM, i {
+		    mean = mean + asumr (Memr[imgl2r(in,l)+BLDTRIM],
+			nc-2*BLDTRIM) / (nc - 2*BLDTRIM)
+		    nmean = nmean + 1
+		}
+		mean = mean / nmean
+		if (Memc[str+4] == '+')
+		    bth = bth + mean
+		else if (Memc[str+4] == '*')
+		    bth = bth * mean
+	    } else if (strncmp (Memc[str], "saturation", 10) == 0) {
+		i = 6
+		l = ctor (Memc[str], i, bth)
+		if (l == 0 || (Memc[str+10] != '/' && Memc[str+10] != '-'))
+		    call error (2, "Syntax error in bleed threshold")
+		if (IS_INDEFR(sthresh))
+		    bth = sthresh
+		else if (Memc[str+10] == '-')
+		    bth = sthresh - bth
+		else if (Memc[str+10] == '/')
+		    bth = sthresh / bth
+	    } else {
+		i = 1
+		if (ctor (Memc[str], i, bth) == 0)
+		    call error (2, "Syntax error in bleed threshold")
+	    }
+	}
+
+	# Initialize the parameters.
+	sec[1,1] = 1
+	sec[2,1] = nc
+	sec[1,2] = 1
+	sec[2,2] = nl
+	call bld_open (out, omask, NULL, sthresh, svalue, sgrow, bth,
+	    bvalue, bgrow, btrail, sec, sec)
+
+	# Find the pixels and interpolate.
+	do i = 1, nl {
+	    data = imgl2r (in, i)
+	    call bld_mask (omask, i, Memr[data], NULL)
+	    if (out != NULL)
+		call bld_interp (out, i, Memr[data])
+	}
+
+	# Finish up.
+	call bld_close ()
+	call sfree (sp)
+end
