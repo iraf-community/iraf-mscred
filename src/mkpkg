@@ -15,14 +15,8 @@ update:
 relink:
 	$checkout x_mscred.o mscbin$
 	$omake	x_mscred.x
-	$ifnewer (plp2li.x, iraf$sys/plio/tf/plp2li.x)
-	    $omake plp2li.x
-	    $link  -z x_mscred.o plp2li.o -lmscred -lxtools -lcurfit \
+	$link  x_mscred.o -lmscred -lxtools -lcurfit \
 		-lgsurfit -lslalib -lsurfit -liminterp -o xx_mscred.e
-	$else
-	    $link  x_mscred.o -lmscred -lxtools -lcurfit \
-		-lgsurfit -lslalib -lsurfit -liminterp -o xx_mscred.e
-	$endif
 	$checkin x_mscred.o mscbin$
 	;
 

@@ -19,12 +19,7 @@ relink:
 	    $set LIBS2 = "-lgsurfit -liminterp -lnlfit -lslalib -lncar -lgks"
 	$endif
 	$omake	x_combine.x
-	$ifnewer (../../../plp2li.x, iraf$sys/plio/tf/plp2li.x)
-	    $link -z x_combine.o ../../../plp2li.o -lcombine\
-		$(LIBS1) $(LIBS2) -o xx_combine.e
-	$else
-	    $link x_combine.o -lcombine $(LIBS1) $(LIBS2) -o xx_combine.e
-	$endif
+	$link x_combine.o -lcombine $(LIBS1) $(LIBS2) -o xx_combine.e
 	$checkin x_combine.o mscbin$
 	;
 
