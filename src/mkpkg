@@ -113,9 +113,4 @@ libmscred.a:
 			<math/iminterp.h> <pkg/gtools.h>
 	xtalk.x		<imhdr.h>
 	xtmaskname.x	
-	$ifnfile (xtools$xtextns.x)
-	    xtextns.x	<ctype.h> <error.h> <mach.h>
-	$else $ifnewer (xtextns.x, xtools$xtextns.x)
-	    xtextns.x	<ctype.h> <error.h> <mach.h>
-	$endif $endif
 	;
