@@ -124,8 +124,4 @@ libmscred.a:
 	$else $ifnewer (xtextns.x, xtools$xtextns.x)
 	    xtextns.x	<ctype.h> <error.h> <mach.h>
 	$endif $endif
-	$ifnfile (xtools$fixpix/ytpmmap.x)
-	    xtpmmap.x	<ctype.h> <error.h> <imhdr.h> <imset.h> <mach.h>\
-			<mwset.h> <pmset.h>
-	endif
 	;
