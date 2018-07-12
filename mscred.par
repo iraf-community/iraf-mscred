@@ -12,4 +12,4 @@ ssfile,s,h,"subsets",,,Subset translation file
 im_bufsize,r,h,0.065536,0.001024,,Image I/O buffer size (in Mbytes)
 graphics,s,h,"stdgraph",,,Interactive graphics output device
 cursor,*gcur,h,"",,,Graphics cursor input
-version,s,h,"V5.05: August 9, 2012"
+version,s,h,"V5.05: 2018.07.09"
