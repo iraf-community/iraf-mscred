@@ -22,11 +22,7 @@ relink:
 	    $set LIBS = "-lccdred -lcombine -lxtools -lcurfit -lgsurfit -lncar -lgks"
 	$endif
 	$omake	x_ccdred.x
-	$ifnewer (../plp2li.x, iraf$sys/plio/tf/plp2li.x)
-	    $link  -z x_ccdred.o ../plp2li.o $(LIBS) -o xx_ccdred.e
-	$else
-	    $link  x_ccdred.o $(LIBS) -o xx_ccdred.e
-	$endif
+	$link  x_ccdred.o $(LIBS) -o xx_ccdred.e
 	$checkin x_ccdred.o mscbin$
 	;
 
