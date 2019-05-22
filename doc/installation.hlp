@@ -111,7 +111,7 @@ your loginuser.cl file, or interactively as follows.
 To define the package you need to an IRAF logical path to the mscred
 directory and a "task" declaration.  As noted above, this is often
 done in the $iraf/unix/hlib/extern.pkg file but it can also be done
-in your irafuser.csh file or even interactively.  The statements you
+in your irafuser.sh file or even interactively.  The statements you
 need are something like:
 
 .nf
@@ -159,13 +159,13 @@ COMPILING
 
 If you will be compiling the package, as opposed to installing a binary
 distribution, then you need to define various environment variables.
-The following is for Unix/csh which is the main supported environment.
+The following is for Unix which is the main supported environment.
 
 .nf
-    % setenv iraf /iraf/iraf/             # Path to IRAF root (example)
-    % source $iraf/unix/hlib/irafuser.csh # Define rest of environment
-    % setenv IRAFARCH redhat              # IRAF architecture
-    % setenv mscred <path>/		  # Path to package
+    % export iraf=/iraf/iraf/            # Path to IRAF root (example)
+    % source $iraf/unix/hlib/irafuser.sh # Define rest of environment
+    % export IRAFARCH=redhat             # IRAF architecture
+    % export mscred=<path>/		 # Path to package
 .fi
 
 where you need to supply the appropriate path to the IRAF installation root
