@@ -1,0 +1,102 @@
+include	<mach.h>
+
+# AKAVG -- Compute the mean and standard deviation of a sample array by
+# iteratively rejecting points further than KSIG from the mean.
+# The k-clipped sigma is corrected to match the classical sigma for a
+# normal distribution. The number of pixels remaining in the sample upon
+# termination is returned as the function value.
+
+$for (silrd)
+
+int procedure akavg$t (a, npix, mean, sigma, kclip, itmax)
+
+PIXEL	a[ARB]			# input data array
+$if (datatype == dl)
+double	mean, sigma, kclip
+$else
+real	mean, sigma, kclip
+$endif
+int	npix, itmax, ngpix
+int	akavr$t()
+
+double  corr, signorm()
+
+begin
+
+	# Compute ratio of k-clipped sigma to classical sigma for a normal
+        # distribution
+        $if (datatype == dl)
+	corr  = signorm (kclip)
+        $else
+	corr  = signorm (double(kclip))
+        $endif
+
+        $if (datatype == dl)
+	ngpix = akavr$t (a, npix, mean, sigma, kclip, corr, itmax)
+        $else
+	ngpix = akavr$t (a, npix, mean, sigma, kclip, real(corr), itmax)
+        $endif
+
+	return (ngpix)
+end
+
+# AKAVRx -- As AKAVGx except that the sigma normalisation is supplied by
+# the caller.
+
+int procedure akavr$t (a, npix, mean, sigma, kclip, signorm, itmax)
+
+PIXEL	a[ARB]			# input data array
+$if (datatype == dl)
+double	mean, sigma, kclip, signorm, deviation, lcut, hcut
+$else
+real	mean, sigma, kclip, signorm, deviation, lcut, hcut
+$endif
+int	itmax, npix, ngpix, old_ngpix, iter, awvg$t()
+
+begin
+	lcut = -MAX_REAL				# no rejection to start
+	hcut =  MAX_REAL
+	ngpix = MAX_INT
+
+	# Iteratively compute mean and sigma and reject outliers.
+	# We exit when no more pixels are rejected, when there are
+	# no more pixels, or when we have completed itmax iterations.
+
+	do iter = 1, itmax {
+	    old_ngpix = ngpix
+	    ngpix = awvg$t (a, npix, mean, sigma, lcut, hcut)
+
+#	    call eprintf ("iter=%d nrej=%d mean=%f sigma=%f")
+#		call pargi (iter)
+#		call pargi (npix - ngpix)
+#		call parg$t (mean)
+#		call parg$t (sigma)
+
+	    # Correct for clipping
+	    if (iter > 1 && signorm > EPSILOND)
+		sigma = sigma / signorm
+
+#	    call eprintf (" sigma_corr=%f\n")
+#		call parg$t (sigma)
+
+	    $if (datatype == dl)
+	    if (ngpix <= 1 || sigma <= EPSILOND)
+	    $else
+	    if (ngpix <= 1 || sigma <= EPSILONR)
+	    $endif
+		break
+
+	    if (ngpix >= old_ngpix)
+		break
+
+	    deviation = sigma * kclip
+
+	    lcut = mean - deviation			# compute window
+	    hcut = mean + deviation
+	}
+
+	return (ngpix)
+
+end
+
+$endfor

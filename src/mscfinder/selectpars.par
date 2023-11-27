@@ -1,0 +1,18 @@
+explicit,s,h,"",,,"Overriding expression"
+disjunction,b,h,no,,,"Inclusively OR (vs. AND) the expressions?\n"
+
+column1,s,h,"PLATE_ID",,,"Name for selection column 1"
+boolop1,s,h,"==",,,"Boolean operator for column 1"
+value1,s,h,"",,,"Value for column 1 (single AND double quote strings)\n"
+
+column2,s,h,"CLASS",,,"Name for selection column 2"
+boolop2,s,h,"==",,,"Boolean operator for column 2"
+value2,s,h,"0",,,"Value for column 2 (single AND double quote strings)\n"
+
+column3,s,h,"",,,"Name for selection column 3"
+boolop3,s,h,"",,,"Boolean operator for column 3"
+value3,s,h,"",,,"Value for column 3 (single AND double quote strings)\n"
+
+column4,s,h,"",,,"Name for selection column 4"
+boolop4,s,h,"",,,"Boolean operator for column 4"
+value4,s,h,"",,,"Value for column 4 (single AND double quote strings)\n"

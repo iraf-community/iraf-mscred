@@ -1,0 +1,20 @@
+# STARFOCUS.
+
+update:
+	$call	lsf
+	;
+
+lsf:
+	$checkout libsf.a mscbin$
+	$update   libsf.a
+	$checkin  libsf.a mscbin$
+	;
+
+libsf.a:
+	rngranges.x	<ctype.h> <mach.h>
+	stfgraph.x	<error.h> <gset.h> <mach.h> starfocus.h
+	stfprofile.x	<imhdr.h> <mach.h> <math.h> <math/iminterp.h>\
+			<math/nlfit.h> starfocus.h
+	t_starfocus.x	<error.h> <imhdr.h> <mach.h> ../mosgeom.h\
+			../mosim.h ../mosproc.h starfocus.h
+	;

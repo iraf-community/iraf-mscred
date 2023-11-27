@@ -1,0 +1,3443 @@
+.help revisions Oct96 noao.imred.mscred
+.nf
+REMOVE FIXPIX WORKAROUNDS WHEN V2.11.2 PATCH IS RELEASED.
+
+mscfinder/msctpeak.cl
+    Made the internal table use an explicit extension of fits.
+    (8/9/2012, Valdes)
+
+mscimage.cl
+../mscred.par
+    The task parameters "boundary" and "blank" were not being used.
+    (9/18/09, Valdes)
+
+../mscred.cl
+    The logical directory ccdred was being redefined which confuses loading
+    the ccdred package.  The directory is now mccdred.
+    (6/13/08, Valdes)
+
+t_mscwcs.x
+    There was a bug where arguments were used both as input and output.
+    (3/3/08, Valdes)
+
+=================
+V4.8: Mar 3, 2008
+=================
+
+t_msctmplt.x
+    Reference projections of zpn are changed to tan on output.
+    (3/30/07, Valdes)
+
+mscarith.cl
+    Changed nresults to nresult in the declaration since that is what is
+    used in the script.  (3/8/06, Valdes)
+
+ccdred/src/setsections.x
+    The updating of the physical WCS was not correct for binned data.
+    This would cause mscmerge produce incorrect sections such as for
+    CCDSEC.  In turn, that would cause applying merged calibrations
+    of binned data to fail in CCDPROC.  (4/15/05, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+    In order to support the tiled WCS in XImtool the tx/ty calculation has
+    to not subtract the mosaic origin on the individual tiles.
+    (2/3/05, Valdes)
+
+ccdred/src/combine/src/generic/mkpkg
+ccdred/src/combine/src/mkpkg
+ccdred/src/combine/mkpkg
+ccdred/src/generic/mkpkg
+ccdred/src/mkpkg
+ccdred/mkpkg
+curfit/mkpkg
+imsurfit/mkpkg
+mscdisplay/src/imexam/mkpkg
+mscdisplay/src/starfocus/mkpkg
+mscdisplay/src/mkpkg
+mscdisplay/mkpkg
+mscfinder/cdrfits/mkpkg
+mscfinder/select/mkpkg
+mscfinder/mkpkg
+mkpkg
+../mkpkg
+    Restructured to put all binaries in mscbin$.  (9/28/04, Valdes)
+
+t_patfit.x
+    Added another line of output which is the statistical weight to
+    use when combining multiple scale measurements.  This can be used
+    to run PATFIT independently on pieces of a mosaic and then combine
+    the scales with the given weights to get the same result as running
+    PATFIT over all the pieces together.  (8/16/04, Valdes)
+
+t_patfit.x
+    There was a bug when the background is specified and a non-zero
+    constant value and there is block averaging used.  (8/2/04, Valdes)
+
+ccdred/src/combine/src/icombine.x
+    Added environment variable "imcombine_maxmemory" to control memory
+    allocation.  (7/28/04, Valdes)
+
+ccdred/src/combine/src/icmask.x
+ccdred/src/combine/src/iclog.x
+ccdred/src/combine/src/icombine.h
+ccdred/src/combine/combine.par
+ccdred/src/combine/fcombine.par
+ccdred/src/combine/scombine.par
+ccdred/src/combine/zcombine.par
+ccdred/src/combine/mergeamps.par
+    As a special unadvertised feature the "maskvalue" parameter may be
+    specified with a leading '<' or '>'.  Ultimately a full expression
+    should be added and documented.  (7/26/04, Valdes)
+
+ccdred/src/xtfp.gx
+ccdred/src/xtfixpix.x
+ccdred/src/xtpmmap.x
+ccdred/src/xtfixpix.h
+    Updated to pick up latest bugfixes from xtools$fixpix/.  The most
+    important fix is that column interpolation was not really working!
+    (7/23/04, Valdes)
+
+ccdred/src/combine/x_combine.x
+ccdred/src/combine/scombine.par
+    Added alias scombine for combine.  (7/18/04, Valdes)
+
+ccdred/src/combine/src/
+    Updated to latest version.  This includes a change to allow images to
+    be specified with a directory path and have the masks specified in the
+    header be found in that directory.  (7/16/04, Valdes)
+
+==================
+V4.8: May 11, 2004
+==================
+
+t_msccmatch.x
+    1.  Added argument to control the maximum fraction of regions that can be
+	rejected by the mask before ignoring the mask.
+    2.  Currently the fraction is 0.5 during coarse search (the same as
+	before) and 0 during the fine centering.  The latter change means
+	that if all the sources are flagged (say because the mask incorrectly
+	flags all pixels) the program will quit with too few sources.
+	(5/11/04, Valdes)
+
+t_msccmatch.x
+    Added a line to the verbose output that prints the average shift.
+    Note that this is different than the tangent point shift which is
+    part of a higher order fit.  (3/17/04, Valdes)
+
+=======================
+V4.8: February 25, 2004
+=======================
+
+t_mscwcs.x
+    A ctran descriptor was not being freed and so after enough calls to
+    wcs_adjust an error would occur for too many ctran descriptors allocated.
+    (2/25/04, Valdes)
+
+t_msccmatch.x
+    Added check to avoid a segmentation violation if an error occurred
+    in reading the coordinate list. (2/25/04, Valdes)
+
+mscdisplay/src/mosmap.x
+    Fixed problem with possibly computing bad image sections when binning
+    the real time readout.  (2/13/04, Valdes)
+
+t_getcatalog.x
+    Increase the formating by one decimal place.  (2/3/04, Valdes)
+
+t_mscimatch.x
+    Fixed intrinsic function type mismatch in imat_eprop.  (1/15/04, Valdes)
+
+ccdproc/src/combine/src/xtimmap.gx
+    Copying the IMIO structure to an internal structure required two
+    amovi calls in order to maintain alignment.  (1/12/04, Zarate/Valdes)
+
+t_xtalkcor.x
+    More changes to handle checking for existing split output images and
+    handling errors.  (1/2/04, Valdes)
+
+=======================
+V4.8: December 30, 2003
+=======================
+
+mscdisplay/src/starfocus/t_starfocus.x
+    The input mosaic (i.e. tv) coordinates are transformed to image
+    coordinates (in stf_find) but then not transformed back to mosaic
+    coordinates for iteration, focus steps, and output.  This results
+    in the focus stepping and iteration not to work.  Calls to
+    mg_im2c were added.  (12/16/03, Valdes)
+
+t_xtalkcor.x
+    Removed the option, added on 3/13/03, to have a longer output list than
+    input in order to specify explicit output names.  (12/23/03, Valdes)
+
+t_xtalkcor.x
+    Modified logic so that if the input is missing extensions it is not
+    an error if those extensions are referenced in the crosstalk file
+    as long as all dependent extensions are absent.  (12/18/03, Valdes)
+
+mscshutcor.cl
+../doc/mscshutcor.hlp
+../mscred.cl
+../mscred.men
+../mscred.hd
+    Added a new task to compute shutter corrections for mosaic exposures.
+    (12/16/03, Valdes)
+
+../mscred.cl
+ccdproc.cl
+calproc.cl
+    Removed the mscstatus variable.  (12/16/03, Valdes)
+
+=======================
+V4.8: November 6, 2003
+=======================
+
+t_patfit.x
+    In case of an error the input would be deleted if no output was
+    specified or if the input and output are the same.  Instead the
+    temp file is supposed to be deleted.  (10/30/03, Valdes)
+
+../doc/wiynoptic.hlp
+    Added user's guide for the WIYN/OPTIC camera.  (10/22/03, Valdes)
+
+ccdred/src/proc.gx
+    Forgot to set the minval/maxval variables for sky flats.
+    (9/26/03, Valdes)
+
+mscimage.cl
+    Added the "addonly" flag to the hedit calls.  (9/25/03, Valdes)
+
+mscsetwcs.cl
+    When msctpeak is used on non-extension data the database solution name
+    is the image name.  Mscsetwcs now finds the last solution in the
+    database if the image being calibrated does not have an extension
+    name.  (9/24/03, Valdes)
+
+t_msccmatch.x
+    The "maxiterate" parameter for GEOMAP was not set.  It is now set
+    to 4.  (9/23/03, Valdes)
+
+ccdred/src/setflat.x
+    Minor fix to remove unused variable.  (9/22/03, Valdes)
+
+ccdred/src/ccdred.h
+ccdred/src/cor.gx
+ccdred/src/proc.gx
+ccdred/src/setflat.x
+    Added an option to convert data to electrons or electrons/s during
+    flat fielding provided the (translated) keyword GAINNORM is in the
+    header.  This is implemented by modifying the flat field normalization
+    value which is why it can only be done during flat fielding.
+    ( 9/17/03, Valdes)
+
+ccdred/src/setoverscan.x
+    Added the keyword OVSNMEAN to give the mean overscan as a separate
+    keyword.  This is used for keyword monitoring.  (9/17/03, Valdes)
+
+t_msccmatch.x
+    The hidden debug option for outputing a vote array was changed
+    slightly.  (8/29/03, Valdes)
+
+t_xtalkcor.x
+    1.  Fixed bug when giving a list of bad pixel names during splitting.
+    2.  The bad pixel mask name is added to the header with keyword XTALKBPM.
+    (8/28/03, Valdes)
+
+ccdred/src/combine/src/xtimmap.x
+    Increased the length of image names in the structure.  (8/20/03, Valdes)
+
+xtpmmap.x
+    Added a check yt_match to deal with the unusual situation where the mask
+    and reference image are off by a fraction of a pixel.  (8/14/03, Valdes)
+
+=======================
+V4.8: July 30, 2003
+=======================
+
+ccdred/src/combine/src/icsetout.x
+    When using offsets based on physical coordinates and there is a flip
+    the routine was incorrectly using imunmap instead of xt_imunmap.
+    (7/30/03, Valdes)
+
+ccdred/src/imcombine/src/icstat.gx
+    Fixed an incorrect declaration for asum$t() in the generic routine.
+    (7/30/03, Valdes)
+
+ccdred/src/setsection.x
+    The ltv calculation was wrong when LTM1_1/LTM2_2 are negative.
+    (7/28/03, Valdes)
+
+t_mscimatch.x
+    Added divide by zero protection.
+    (7/17/03, Valdes)
+
+=======================
+V4.8: June 24, 2003
+=======================
+
+mkpkg
+ccdred/mkpkg
+    Modified to use plp2li.o if the private version is newer than the system
+    version.  (6/24/03, Valdes)
+
+mscdisplay$src/starfocus/t_starfocus.x
+mscdisplay$src/starfocus/stfprofile.x
+mscdisplay$src/starfocus/starfocus.h
+mscdisplay$src/imexam/stfmeasure.x
+mscdisplay$src/imexam/stfprofile.x	+
+mscdisplay$src/imexam/starfocus.h
+    Updated for recent bug fixes.  (5/5/03, Valdes)
+
+=======================
+V4.8: April 11, 2003
+=======================
+
+mscwcs.x
+    Removed changes made on 11/22/02 as they introduced a bug when an image has 
+    a "image" coordinate system and valid WCS. (04/11/03, fpierfed)
+
+ccdred/src/combine/x_combine.x
+ccdred/src/combine/fcombine.par
+ccdred/src/combine/zcombine.par
+    Make aliases for flat and zero combining so that they can have different
+    default parameters.  (4/11/03, Valdes)
+
+ccdred/src/combine/src/icombine.x
+    Due to the way IMIO works it converts an out of memory error to
+    cannot open pixel file if a memory alloaction error occurs when
+    allocating file descriptor memory.  So if this error occurs and the
+    number of images is small the error will be interpreted as
+    a memory allocation error.  (4/9/03, Valdes)
+
+t_xtalkcor.x
+../doc/xtalkcor.hlp
+    The output split or pixel mask filenames may be specified explicitly
+    for all extensions in addition to rootnames.  This was added to allow
+    the output to be written to different directories or nodes.
+    (3/13/03, Valdes)
+
+=======================
+V4.8: March 25, 2003
+=======================
+
+t_patfit.x
+    There was a bug in the last change when using block averging and the
+    background is not small.  (3/25/03, Valdes)
+
+=======================
+V4.8: March 14, 2003
+=======================
+
+ccdred/src/combine/mkpkg
+    Needed to use the version of xt_pmmap in mscred to pick up the
+    change that the sizes must match as well as the offsets and scales.
+    (3/14/03, Valdes)
+
+ccdred/src/combine/t_combine.x
+    There were missing arguments to pl_loadim.  (3/14/03, Valdes)
+
+pupilfit.par
+    The x and y offset values were limited to positive values.  There is
+    no reason for this so the p_min field was cleared.  (3/11/03, Valdes)
+
+rmfringe.cl
+rmpupil.cl
+../doc/rmfringe.cl
+../doc/rmpupil.cl
+    RMFRINGE has new parameters for the block averaging.  Both RMFRINGE
+    and RMPUPIL had their help and prompt strings modified to describe
+    the new block averaging feature.
+
+t_patfit.x
+patfit.par
+patblk.gx		+
+../doc/patfit.hlp
+mkpkg
+    The block averaging now applies to the input, pattern, weight, and
+    mask images.  (3/11/03, Valdes)
+
+mscwcs.x
+    Modified this routine not to complain if there is an "image" coordinate
+    system and not set up the astrometric WCS.  (11/22/02, Valdes)
+
+
+=======================
+V4.8: November 4, 2002
+=======================
+
+setsaturate.x
+    The "saturation?value" parsing had a bug.  (10/23/02, Valdes)
+
+t_msccmatch.x
+msccmatch.par
+    Added parameters controling the centroiding and reorganized the
+    epar parameter display.  (10/2/02, Valdes)
+
+mscimage.cl
+t_mscpmask.x	+
+mscpmask.par	+
+plp2li.x	+
+mkpkg
+x_mscred.x
+../mscred.cl
+    Added a workaround for a PLIO bug.  MSCPMASK is used in MSCIMAGE
+    in place of IMEXPR to convert an image to a mask.  The executable
+    is linked static.  (9/27/02, Valdes)
+
+xtpmmap.x
+    Added a workaround for a bug in pl_l2r$t for the I_PN opcode when
+    the requested region cuts through the segment.  (9/18/02, Valdes)
+
+xtpmmap.x
+    Added errchk's on im_pmmapo.  (9/16/02, Valdes)
+
+mscdisplay/src/imexam/iemw.x
+    Added a heuristic check for the appropriate hHmM formats.
+    (9/12/02, Valdes)
+
+xtpmmap.x
+    A common case of matching a mask to an image is where the pixel sizes
+    are the same but there are offsets and/or different sizes.  An optimized
+    mask matching based on using range lists and not calling mwcs was
+    added.  (9/12/02, Valdes)
+
+mscdisplay/src/mosmap.x
+    Needed to initialize when there is no DATASEC but there is a DETSEC.
+    (9/11/02, Valdes)
+
+xtpmmap.x
+    Updated to current version of xtools$fixpix/.
+    (9/10/02, Valdes)
+
+t_mscext.x
+    Did not handle expansion correctly for the first extension when
+    there is an image section.  (9/10/02, Valdes)
+
+t_xtcoeff.x
+xtcoeff.par
+../doc/xtcoeff.hlp
+    Modified to include victim and source backgrounds and object masks.
+    (9/3/02, Valdes)
+
+images$immatch/src/imcombine/src/iclog.x
+    The pixel masks listed in the log output was wrong.  This only applies
+    to the log, the correct mask is used during processing.  (6/26/02, Valdes)
+
+===================
+V4.7: June 14, 2002
+===================
+
+ccdred/src/combine/src/icsetout.x
+    Needed to disable axis mapping to handle cases where the input images
+    are dimensionally reduced.  (6/14/02, Valdes)
+
+ccdred/src/combine/src/xtimmap.gx
+    The size of image header data structures was computed incorrectly
+    resulting in the potential for segmenation violations.  (6/14/02, Valdes)
+
+mscpupil.cl
+    There was a bug in working with single images.  (5/31/02, Valdes)
+
+======================
+V4.7: May 28, 2002
+======================
+
+ccdred/src/combine/mefscale.x
+    The call to ic_mopen was missing the offsets argument.
+    (5/9/02, Valdes)
+
+ccdred/src/combine/src
+    Updated to pick up fixes for projection.  (4/22/02, Valdes)
+
+msczero.key
+    Removed reference to USNO for the 'u' key.  (4/11/02, Valdes)
+
+mscagetcat.cl		+
+mscgetcatalog.cl
+t_getcatalog.x
+getcatalog.par
+mkpkg
+../mscred.cl
+../doc/mscgetcatalog.hlp
+    The catalog access tools now use the ASTCAT package.  For backwards
+    compatibility the old catalog names may be used and they are then
+    accessed as before.  (4/11/02, Valdes)
+
+ccdred/src/combine/src/icmask.x
+    There was a bug in the recent change to open and close masks as needed
+    where a possibly null filename pointer was being checked for being
+    a null string.  (4/8/02, Valdes)
+
+msccntr.cl
+    Added parameters for specifying the noise parameters.  For now this
+    will remain hidden and if users encounter problems they can set the
+    default values.  These should eventually become msccmatch parameters.
+    (4/3/02, Valdes)
+
+mscimage.cl
+calproc.cl
+ccdproc.cl
+mscnimage.cl
+mscstack.cl
+sflatcombine.cl
+ccdred/darkcombine.cl
+ccdred/flatcombine.cl
+ccdred/sflatcombine.cl
+ccdred/zerocombine.cl
+    Added default for new "outlimits" parameter in combine.
+    (4/3/02, Valdes)
+
+mscztvmark.cl
+    Needed to be updated for a change in the format of the uparm$mscdispN
+    file to include the WCS number.  This was not a problem when called
+    from msczero but was a problem when called from msctvmark.
+    (3/29/02, Valdes)
+
+../lib/mscred.dat
+    Removed the line "skyflat skyflat" in the default correction
+    flag translations.  (3/28/02, Valdes)
+
+ccdred/src/t_ccdlist.x
+    The skyflat correction keyword is "sflatcor" instead of "skyflat".
+    (3/28/02, Valdes/Conroy)
+
+ccdred/src/combine/t_combine.x
+    In cmb_images it now uses extension [1] instead of [0] to determine
+    if the file is mef and to get the header keywords which may not
+    be in a global header.  (3/28/02, Valdes/Conroy)
+
+sflatcombine.cl
+ccdred/sflatcombine.cl
+    Added "masktype" and "maskvalue" parameters to allow use of object
+    masks when making sky flats.  (3/15/02, Valdes)
+
+t_xtalkcor.x
+    Needed to add a copy step to create the single image output
+    for extension with no correction when using the split option.
+    (3/11/02, Valdes)
+
+rmfringe.cl
+../doc/rmfringe.hlp
+    There was a need for a fringe mask because the pupil pattern subtraction
+    affects the derived fringe pattern.  (3/7/02, Valdes)
+
+ccdred/src/combine/src/icombine.x
+    Added error checks for imunmap of the output files.  In the final
+    staage of closing the output if an error occurs, principally in
+    writing mask, this will at least allow the primary combined output
+    image to be written.  This is useful when an extremely large combining
+    operation is performed.  (3/6/02, Valdes)
+
+ccdred/src/combine/src/iclog.x
+ccdred/src/combine/src/icmask.x
+ccdred/src/combine/src/icstat.gx
+    Rather than open all the masks at the beginning the masks are now
+    opened and closed as needed.  For situations with offsets this
+    can reduce the amount of memory required for the masks.
+    (3/6/02, Valdes)
+
+xtmaskname.x
+    Added check for optional "masktype" environment variable with
+    a value of "pl" to force the pl files.  (3/1/02, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrtdisp.x
+mscdisplay/mscdisplay.par
+mscdisplay/mscrtdisplay.par
+    The maximum frame is now 16 by default but if the task detects
+    the WCS server is the old one and a frame is > 4 it aborts with
+    an error.  (2/27/02, Valdes)
+
+xtpmmap.x
+    If the bad pixel mask does not exist and the extension name is not
+    found no error was being reported.  (2/26/02, Valdes)
+
+t_pupilfit.x
+    There was a bug in the earlier fix.  (2/25/02, Valdes)
+
+ccdproc.cl
+    There was a typo "extlist" instead of "xtlist" when the crosstalk
+    operation was selected but when no crosstalk correction was applied,
+    either because of an error or because the operation was already done.
+    This caused various warning or fatal errors.  (2/21/02, Valdes)
+
+ccdred$src/combine/t_combine.x
+    An error is no printed if an @file for the scales, zeros, or weights
+    does not contain enough numeric values.  (2/19/02, Valdes)
+
+======================
+V4.7: January 31, 2002
+======================
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrtdisp.x
+    Call yt_pmmap instead of xt_pmmap to add extension name to mask name
+    if needed.  (2/9/02, Valdes)
+
+xtpmmap.x
+    If the specified name fails try adding the extension name of the reference
+    image to the mask name.  (2/9/02, Valdes)
+
+xtmaskname.x
+    Add "type=mask" only if the mode is not READ_ONLY.  (2/9/02, Valdes)
+
+ccdred/src/combine/src/
+    Update for IMCOMBINE changes to allow zero weight combining.
+    (2/9/02, Valdes)
+
+ccdred/src/combine/combine.par
+ccdred/src/combine/mergeamps.par
+ccdred/src/combine/src/iclog.x
+ccdred/src/combine/src/icmask.h
+ccdred/src/combine/src/icmask.x
+_combine.par
+mscstack.par
+    Imported IMCOMBINE changes to allow pixel masks in FITS format and
+    to allow the mask keyword to be specified.  The parameter changes
+    eliminate the enumerated strings.
+    (2/5/02, Valdes)
+
+../lib/mkpkg.inc
+../lib/mkpkg.sf.SSUN	+
+    The x_combine.e executable is now linked statically on Solaris.
+    (1/31/02, Valdes)
+
+ccdred/src/combine/src/icombine.x
+ccdred/src/combine/src/icomb.gx
+ccdred/src/combine/src/xtimmap.gx
+ccdred/src/combine/src/icombine.h
+    The buffer size management calculation based on the number of input
+    images was no longer working because unless IM_BUFFRAC is explicitly
+    set to 0, the requested buffer size is just a lower limit.  The buffer
+    size calculation was modified and calls to set IM_BUFFRAC to zero were
+    added.  (1/30/02, Valdes)
+
+ccdred/src/combine/src/xtimmap.gx
+ccdred/src/combine/src/icgdata.gx
+ccdred/src/combine/src/icomb.gx
+    The code to close unused images when they are not needed had an error
+    when there were y offsets.  Rather than closing each image when it not
+    longer contributed to an output line due to an offset, it was instead
+    closing all images on every line and then mapping them again.
+    (1/29/02, Valdes)
+
+t_pupilfit.x
+    Fixed bug in setting up points to fit.  (1/27/02, Valdes)
+
+mkpkg
+curfit/mkpkg
+imsurfit/mkpkg
+ccdred/src/mkpkg
+ccdred/src/generic/mkpkg
+mscdisplay/src/mkpkg
+mscdisplay/src/starfocus/mkpkg
+mscfinder/mkpkg
+mscfinder/cdrfits/mkpkg
+mscfinder/stdcoords.x -> stdcoords.xBAK
+mscdisplay/src/tile.x -> tile.xBAK
+mscdisplay/src/t_tile.x -> t_tile.xBAK
+mscdisplay/src/mittest.x -> mittest.xBAK
+    Check and fixed file dependencies.  Renamed .x files that are not
+    used.  (1/24/02, Valdes)
+
+rmfringe.cl	 +
+rmpupil.cl	 +
+doc/rmfringe.hlp +
+doc/rmpupil.hlp	 +
+../mscred.cl
+../mscred.men
+../mscred.hd
+    New non-interactive versions of the fringe and pupil removal tasks
+    based on the PATFIT tasks.  (1/22/02, Valdes)
+
+t_patfit.x	+
+mapio.x		+
+mim.x		+
+mgs.x		+
+patfit.par	+
+doc/patfit.hlp	+
+x_mscred.x
+mkpkg
+../mscred.cl
+../mscred.men
+../mscred.hd
+    New task PATFIT added.  This depends on a set of "map I/O" routines for
+    allowing reduced size images and constants as images.  (1/22/02, Valdes)
+
+rmfringe.cl -> irmfringe.cl
+rmpupil.cl -> irmpupil.cl
+../mscred.cl
+../mscred.men
+    Renamed the interactive fringe and pupil removal tasks.
+    (1/22/02, Valdes)
+
+t_pupilfit.x
+mscpupil.cl
+pupilfit.par
+mscpupil.par
+    Added new "mask" output type.  (1/14/02, Valdes)
+
+xtmaskname.x		+
+mkpkg
+    Added new procedure for making mask names in either pl or fits format.
+    This checks to see if the FITS kernel source code supports FITS format
+    so that the routine will work with versions before V2.12.
+    (1/14/02, Valdes)
+
+=======================
+V4.6: December 7, 2001
+=======================
+
+../lib/mkmsc/quad.dat	+
+../lib/mkmsc/fors.dat	+
+../lib/mkmsc/keck.dat	+
+    Sample description files for MKMSC.  (12/7/01, Valdes)
+
+t_mkmsc.x		+
+mkmsc.par		+
+../doc/mkmsc.hlp	+
+ccdsection.x		+
+x_mscred.x
+mkpkg
+../mscred.cl
+../mscred.hd
+../mscred.men
+    Added new task for converting multiamp/multiccd data in flat image format
+    to multiextension format suitable for use with MSCRED.  This is useful
+    for CTIO quad and ESO FORS data.  (12/7/01, Valdes)
+
+
+=======================
+V4.6: December 4, 2001
+=======================
+
+ccdred/src/combine/src/icscale.x
+    Fixed a bug with the normalization.  (12/4/01, Valdes)
+
+=======================
+V4.6: November 29, 2001
+=======================
+
+t_msccmatch.x
+    1.  The centering by msccntr now returns the centering uncertainties
+    	(xerr and yerr).  Uncertainties in radius (sqrt(xerr**2+yerr**2)
+	more than 0.1 pixel are excluded to eliminate coordinates not near an
+	object.
+    2.  If the number of centered coordinates is less than half the total
+        candidates then the task is considered to have failed to find the
+	offset.
+    3.  If more than half of the candidate in bounds search positions contain
+    	masked pixels then all the regions are used regardless of bad pixels.
+	This is to allow use of large coarse search boxes and bad pixel masks
+	in the fine centering.
+    4.  The vote array centroid weighting is now the number of votes above
+	the minimum, rather than the actual votes.  This is important
+	with large search boxes where a few outliers can significantly
+	affect the centroid.
+    5.	There was an error when not using a BPM.  If the the coarse search
+    	needed to be repeated because of being too close to the
+	search box edge new boxes were not read resulting in an infinite
+	loop.
+    6.  "ERROR: MSCCMATCH failed for <image>" is now printed upon a failure.
+    7.  The verbose output was extended to give both the number of failures
+    	and the total candidates for out of bounds, masked, and centered.
+    8.  The header keyword MSCCMATC is added when the WCS is updated.  The
+    	value is the time the shifts, scales, and rotations.
+    (11/29/01, Valdes)
+
+msccntr.cl
+    1.	Changed default cbox value to 11.
+    2.  Now returns xerr and yerr.
+    (11/29/01, Valdes)
+
+ccdproc.cl
+    Added new parameter "split" to select use of split images during
+    processing.  (11/29/01, Valdes)
+
+t_xtalkcor.x
+../doc/xtalkcor.hlp
+ccdproc.cl
+calproc.cl
+    Added new parameter "split" to allow output to separate images.
+    This saves time in building the final MEF file.  CCDPROC and CALPROC
+    were just modified to set split=no in the call to XTALKCOR.
+    (9/13/01, Valdes)
+
+==================================
+V4.6: September 5, 2001 (internal)
+==================================
+
+mscdisplay/src/mosmap.x
+    If there is no DETSEC but there is a WCS the DETSEC is computed from
+    the WCS.  (9/5/01, Valdes)
+
+../mscred/mscred.cl
+ccdred/x_ccdred.x
+ccdred/mkpkg
+ccdred/src/mkpkg
+ccdred/src/combine
+ccdred/src/generic/mkpkg
+ccdred/src/combine:
+ccdred/src/combine/x_combine.x
+ccdred/src/combine/combine.par
+ccdred/src/combine/mergeamps.par
+ccdred/src/combine/icmefscale.x
+ccdred/src/combine/icombine.x
+ccdred/src/combine/mkpkg	+
+ccdred/src/combine/t_combine.x
+ccdred/src/combine/src	+
+    1. CCDRED executable divided into one for COMBINE and one for the rest.
+    2. COMBINE source moved to new directory.
+    3. COMBINE revised to use a common src directory with IMCOMBINE.
+    (8/29/01, Valdes)
+
+================================
+V4.5: August 16, 2001 (internal)
+================================
+
+mscdisplay/mkpkg
+mscdisplay/imdwcsver.x
+src/t_mscdisplay.x
+src/t_mscrtdisp.x
+src/mosmap.x
+src/moscoords.x		+
+src/mkpkg
+src/imexam/iegcur.x
+src/starfocus/t_starfocus.x
+msczero.cl
+    Changes to support multiple WCS mappings in the display server.
+    The mkpkg checks if pkg$images/tv/display/imdwcsver.x exists and
+    if it doesn't it uses dummy routines.  (8/16/01, Valdes)
+
+../doc/installation.hlp
+    Modified to handle case where the user builds the executables.
+    (8/3/01, Valdes)
+
+t_jlists.x
+    imtopen called with an extra argument.  (7/17/01, Valdes)
+
+t_xtalkcor.x
+    strcopy missing len argument. (7/17/01, Valdes)
+
+../mscred.hd
+../doc/ccdlist.hlp
+    Added new help page. (7/3/01, Valdes)
+
+ccdred/src/xtprocid.x
+    gpatmatch called as subroutine but should be an int function.
+    (7/17/01, Valdes)
+
+ccdred/src/readcor.x
+ccdred/src/scancor.x
+    Incorrect arguments for set_output.  Since these routines are not used
+    for mosaic data replace with an error statement for now.  (7/17/01, Valdes)
+
+ccdred/src/setsaturate.x
+    Replace pargr with pargi when used with SATGROW.  (7/17/01, Valdes)
+
+ccdred/src/proc.gx
+ccdred/src/t_bleed.x
+    Calls to bld_open were wrong.  (7/17/01, Valdes)
+
+../doc/ccdlist.hlp	+
+../mscred.hd
+    Added a help page for CCDLIST.  (7/3/01, Valdes)
+
+==============================
+V4.5: June 16, 2001 (internal)
+==============================
+
+ichdr.x
+    The input procids and image names are only written to the output if
+    there are less than 99 input images.  (6/16/01, Valdes)
+
+ccdred/src/xtimmap.x	+
+ccdred/src/icgdata.gx
+ccdred/src/icombine.gx
+ccdred/src/icscale.x
+ccdred/src/t_combine.x
+ccdred/src/mkpkg
+    Modified to use xtimmap to control the large number of images.
+    (6/16/01)
+
+ccdred/src/ccdtypes.x
+    The ccdstr procedure that encodes the CCD type did not have a case
+    for a sky flat.  This means that the processing types output for
+    use with calproc in mosaic data would not identify sky flats needing
+    processing as sky flats leading to the possiblity of trying to
+    apply a sky flat to the sky flat with the resulting error that
+    the input is the same as calibration.  (6/11/01, Valdes)
+
+ccdproc.cl
+calproc.cl
+    If no output bad pixel mask then there will be no output merged mask.
+    (5/25/01, Valdes)
+
+=================
+V4.5: May 4, 2001
+=================
+
+t_msctmplt.x
+    The combining of wterm and lterm was potentially incorrect because
+    of the way in-place operations were done.  (4/27/01, Valdes)
+
+mscdisplay/src/mosmap.x
+    The calculation of the binning factor when there is no header
+    information did not take the size of the bias section, which does
+    no bin, into account.  (3/27/01, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+    There was an nint error in computing wipix limits in mos_params
+    resulting in trimming one extra column in the display.
+    (3/22/01, Valdes)
+
+ccdred/src/icscale.x
+    An error in normalizing the scales and means was fixed.
+    (3/20/01, Valdes)
+
+ccdproc.cl
+calproc.cl
+    Modified to handle merging of the masks.
+    (3/15/01, Valdes)
+
+t_combine.x
+mergeamps.par
+    The T_AMPMERGE procedure was revised to call a new routine, MASKMERGE,
+    to merge pixel masks using physical coordinate registration.  A mask is
+    produced if there is more than one mask from the set of the mask
+    produced during combining and unique input masks.  Empty masks are
+    ignored.  If there is no mask data or all are the same then the BPM
+    keyword is unset or set to the common mask.  When there is more than
+    one mask an output mask is the computed as the  maximum value from all
+    the masks.  The output mask name is specified by the new "outmasks"
+    parameter.  Currently this is a directory where entries bpmm_<extname>.pl
+    are created.
+    (3/15/01, Valdes)
+
+t_msccmatch.x
+msccntr.cl	+
+../mscred.cl
+    1.	The centroiding step was changed to use the new script task MSCCNTR.
+	This script fixes all the parameters so there is no need for
+	MSCCPARS and MSCDPARS.  It calls TXDUMP to extract the fields
+	to avoid problems with parsing the database format in MSCCMATCH.
+    2.  The centering box size is now fixed at 5 pixels instead of something
+	based on the "maxshift" parameter.
+    3.  The various keywords for exposure time, gain, etc. are now not used.
+    (3/14/01, Valdes)
+
+t_msccmatch.x
+    Converted from using imextensions to mscextensions to allow use of
+    this task with single images.  Also added an error check for no
+    input images to avoid a potential divide by zero.
+    (3/13/01, Valdes)
+
+ccdproc.cl
+calproc.cl
+_ccdtool.par
+    Updated for new bleed trail parameters.  (3/13/01, Valdes)
+
+ccdred/src/bleed.x		+
+ccdred/src/bleed.com		+
+ccdred/src/t_bleed.x		+
+ccdred/src/setinmask.x		+
+ccdred/src/setsaturate.x	+
+ccdred/src/proc.gx
+ccdred/src/setproc.x
+ccdred/src/setheader.x
+ccdred/src/ccdproc.x
+ccdred/src/ccdcheck.x
+ccdred/src/setoutput.x
+ccdred/src/setbpmask.x
+ccdred/src/setfixpix.x
+ccdred/src/t_ccdproc.x
+ccdred/src/ccdred.h
+ccdred/src/mkpkg
+ccdred/ccdproc.par
+    1.	New parameters "sgrow", "bleed", "btrail", and "bgrow".
+    2.  New algorithm to find and grow saturated pixels and bleed trails.
+    3.  Saturated and bleed pixels may be added to an output mask.
+    4.  Saturated and bleed pixel may be "fixed" in the data.
+    5.	If no input bad pixel mask is given it is treated as an empty mask.
+    (3/13/01, Valdes)
+
+calimage.x
+    The input bad pixel mask is not required to match by amplifier
+    and CCD when it is specified by a header keyword.  (3/13/01, Valdes)
+
+===================
+V4.4: March 6, 2001
+===================
+
+ccdred/src/setheader.x
+    The check on a flip between target and calibration is not done.
+    (3/6/01, Valdes)
+
+msczero.cl
+mscztvmark.cl
+    Changes to make these tasks work with CFH12K headers where there is
+    no TRIMSEC and DATASEC is flipped.  (3/5/01, Valdes)
+
+ccdred/src/t_combine.x
+    The rejection masks now have the WCS updated for the extra dimension.
+    Also the MASKiiii keywords are not needed since the IMCMB keywords
+    will identify the input images.  (3/1/00, Valdes)
+
+ccdred/src/icsetout.x
+    Modified to reset physical coordinates.  (2/28/00, Valdes)
+
+t_msctmplt.x
+    Fixed bug where the RA/DEC were not updated when a reference image is
+    used to set the other parameters.
+    (2/28/01, Valdes)
+
+mscimage.cl
+    Increased the precision of the RA/DEC output and changed the GEOMAP
+    function from polynomial to chebyshev.
+    (2/28/01, Valdes)
+
+ccdred/coutput.par
+    There was a misformating problem in this parameter file.
+    (2/27/01, Valdes)
+
+=======================
+V4.3: February 23, 2001
+For the Feb 23 export version mscimage was restored to the old version.
+=======================
+
+mscimage.cl
+mscimage.par
+    1.	The defaults nxblock and nyblock is INDEF and then they are set to
+	the output image size in GEOTRAN.
+    2.	Minor changes if pixmask=no.
+    (2/22/01, Valdes)
+
+t_imstat.x
+    Replaced using MIO with lower pixel mask I/O for efficiency and to
+    workaround a problem with image sections.
+    (2/21/01, Valdes)
+
+mscimage.cl
+mscimage.par
+mscoimage.cl		+
+mscoimage.par		+
+../mscred.cl
+    Old version of mscimage renamed to mscoimage.
+    New version installed as mscimage.
+    (2/20/01, Valdes)
+
+t_msctmplt.x
+mscwtemplate.par	+
+x_mscred.x
+../mscred.cl
+    Added new hidden task mscwtemplate.  (2/16/01, Valdes)
+
+t_imstat.x
+    An error in initializing the region vectors during the histogram
+    step was fixed.  (2/12/01, Valdes)
+
+rmfringe.cl
+    The default extname pattern was wrong.  Change to "" to selected all
+    extensions.  (2/10/01, Valdes)
+
+mscmedian.cl
+mscmedian.par
+msctmp1.cl
+msctmp1.par
+../mscred.cl
+../mscred.men
+    Added new task MSCMEDIAN.  (2/10/01, Valdes)
+
+t_jlists.x
+joinlists.par
+mkpkg
+x_mscred.x
+../mscred.cl
+    Added new hidden task JOINLISTS.  (2/10/01, Valdes)
+
+ccdred/src/t_combine.x
+    There was no error checking when opening files in cmb_images.
+    (2/9/01, Valdes)
+
+======================
+V4.3: February 8, 2001
+======================
+
+ccdproc.cl
+calproc.cl
+    When merge=yes and no merging is needed and if a previous image was
+    already processed the previously processed image will be clobbered.
+    (2/8/01, Valdes)
+
+mscfinder/t_tpeak.x
+mscfinder/msctpeak.cl
+    The display fill option was being set in msctpeak by updating the user's
+    default parameters.  Now when TPEAK issues the display command it
+    sets the fill parameter on the command line leaving the user's default
+    parameter unchanged.  TPEAK has a new parameter, fill, to control
+    this and MSCTPEAK does not touch it to allow possible control of the
+    fill option in this hidden task though I can't think of why the fill
+    option would not be used.  (2/8/01, Valdes)
+
+setsections.x
+    There was still error in calculating the size of the sections when
+    comparing CCDSEC between the input and the calibration in the case
+    of flipping and binning.  (1/30/01, Valdes)
+
+mscsetwcs.cl
+    Added the translit step to eliminate quotes when getting the RA and
+    DEC and the keyword values have whitespace.  (2/5/01, Valdes)
+
+ccdred/src/setheader.x
+    CCDPROC now calls xt_procid to create or update the PROCID keyword.
+    (2/5/01, Valdes)
+
+mscstack.cl
+mscstack.par
+    The new optional combine outputs are available through the new parameters
+    "headers", "bpmasks", "rejmasks", "nrejmasks", "expmasks", "sigmas".
+    (2/5/01, Valdes)
+
+ccdred/darkcombine.cl
+ccdred/flatcombine.cl
+ccdred/sflatcombine.cl
+ccdred/zerocombine.cl
+sflatcombine.cl
+calproc.cl
+ccdproc.cl
+    Updated to explicitly pass null strings for the new optional
+    combine/mergeamps output.
+    (2/5/01, Valdes)
+
+ccdred/src/t_combine.x
+ccdred/src/icombine.gx
+ccdred/src/icscale.x
+ccdred/src/iclog.x
+ccdred/src/icemask.x	+
+ccdred/src/ichdr.x	+
+ccdred/src/xtprocid.x	+
+ccdred/src/mkpkg
+ccdred/combine.par
+ccdred/coutput.par
+ccdred/mergeamps.par
+_combine.par
+    1.  New output parameters added: "headers", "bpmasks", "rejmasks",
+	"nrejmasks", "expmasks", "sigmas".
+    2.  Old output parameters removed: "plfile", "rejmask", "sigma".
+    3.  Dataless extensions of the input headers are recorded in the
+	optional output FITS MEF files specified by the "headers" parameter.
+    4.  Bad pixel masks with 0 for data and 1 for no data are recorded in
+	the optional output masks specified by the "bpmasks" parameter.
+	The output header contains the keyword BPM pointing to the mask.
+    5.  Masks with the number of pixels rejected are now specified by
+	the parameter "nrejmasks" instead of "plfile".
+    6.	Exposure masks, which are the sum of the exposure times of the
+	data combined, are recorded in the optional output masks specified
+	by "expmasks".
+    7.  The input data is scaled to the first input image and the output
+	header is a copy of the first input image.
+    8.  The exposure time and dark time keywords are no longer modified
+	from the input times.  The output will just contain a copy of
+	the times from the first input image header.
+    9.  The keyword NCOMBINE, PROCID, PROCIDnn, and IMCMBnnn are added
+	modified or added to the output.
+    10.	The log output includes the names the extra output files if specified.
+    (2/5/01, Valdes)
+
+
+ccdred/src/icgrow.gx
+    Added a step to periodically compress the masks.  (2/2/01, Valdes)
+
+xtpmmap.x
+    Updated to allow '^' to be used to invert a mask.  (2/1/01, Valdes)
+
+mscfindgain.cl
+    The script did not actually pass on the mask to ximstat.  (2/1/01, Valdes)
+
+t_imstat.x
+    Fixed a couple of bugs.  (2/1/01, Valdes)
+
+======================
+V4.2: January 30, 2001
+======================
+
+setsections.x
+    There was an error in calculating the size of the sections when comparing
+    CCDSEC between the input and the calibration.  (1/30/01, Valdes)
+
+ccdred/src/ccdred.h
+    Increased length of log strings to 199.  This is to avoid String_File
+    errors when the filenames are too long.  (1/16/01, Valdes)
+
+ccdred/src/proc.gx
+    Since pixel mask values of 2 and 3 are used for defining interpolation
+    directions the saturated pixels are now identified by the value 4.
+    Also, previously bad pixels were converted to the value 1 now the
+    input bad pixels are not changed.  (1/10/01, Valdes)
+
+t_xtcoeff.x
+    Now deals with relative amplifier flips.  (1/9/01, Valdes)
+
+../mscred.cl
+../mscred.men
+    XTALKCOR is no longer a hidden task.  (1/9/01, Valdes)
+
+=============================================
+V4.1: January 6, 2001 : MDHS internal release
+=============================================
+
+ccdproc.cl
+calproc.cl
+    Made merge=yes the default.  With the change to MERGEAMPS to check
+    when there are not multiple amps to merge this is a safe default.
+    (1/5/01, Valdes)
+
+t_combine.x
+    Added check for just a single image to combine.  This is used by
+    MERGEAMPS to avoid merging when not necessary.  (1/5/01, Valdes)
+
+t_xtalkcor.x	+
+xtalk.gx	+
+xtalkcor.par	+
+doc/xtalkcor.hlp
+x_mscred.x
+mkpkg
+../mscred.cl
+    New version of crosstalk correction which supports multiple source
+    amplifiers affecting a target amplifier.  This is a compiled task
+    which is optimized for this operation.  (1/5/01, Valdes)
+
+ccdred/src/ccdamps.x
+    When getting the amp or ccdname logical keywords try imageid followed
+    by extname if no value is found.  (12/28/00, Valdes)
+
+ccdproc.cl
+    The default saturation was not quoted so it appears as a null string
+    instead of INDEF.  (12/20/00, Valdes)
+
+ccdproc.cl
+    If the bpmask directory name matches the input name, for example
+    obj092, then when the final imrename is called the temporary file ends
+    up in the bpmask directory.  This has been fixed by detecting this case
+    and appending _bpm to the bpmask directory name.
+    (12/15/00, Valdes)
+
+========================
+V4.1: December 14, 2000
+========================
+
+ccdproc.cl
+_ccdtool.par
+ccdred/ccdproc.cl
+ccdred/src/setbpmask.x
+    The parameter syntax for the saturation parameter is now two words.
+    If the first word is a number that is the saturation value otherwise
+    it is a keyword (either with or without a leading !).  The second
+    word is either ADUs or electrons.  If it is missing then it defaults
+    to ADUs.  (12/14/00, Valdes)
+
+msczero.cl
+mscztvmark.cl
+    More work to support flips and trims.  (12/14/00, Valdes)
+
+========================
+V4.1: December 13, 2000
+========================
+
+msctest		-
+    Removed this internal development test directory.
+    (12/30/00, Valdes)
+
+ccdproc.cl
+calproc.cl
+    Added a flpr after ccdtool to workaround a memory leak with masks.
+    This can be removed with the next release of IRAF.
+    (12/30/00, Valdes)
+
+ccdred/src/setfixpix.x
+ccdred/src/setproc.x
+ccdred/src/calimage.x
+    Modified to use yt_pmunmap instead of imunmap in order to free the
+    pl pointer.  (12/13/00, Valdes)
+
+xtpmmap.x
+    A version that contains yt_pmunmap for use until the next release
+    of IRAF xtools includes xt_pmunmap.
+    (12/13/00, Valdes)
+
+========================
+V4.1: December 7, 2000
+========================
+
+mscfinder$msctpeak.cl
+    The parsing of the reference point from the RA/DEC keywords would fail
+    if there were blanks in the string representation of the sexigesimal
+    values.  This results in an error about coercing `' to string.
+    This has now been fixed.
+    (12/7/00, Valdes)
+
+ccdproc.cl
+calproc.cl
+    The proper handling of the CCDMEAN/CCDMEANT keywords was not being done.
+    Now the CCDMEAN/CCDMEANT keywords are deleted from all the extensions
+    and the average of the CCDMEAN keywords is written to the global header.
+    (12/7/00, Valdes)
+
+========================
+V4.1: December 5, 2000
+========================
+
+mscfindgain.cl
+    Modified to use XIMSTAT, thus allowing use of masks and sigma clipping.
+    The script no longer calls nproto.findgain but includes all the code
+    itself.  The output format was improved.
+    (12/5/00, Valdes)
+
+t_imstat.x
+ximstat.par
+x_mscred.x
+../mscred.cl
+    A version of IMSTAT, called XIMSTAT, that supports masks and
+    sigma clipping was added as a hidden task.
+    (12/5/00, Valdes)
+
+mosmap.x
+    When there is binning and flips the step size was computed wrong
+    because of a max statement that assumed the step size is positive.
+    (12/5/00, Valdes)
+
+msczero.cl
+    Added support for flipped extensions when creating the WCS dummy
+    image.  The task will still fail if there is a TRIMSEC for
+    flipped extensions.  (11/20/00, Valdes)
+
+mscimage.cl
+    Added a missing return in a warning statement.  (11/6/00, Valdes)
+
+========================
+V4.1: October 2, 2000
+========================
+
+calproc.cl
+    A default value for bpmasks was not set in the call to _ccdtool.
+    (9/30/00, Valdes)
+
+t_msccmatch.x
+    When collecting the brightest objects for the coarse search the
+    regions going off an edge were excluded but not replaced with the
+    next fainter object.  For large search size this meant that
+    significantly few object than the specified would be used resulting
+    in a greater likelihood of failure.  The algorithm now uses
+    the specified number that pass all the checks.
+    (9/27/00, Valdes)
+
+t_msccmatch.x
+    If an error occurs in getting the coordinates an sfree is called
+    without an smark.  The smark was moved to before the possible error
+    condition.  (9/27/00, Valdes)
+
+../lib/strip
+    Added a strip file.  (9/26/00, Valdes)
+
+t_imext.x
+    Added logic to recognize an input specifications which has an explict
+    extension as a single image.  Previously an infinite loop would
+    result.  (9/26/00, Valdes)
+
+ccdproc/src/t_combine.x
+    Modified the conversion of pclip from a fraction to a number of images
+    because for even number of images the number above/below the median
+    is one too small.  (9/26/00, Valdes)
+
+mscztvmark.cl
+    There is a commented out section for rotating the coordinates which
+    is useful for debugging.  (9/21/00, Valdes)
+
+mscjoin.cl
+    The warning when <root>_0 or <root>_1 are not accessible was made
+    more explicit.  (9/20/00, Valdes)
+
+========================
+V4.1: September 20, 2000
+========================
+
+mscfinder/tpltsol.cl
+    1.  If the number of sources is less than 3 a message is printed.
+    2.  If the number of sources is less than 6 an rxyscale solution is done.
+    3.  The solution name is now set if extname is not present.
+    (9/20/00, Valdes)
+
+mscfinder/msctpeak.cl
+    Added "No images found" message.  (9/20/00, Valdes)
+
+mscsetwcs.cl
+    Changed to use mscextensions instead of imextensions.  (9/18/00, Valdes)
+
+========================
+V4.1: September 15, 2000
+========================
+
+t_imext.x
+    Added a special check for the extname pattern "*" which was going into
+    an infinite loop.  The pattern "*" by itself is considered to
+    match all extensions names including no extension name.
+    (9/15/00, Valdes)
+
+mscfinder/msctpeak.cl
+mscfinder/tvmark_.par
+mscfinder/t_tpeak.x
+    1.  An fseti call to CLIN was necessary to avoid an error when returning
+	from the plate solution step if the user does '?'.
+    2.  The dictionary string for the ":epar" command was truncated for
+	some reason.
+    3.  msctpeak.cl was changed to not always set the default marking radius.
+	Instead the default is set in tvmark_.par.
+    (9/15/00, Valdes)
+
+ccdred/src/t_combine.x
+ccdred/src/icimstack.x
+    Error handling when running out of memory with immap (due to a very
+    large min_lenuserarea) and when trying to stack was fixed up to
+    report reasonable error messages and to not go into an infinite loop
+    trying to manage memory.  (9/13/00, Valdes)
+
+ccdred/src/iccombine.gx
+ccdred/src/icgdata.gx
+    Additional errchk declarations were needed to catch out of memory
+    during image reading which were not caught during the initial
+    pass at reading the images.  (9/11/00, Valdes)
+
+t_msccmatch.x
+    The DEGTORAD macro in a min statement caused a mismatched types error
+    on the Alpha.  Explict type casts were added.  (9/11/00, Valdes)
+
+../mscred.men
+    MSCSETWCS was not included in the list of tasks.  (9/11/00, Valdes)
+
+mscpupil.cl
+    If the input file does not exist there is now an error message rather
+    than an obsure error about accessing undefined local variable.
+    (9/8/00, Valdes)
+
+====
+V4.1
+====
+
+ccdproc.cl
+calproc.cl
+    Changed the error behavior back to the original abort in ccdtool;
+    i.e. onerror="exit" changed to onerror="original".  (9/7/00, Valdes)
+
+mscimage.hlp
+    Help page updated.  (9/6/00, Valdes)
+
+mscimage.cl
+    Changed to use mscextensions instead of imextensions so that it would
+    work with single images.  (9/6/00, Valdes)
+
+msczero.cl
+    The when 'x' or other keys that mark positions on the display were used
+    it would print the label "1" (the line number in the input list) for all
+    sources even though no label is defined.  This was fixed to check if a
+    there is actually a label.  (9/6/00, Valdes)
+
+mscfinder/msctpeak.cl
+    1.  Changed to use mscextensions instead of imextensions so that it would
+	work with single images.
+    2.  The extname parameter was not initialized to "".
+    (9/6/00, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+    Fixed an off-by-one error in WCS sent to the display when the display
+    buffer is smaller than the image.  This is the same error fixed
+    in tv$display/t_display.x.  (9/5/00, Valdes)
+
+msczero.cl
+    Added a cbox parameter to set the centering box size.
+    (9/5/00, Valdes)
+
+mscdisplay/src/imexam/t_imexam.x
+mscdisplay/src/imexam/timexam.x	+
+mscdisplay/src/imexam/iecolon.x
+mscdisplay/src/imexam/mkpkg
+mscdisplay/mscexamine.par
+lib/scr/imexamine.key
+    Added new key 't' to ouput an image section centered on the cursor.
+    (9/2/00, Valdes)
+
+t_combine.x
+    If an error occurs in mapping an image at an early stage it was possible
+    to get into an infinite loop.  (9/1/00, Valdes)
+
+t_combine.x
+    When there is an error with an MEF image then the error recovery to
+    delete the image would fail since you can't delete an extension.
+    Added a higher level step in mefcombine to delete the output in
+    the case of an error (8/30/00, Valdes)
+
+mscimage.cl
+mscimage.par
+    1.  The ntrim parameter was changed to apply the trim to the input
+	rather than the output.  This has the
+	effect of masking the specified number of edge pixels in the output
+	mask even with rotations.
+    2.  The boundary extension was added as parameters "boundary" and
+	"constant".  The default was changed from constant with value
+	blank to reflect.
+    (8/29/00, Valdes)
+
+t_msccmatch.x
+t_mscimatch.x
+t_mscwcs.x
+ccdred/src/ccdcheck.x
+ccdred/src/readcor.x
+ccdred/src/scancor.x
+ccdred/src/setfixpix.x
+    Various minor changes and typo fixes found with spplint.
+    (8/23/00, Valdes)
+
+mscjoin.cl
+    To work around a problem with V2.11.3p1 the primary header is now
+    referenced with [0].  (8/22/00, Valdes)
+
+====
+V4.0
+====
+
+xtalkcor.cl
+    If the crosstalk coefficient file has two extensions but no coefficients
+    it behaves in the same way as with just one extension; i.e. no
+    correction to the victim.  Also if the coefficients are zero it
+    only copies the victim.  (8/22/00, Valdes)
+
+t_msccmatch.x
+    The output coordinates now exclude those which failed to center.
+    Also the coarse search is only done if nsearch>0 and search>0.
+    (8/21/00, Valdes)
+
+../mscred.cl
+    1. Hide dispsnap.
+    2. Hide mscpipeline.
+    3. Hide mscqphot.
+    4. Hide pixarea.
+    4. Hide msctoshort.
+    (8/21/00, Valdes)
+
+ccdred/src/imcombine/t_combine.x
+ccdred/src/imcombine/icimstack.x
+ccdred/src/imcombine/iclog.x
+    When there are a large number of images with bad pixel masks both the
+    input images and the bad pixel masks are stacked for combining.  The
+    addition of stacking the masks allows for independent bad pixel masks
+    for each input image which was not supported previously.
+    (6/21/00, Valdes, 8/21/00 Valdes)
+
+xtcoeff.x		+
+xtcoeff.par		+
+../doc/xtcoeff.hlp	+
+mkpkg
+../mscred.cl
+../mscred.men
+../mscred.hd
+../lib/xtcoeff/		+
+    Added new task to compute crosstalk coefficients.
+    (8/18/00, Valdes)
+
+mscrfits.cl
+mscwfits.cl
+    The call to fitscopy was changed to mscred.fitscopy to avoid a conflict
+    if the ttools or fitsion packages are loaded.  (8/15/00, Valdes)
+
+t_getcatalog.x
+    The idea that the field center is given by the tangent point is not
+    good for resampled images where the target WCS is well off the
+    individual exposure.  The task was modified to compute the midpoint
+    of the extreme corners in arcsec from the tangent point and then use
+    that for the field center and the computation of the radius enclosing
+    the image(s).  (8/15/00, Valdes)
+
+mscfindgain.cl
+../mscred.cl
+    New task for finding the gain and readnoise from mosaic exposures.  This
+    uses nproto.findgain.  (8/14/00, Valdes)
+
+ccdred/src/imcombine/t_combine.x
+ccdred/src/imcombine/icscale.x
+    For MEF data there was no error check on the statistics calculation.
+    If a bad pixel mask (or thresholds) excluded all the pixels in the
+    section then a segmentation error would result rather than an error
+    message.  An errchk was added.  Also the scaling computation was moved
+    to before the output header is created to avoid an image being left
+    behind in case of an error.  (7/31/00, Valdes)
+
+t_pupilfit.x
+    The lmedian option divides the image by the line medians.  The
+    missing step was to mulitply back by the mean.
+    (7/14/00, Valdes)
+
+t_mscwcs.x
+    The routine to adjust the WCS by refitting after applying a low order
+    correction (shift, rotation, scale) would shift the pixel position of
+    the tangent point to keep the old coordinate reference point the same.
+    This was changed to make the coordinate reference point be that after
+    applying the low order correction.  This has the effect of making the
+    pixel position of the tangent point be nearly unchanged (it does
+    change a small amount because of the degree of freedom in the
+    ccmap fitting).  Without this change the tangent point would move
+    hundreds of pixels (depending on the zero point error) which affected
+    the pupil fitting center, while with the change the tangent point moves
+    only a few to 10 pixels (for the NOAO Mosaic I WCS and zero point
+    shifts of order 30 arc seconds).  (7/7/00, Valdes)
+
+mscarith.cl
+    With "noact = yes" the output list was not generated and then the
+    error about wrong number of elements in the operand lists would
+    occur.  (6/13/00, Valdes)
+
+mscdisplay/src/mosmap.x
+    Added a minimum value for DX/DY.  This would produce 0 in cases
+    where the header keywords were wrong leading to a floating divide
+    by zero error.  (5/10/00, Valdes)
+
+mscztvmark.cl
+    Added a check for scanning the right number of columns.
+    (5/10/00, Valdes)
+
+t_msccmatch.x
+msccmatch.par
+    The coordinate file can now be specified as a command to generate
+    the file.  (4/27/00, Valdes)
+
+msczero.cl
+mscztvmark.cl
+    Fixed problems with working with untrimmed exposures.
+    (4/27/00, Valdes)
+
+t_pupilfit.x
+pupilfit.par
+mscpupil.cl
+mscpupil.par
+    1.	Added lmedian parameter to allow taking a median of each line
+	prior to fitting the pupil.
+    2.	Changed default 'sorder' parameter.
+    3.  Added 'sorder' fixed to a value of 1 in the calls to pupilfit
+	in mscpupil.
+    4.  Made some minor changes to pupilfit.
+    (4/27/00, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrdisp.x
+	The title was being sent to the display server with a newline
+	which causes readback of the WCS to fail.  The newline was
+	removed.  (4/27/00, Valdes)
+
+mscsetwcs.cl
+    The WCSSOL keyword is now deleted if needed.  (4/19/00, Valdes)
+
+ccsetwcs.x
+    The replacement of the tangent point from the image into the database
+    solution was not working.  So the WCSSOL coordinate system would always
+    be that of the database rather than the image.  (4/19/00, Valdes)
+
+msczero.cl
+msczero.key
+    1.  Added "updcoord" and "mark" parameters.
+    2.  Renamed "mark" parameter to "mtype".
+    3.  Added keys 'e' and 'i' to MSCZERO.
+    4.  Reorganize script.
+    5.  Added marking on display with using various keys.
+    (4/10/00, Valdes)
+
+mscztvmark.cl
+    Added a column to the returned file with the line number from the
+    original coordinate file.
+    (4/10/00, Valdes)
+
+t_imext.x
+    An "extname" pattern that is only whitespace matches all extensions.
+    (4/6/00, Valdes)
+
+msczero.cl
+msczero.key
+    1.	Added MSCTVMARK parameters.
+    2.  Added 's' key.
+    3.  Added "id" query parameter.
+    4.  Now uses a temporary WCS image so that new coordinates and marking
+	will use the current zero point.
+    5.  Added 'u' key to access the USNO catalog with MSCGETCATALOG.  A
+	magnitude query parameter "mag" was added to limit the magnitudes.
+    (3/31/00, Valdes)
+
+t_getcatalog.x
+getcatalog.par
+mscgetcatalog.cl
+    Added "magmin" and "magmax" parameters.
+    (3/31/00, Valdes)
+
+msctvmark.cl
+    This simply calls MSCZTVMARK with the mosaic geometry file created
+    by MSCDISPLAY.
+    1.  Added a "fields" parameter to allow selecting the fields which
+	have the RA, DEC, and ID values.
+    2.	Added "output" parameter to allow saving the file used by TVMARK.
+	This also includes the mosaic display pixel coordinates.
+	The output file consists of x, y, id, ra, dec.
+    (3/31/00, Valdes)
+
+mscztvmark.cl
+../mscred.cl
+    This is what used to be MSCTVMARK.
+    1.  Added a "fields" parameter to allow selecting the fields which
+	have the RA, DEC, and ID values.
+    2.	Added "output" parameter to allow saving the file used by TVMARK.
+	This also includes the mosaic display pixel coordinates.
+	The output file consists of x, y, id, ra, dec.
+    3.  Added "mscdisp" parameter which is the mosaic geometry file created
+	either by MSCDISPLAY or MSCZERO.
+    (3/31/00, Valdes)
+
+t_msccmatch.x
+msccmatch.par
+    The "reject" parameter from CCMAP was added as a user parameter.
+    (3/3/00, Valdes)
+
+t_msctmplt.x
+    Added special case for ZPX.  (3/2/00, Valdes)
+
+mscwcs.x
+    The astrometry coordinate system is now always "tan" projection
+    regardless of the input projection.  (3/2/00, Valdes)
+
+t_getcatalog.x
+getcatalog.par
+mscgetcatalog.par
+    Added another catalog, the USNO catalog at CADC.
+    (3/2/00, Valdes)
+
+calproc.cl
+ccdproc.cl
+mscarith.cl
+msccmd.cl
+    Put explicit verbose- in imrename calls.  (2/17/00, Valdes)
+
+../mscred.cl
+    Commented out the immatchx loading.  (2/15/00, Valdes)
+
+t_fitscopy.x
+    The error checking of awaitb was not being done correctly.
+    (2/9/00, Valdes)
+
+mscsplit.cl
+    Minor change to allow extname to be undefined.  (1/26/00, Valdes)
+
+mscdisplay/src/starfocus/rngranges.
+    Modified to fix a repeat with no exit.  (1/24/00, Valdes)
+
+ccdred/src/icsetout.x
+    Fixed error with MWCS dimension mismatch when using offsets on
+    input images which have been dimensionally reduced.  (1/12/00, Valdes)
+
+../mscred.cl
+    Added mscstatus variable.
+    (12/20/99, Valdes)
+
+t_msccmatch.x
+msccmatch.par
+    Added parameters to control listing of coordinates, graphics, and
+    cursor input.  If interactive fit is enabled then either interactive
+    has to be enabled or a cursor input file has to be given.
+    (12/20/99, Valdes)
+
+cccdred/src/calimage.x
+    Will now print error message from xt_pmmap to explain why a bad
+    pixel mask was not found.  (12/17/99, Valdes)
+
+rmpupil.cl
+    1.  The automatic scaling now uses abin=360. in pupilfit to avoid problems
+	with wild edge values.
+    2.  The default if the automatic scaling is undefined or negative is
+	set to 1 for difference and 0.0001 for ratio.
+    (12/16/99, Valdes)
+
+t_pupilfit.x
+    Did more to insure a reasonable number of points in each radial
+    fit.  (12/16/99, Valdes)
+
+t_fitscopy.x
+    The filename root procedure was being called on the header filenames
+    which already have the image extension root removed.  This means that
+    names with '.' other than in the image extension will be stripped
+    during reading.  (12/16/99, Valdes)
+
+t_mscrtdisp.x
+    Added change for displaying with no interpolation.  (12/14/99, Valdes)
+
+ccdred/src/icmm.gx
+    This routine was not returning a sorted list for use with growing.
+    (12/7/99, Valdes)
+
+setsections.x
+    There was an error in calculating the size of the sections when comparing
+    CCDSEC between the input and the calibration.  (12/3/99, Valdes)
+
+t_msctmplt.x
+    Fixed bug introduced when converting to using astrometry coordinates.
+    (12/2/99, Valdes)
+
+rmpupil.cl
+rmfringe.cl
+    Modified to default to all extensions if the extension name list is
+    not understood.  (11/22/99, Valdes)
+
+rmpupil.cl
+    Modified to do block averaging even in non-interactive mode to make
+    the fit go faster.  (11/22/99, Valdes)
+
+t_pupilfit.x
+    There were some conditions where the number of points to fit would
+    be negative leading to a salloc underflow error.  Modified code to
+    handling this situation.  (11/22/99, Valdes)
+
+t_msccmatch.x
+msccmatch.par
+    Made additions to search for a rotation as well as shift.
+    (11/22/99, Valdes)
+
+t_msccmatch.x
+    If interactive then don't use the rms test and let the user decide.
+    (11/20/99, Valdes)
+
+t_mscwcs.x
+    Added msc_wcsstatd parameters for crpix1 and crpix2.  (11/20/99, Valdes)
+
+t_mscwcs.x
+    The change that allowed a primary image to be used would cause a
+    MWCS dismension mismatch error for MEF files with an empty primary
+    image.  This error is now trapped and the task continues on to the
+    first extension.  (11/20/99, Valdes)
+
+ccdred/src/imcombine/icombine.gx
+    An input array was declared with a value of 3 though it was passed to
+    the routine with 4 elements.  Later there was a reference to
+    the 4th element.  While this is legal as the size in the declaration
+    is a dummy this was a compiler error on one platform.  Changed the
+    declaration to 4.  (11/19/99, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/sigm2.gx
+    The "fill" parameter now has a function.  If fill=no then the full
+    mosaic will be displayed at the nearest blocking factor that fits
+    the screen.  If fill=yes then in addition to the blocking the mosaic
+    is interpolated to fill the frame buffer in at least one dimension.
+    (11/17/99, Valdes)
+
+mscdisplay/mimpars.par
+    Changed the exttmplt parameter to match the output of MSCSPLIT.
+    (11/16/99, Valdes)
+
+mscsplit.cl
+mscjoin.cl
+../doc/mscsplit.hlp
+../doc/mscjoin.hlp
+../mscred.cl
+../mscred.men
+../mscred.hd
+    Added new tasks to split and join MEF files.  (11/16/99, Valdes)
+
+rmfringe.cl
+rmpupil.cl
+    Changed default extension name in RMFRINGE and added a check and warning
+    if the extension list expands to no images in both tasks.
+    (11/15/99, Valdes)
+
+ccdproc.cl
+calproc.cl
+    Added msstatus and onerror features.  (11/5/99, Valdes)
+
+ccdred/src/ccdproc.x
+    Modified to make errors in the setup be warnings.  (11/4/99, Valdes)
+
+mscdisplay/src/t_mscrtdisp.x
+    Changed the backup to 25 lines instead of 5 lines.  (11/4/99, Valdes)
+
+t_mscimatch.x
+    The way the sky was handled with dozero=no was incorrect resulting
+    in incorrect sky values.  (11/1/99, Valdes)
+
+mscimage.cl
+    Delete NEXTEND, DETSEC, CCDSEC, AMPSEC, IMAGEID, DATASEC, TRIMSEC, and
+    BIASSEC, from the output single image.  (10/29/99, Valdes)
+
+mscsetwcs.cl
+    1.  Now will add WCSASTRM information if given in the database file.
+    2.  Will log to logfile if one is specified by the package.
+    (10/27/99, Valdes)
+
+dispsnap.cl     +
+../mscred.cl
+    New task to load and snap the display to an export format.
+    (10/26/99, Valdes)
+
+t_xlog.x        +
+xlog.par        +
+x_mscred.x
+mkpkg
+../mscred.cl
+    New logging subroutine package and task interface.  (10/20/99, Valdes)
+
+t_mscwcs.x
+    Now allows working with a simple primary image.  (10/25/99, Valdes)
+
+ccdred/src/t_combine.x
+    Added workaround for error recovery when the error string is lost.
+    (10/21/99, Valdes)
+
+mkpkg
+    The default update and build no longer includes MSCFINDER.  If this
+    is desired it must be built separately.  (10/19/99, Valdes)
+
+mscfinder/cdrfits/fits_read.x
+mscfinder/cdrfits/fits_rimage.x
+mscfinder/cdrfits/ftb_gtsub.x
+mscfinder/cdrfits/ftb_rheader.x
+mscfinder/mkpkg
+    The latest TABLES release moved the previous gf_ calls to gi_
+    and the new gf_ calls are for use with CFITSIO.  To adjust for
+    this change the gf_ calls have to be changed to gi_.
+    (10/19/99, Valdes)
+
+mscdisplay/src/mosmap.x
+    Modifications to allow the CCDs to be in different orders when
+    calculating the gaps.  (10/19/99, Valdes)
+
+mscdisplay/src/mscg.gx
+    There was a typo in the mscgs2$t routines that caused on the fly
+    processing to fail.  (10/14/99, Valdes)
+
+rmpupil.cl
+rmfringe.cl
+    Added feature to allow changing block size in program.  (10/12/99, Valdes)
+
+ccdred/src/setbpmask.x	+
+ccdred/src/calimage.x
+ccdred/src/ccdcache.x
+ccdred/src/ccdcheck.x
+ccdred/src/ccdproc.x
+ccdred/src/ccdred.h
+ccdred/src/mkpkg
+ccdred/src/proc.gx
+ccdred/src/setdark.x
+ccdred/src/setflat.x
+ccdred/src/setheader.x
+ccdred/src/setoutput.x
+ccdred/src/setproc.x
+ccdred/src/setsflat.x
+ccdred/src/setzero.x
+ccdred/src/t_ccdproc.x
+ccdred/src/t_ccdtool.x
+ccdred/src/setfixpix.x
+ccdred/src/generic/ccdred.h
+ccdred/src/mkpkg
+ccdred/ccdproc.par
+ccdred/darkcombine.cl
+ccdred/flatcombine.cl
+ccdred/sflatcombine.cl
+ccdred/zerocombine.cl
+    Added output saturated pixel masks.
+
+t_msccmatch.x
+msccmatch.par
+    1. New step to automatically find coordinate offset.
+    2. New step to check bad pixel mask for saturated and bad pixels.
+    3. New step to output coordinates for objects not affected by bad pixels.
+    4. Now reads magnitudes if given and uses brighter objects for
+       automatic search.
+    (9/27/99, Valdes)
+
+sflatcombine.cl
+ccdred/sflatcombine.cl
+    Removed automatic processing.  (9/27/99, Valdes)
+
+rmpupil.cl
+    Now allows in-place operation.  (9/27/99, Valdes)
+
+mscimage.cl
+mscimage.par
+    1.  The function parameter was removed and hardwired to "polynomial".
+	This is to avoid a bug in flux conservation with the other
+	functions.
+    2.  Added explicit parameters to the call to GEOTRAN.
+    (9/27/99, Valdes)
+
+mscsetwcs.cl
+    Now includes equinox as a parameter and precession if needed.
+    (9/27/99, Valdes)
+
+mscarith.cl
+    Another change related to CCDMEAN.  (9/27/99, Valdes)
+
+ccdproc.cl
+    Now includes output masks and saturation mapping.  (9/27/99, Valdes)
+
+imsurfit/t_imsurfit.x
+    Modified to allow same input and output image name.  (9/25/99, Valdes)
+
+mscpipeline/*		+
+../mscred/mscred.cl
+    Added new pipeline subpackage.  (9/25/99, Valdes)
+    (9/25/99, Valdes)
+
+mscqphot.cl		+
+mscspars.par		+
+mscppars.par		+
+../mscred/mscred.cl
+    New task for doing photometric calibration in pipeline.
+    (9/25/99, Valdes)
+
+t_getcatalog.x		+
+getcatalog.par		+
+mscgetcatalog.cl	+
+x_mscred.x
+mkpkg
+../mscred/mscred.cl
+    Prototype task to get catalog data.  Currently only for USNO.
+    (9/25/99, Valdes)
+
+t_toshort.x		+
+toshort.par		+
+msctoshort.cl		+
+x_mscred.x
+mkpkg
+../mscred/mscred.cl
+    New task to convert images/MEF to scaled short format.
+    (9/25/99, Valdes)
+
+addkey.par		+
+t_addkey.x		+
+mkpkg
+x_mscred.x
+../mscred/mscred.cl
+    New hidden task for adding keywords with comments.  Needed for the MAP.
+    (9/25/99, Valdes)
+
+
+==========
+MSCREDV3.3
+==========
+
+ccdred$src/t_ccdgroups.x
+ccdred$ccdgroups.par
+    1.  Added parameter to break into sequences.
+    2.  Added verbose parameter to provide more control than just the package.
+    (9/22/99, Valdes)
+
+t_msctmplt.x
+    All operations are now performed in "astrometry" coordinates to avoid
+    problems at RA=0 and DEC=+-90.  (9/17/99, Valdes)
+
+mscwcs.x
+    Added an msc_open to convert an already open mw pointer to a wcs pointer.
+    The msc_openim routine now calls msc_open after doing the mw_openim
+    or setting the WCS from a database.  (9/17/99, Valdes)
+
+mscarith.cl
+    Added another change to handle the CCDMEAN keyword without errors.
+    (9/15/99, Valdes)
+
+ccdproc.cl
+    Added checks for the output image being the same as the input image
+    and for the output image existing.  (9/9/99, Valdes)
+
+xtalkcor.cl
+    Added a check for whether the xtalkfile given in the header is found.
+
+mscdisplay/src/mosqproc.x -
+mscdisplay/src/t_mosqproc.x -
+mscdisplay/src/t_mosdisp.x -
+ccdred/src/generic/corinput.x -
+mkpkg
+    Removed unneed files.
+
+ccdred/src/t_combine.x
+    Changed an error call to an erract.  (9/3/99, Valdes)
+
+ccdred/src/t_ccdmask.x
+    Removed extra argument.  (9/3/99, Valdes)
+
+ccdred/src/t_ccdlist.x
+mscdisplay/src/t_mscrtdisp.x
+t_mscimatch.x
+    Added missing argument.  (9/3/99, Valdes)
+
+mscdisplay/src/mscg.x
+    Fixed type declarations for asum.  (9/3/99, Valdes)
+
+ccdred/src/cosmic/crexamine.x
+ccdred/src/iccaclip.gx
+ccdred/src/icscale.x
+t_mscimatch.x
+t_mscwcs.x
+    Added sfree before return.  (9/3/99, Valdes)
+
+============
+MSCREDV3.2.1
+============
+
+t_mscimatch.x
+    Fixed bug where sigma was declared incorrectly as int instead of
+    double in imat_fit2.  If niterate > 0 this would cause a floating
+    operand error on Linux systems and possibly others.
+    (9/3/99, Valdes)
+
+t_mscimatch.x
+mscimatch.par
+    Added feature to save measurements and restore measurements.
+    (9/2/99, Valdes)
+
+rmpupil.cl
+    Needed to change the default value of extname.  (8/27/99, Valdes)
+
+==========
+MSCREDV3.2
+==========
+
+msctvmark.cl
+    Was not dealing correctly with untrimmed data.  (8/2/99, Valdes)
+
+mscfinder/msctpeak.x
+    Added an extname parameter.  (8/2/99, Valdes)
+
+mscfinder/t_tpeak.x
+mscfinder/tpltsol.cl
+mscfinder/tpeak.key
+    1. Fixed bugs not allowing update of coordinates.
+    2. Delete 'e', 'x', and 'p' keys and changed 'f' to update positions
+       of uncentered sources.  (8/2/99, Valdes)
+
+t_mscdisplay.x
+t_mscrtdisp.x
+    Modified z scaling output.  (7/30/99, Valdes)
+
+xtalkcor.cl
+    The crosstalk file can be specified with the !keyword syntax.
+    (7/28/99, Valdes)
+
+mscdisplay/mosmap.x
+    The OTF calibration directory can be specified with the !keyword syntax.
+    (7/28/99, Valdes)
+
+mscdisplay/mosmap.x
+    The scheme for defining defaults during readout has been modified.  The
+    old scheme is still supported.  The new scheme allows having both
+    prescan and overscan and regions.  (7/27/99, Valdes)
+
+t_msccmatch.x
+msccmatch.par
+    The default fitting geometry is now general but constrained to orders
+    of 2 with half cross terms.  This is because refraction does not
+    rotate the axis around the optical axis.  (7/14/99, Valdes)
+
+==========
+MSCREDV3.1
+==========
+
+t_imext.x
+    Modified to accept a list of patterns rather than one pattern for
+    selecting extension names.  (6/18/99, Valdes)
+
+calproc.cl
+ccdproc.cl
+mkfits.cl
+mscarith.cl
+mscblkavg.cl
+mscimage.cl
+mscimatch.cl
+mscsetwcs.cl
+rmfringe.cl
+rmpupil.cl
+sflatcombine.cl
+xtalkcor.cl
+    Made sure HEDIT calls include both the add and del options explicitly.
+    (6/17/99, Valdes)
+
+ccdred/src/icsetout.x
+    Changed to better parse the offset types.  The WCS correction for
+    offsets was incorrect.  (6/17/99, Valdes)
+
+t_msccmatch.x
+    1.	Rather than reporting the number of stars out of bounds it was
+	reporting the number of stars in bounds.
+    2.	Minor bug where the first extensions was used for the scale rather
+	than the image being considered.
+    (6/16/99, Valdes)
+
+mscdisplay/src/sigm2.gx
+    An argument to zigm2_setup was being changed by the routine and this
+    changed argument was then incorrectly used by the calling program.
+    The argument was made input only.  (6/15/99, Valdes)
+
+t_mscwcs.x
+t_msccmatch.x
+mscwcs.par
+    Now only the total target number of grid points for doing the WCS
+    adjusment is specified and the number of points along each axis
+    is computed to preserve nearly equal pixel spacing along both
+    axes independent of the image axis ratio.  (6/11/99, Valdes)
+
+t_mscwcs.x
+    Fixed bug in adjusting WCS when the logical and physical coordinates
+    are not the same.  (6/11/99, Valdes)
+
+t_msctmplt.x
+    Modified to use CCD closest to it's own tangent point as the WCS
+    reference if one is not specified.  (6/10/99, Valdes)
+
+t_pixarea.x
+pixarea.par
+mscpixarea.cl
+    Modified to use pixel area at tangent point for the CCD closest to
+    it's own tangent if a normalization area is not specified.
+    (6/10/99, Valdes)
+
+t_msctmplt.x
+    When the input data is block averaged or binned the output image comes
+    out in physical coordinates rather than a simpler pixel sampling to
+    the input image.  Fixed so that the output image will have the same
+    pixel scale as the input data with the physical coordinate system
+    reset.  (6/8/99, Valdes)
+
+mscfinder/msctpeak.cl
+mscfinder/tpltsol.cl
+    The ennumerated projection parameters for msctpeak and tpltsol were
+    removed.  (6/8/99, Valdes)
+
+msczero.cl
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrtdisp.x
+    1.  The frame select parameter for display is now applied when checking
+	if the image is loaded.  Now if the image is loaded in another
+	frame and checking is done the frame will switch to frame without
+	loading.
+    2.  MSCZERO now will select the frame when the image is currently
+	loaded.
+    (6/3/99, Valdes)
+
+msctvmark.cl
+msczero.cl
+    The conversions between detector coordinates (the mosaic DETSEC system
+    used for display) and logical pixels in an image extension was done
+    wrong.  This would only be a problem when the the physical and
+    logical coordinate systems are different.  (6/3/99, Valdes)
+
+t_mscctran.x
+    Fixed a bug that could use the wrong input units if a previous
+    execution specified units.  This affected MSCZERO.
+    (6/3/99, Valdes)
+
+mscfinder/tpltsol.cl
+    The database entry now has a solution name given by the extension
+    alone rather than including the image name.
+    (6/3/99, Valdes)
+
+mscfinder/t_tpeak.x
+    1.  Quoted the RA and DEC values passed to TPLTSOL.  Otherwise if the
+	DEC had a sign it would cause an error.
+    2.  The '?' help file was not being found.
+    (6/3/99, Valdes)
+
+ccdred/src/t_ccdgroups.x
+    Added a "date" grouping where the date-obs string is stripped of any
+    time component before grouping by matching patterns.
+    (5/19/99, Valdes)
+
+t_mscimatch.x
+    Fixed possible error introduced with the sky level modification.
+    (5/18/99, Valdes)
+
+../lib/zzsetenv.def
+    Added package library definitions for tables so they don't have
+    to be included explicitly.  (5/18/99, Valdes)
+
+ccdred/src/t_ccdlist.x
+    Added support for crosstalk and removed illumination/fringe/scancor/readcor
+    stuff.  (5/13/99, Valdes)
+
+xtalkcor.cl
+    Added noproc flag and behavior.  (5/13/99, Valdes)
+
+==========
+MSCREDV3.1
+==========
+
+rmfringe.cl	+
+../mscred.cl
+     Added new task to interactively remove a fringe correction.  This
+     is similar to RMPUPIL.  (5/11/99, Valdes)
+
+mscdisplay/src/mosmap.x
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrtdisp.x
+    The step which flips the images by mapping them with a flipped section
+    was moved into the lower level routine mg_open in order to have the
+    same mapping apply to MSCEXAM, etc.  (5/11/99, Valdes)
+
+t_mscext.x
+t_imext.x
+    Modified to use temporary disk images rather than in memory
+    string to avoid problem with long lists of files to be expanded.
+    (5/11/99, Valdes)
+
+mscsetwcs.cl	+
+mscwcs.cl	-
+../mscred.cl
+    Added new task to set WCS from a database file and RA/Dec header
+    keywords.  (5/10/99, Valdes)
+
+mscdisplay/src/imexam/iepos.x
+    The x and y keys were not writing to the logfile.  Fixed to be the
+    same as the standard version.  (5/7/99, Valdes)
+
+rmpupil.cl
+    Modified parameters to allow specifying the initial or final scale
+    to use.  (5/4/99, Valdes)
+
+t_pupilfit.x
+    Fixed intrinsic function type mismatch errors which cause compiling
+    failure on Dec machines.  (4/29/99, Valdes)
+
+rmpupil.cl
+    Changed the IMEXPR calls to force real output to avoid double results
+    with small scaling constants.  (4/28/99, Valdes)
+
+ccdproc.cl
+calproc.cl
+    Needed to remove TMFNAME keyword from final result.  (4/26,99, Valdes)
+
+==========
+MSCREDV3.0
+==========
+
+mscwcs.x
+    Fixed error in structure definition.  (4/22/99, Valdes)
+
+ccdproc.cl
+calproc.cl
+    Added crosstalk correction option to CCDPROC.  This calls XTALKCOR.
+    (4/21/99, Valdes)
+
+ccdred/src/ccdlog.x
+    The image name part of the log now first looks for a keyword TMPFNAME
+    and if not found uses the image name associated with the IMIO pointer
+    (as before).  This is used to allow temporary files to  be used in
+    scripts and still get the name of the actual file in the log.
+    (4/21/99, Valdes)
+
+xtalkcor.cl	+
+../mscred.cl
+../mscred.men
+    New crosstalk correction task.  (4/20/99, Valdes)
+
+mscstat.cl
+    Added global mode option.  (4/20/99, Valdes)
+
+t_msctmplt.x
+    If no WCS reference image is given then the first input image (the
+    first extension if using MSCIMAGE) is used.  The averaging of the
+    WCS is no longer done.  (4/20/99, Valdes)
+
+ccsetwcs.x
+mscwcs.x
+    The WCSSOL solution is automatically converted into the standard
+    units rather than being left in ra of hours.  (4/20/99, Valdes)
+
+t_fitscopy.x
+    If the input or output is a tape the task needs to abort and not
+    continue.  (4/15/99, Valdes)
+
+t_combine.x
+ccdred/coutput.par
+sflatcombine.cl
+    Fixed problems with COUTPUT.  (4/14/99, Valdes)
+
+sflatcombine.cl
+    Fixed typo.  (4/14/99, Valdes)
+
+rmpupil.cl
+    Improved to allow input and output lists, the input and output images
+    to be the same, to add a processing keyword to the headers, to check
+    the header for previous processing.  (4/14/99, Valdes)
+
+mscpixarea.cl	+
+t_pixarea.x	+
+pixarea.par	+
+mkpkg
+x_mscred.x
+../mscred.cl
+../mscred.hd
+../mscred.men
+    Added new tasks to compute pixel area corrections based on WCS.  PIXAREA
+    works on individual images and MSCPIXAREA works on MEF mosaic data.
+    (4/12/99, Valdes)
+
+t_mscimatch.x
+    Modified to allow use of "skymean" keyword.  If zero=no then these
+    keywords can be used to constrain the offsets as determined by the
+    keywords.  (4/7/99, Valdes)
+
+imsurfit/*	+
+mscskysub.par	+
+x_mscred.x
+mkpkg
+../mscred.cl
+../mscred.hd
+../mscred.men
+    Modified IMSURFIT to allow use of masks and to output the residuals
+    consisting of the data - fit + mean(fit).  It also adds the keyword
+    "skymean" to the header with the value of mean(fit).  (4/7/99, Valdes)
+
+ccdred/src/ccdred.h
+ccdred/src/setdark.x
+ccdred/src/setfringe.x
+ccdred/src/setillum.x
+ccdred/src/setsflat.x
+ccdred/src/setflat.x
+ccdred/src/settrim.x
+ccdred/src/setzero.x
+ccdred/src/setsections.x
+ccdred/src/setheader.x
+    Significant changes to handle flipped datasec, ccdsec, and detsec.
+    (3/25/99, Valdes)
+
+../mscred.par
+../lib/mosaic.dat	+
+    Made a new default instrument translation file as a guide to users.
+    The new default will work with the NOAO Mosaic headers.
+    (3/19/99, Valdes)
+
+mscdisplay/src/mosmap.x
+    The way the gaps are added was not right when CCDs have multiple
+    amps.  A minor change fixed this.  (3/18/99, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrtdisp.x
+    There was an error in how DX and DY were used when there are flips.
+    The values are now absolute values in the call to mos_params.
+    (3/17/99, Valdes)
+
+mscarith.cl
+msccmd.cl
+calproc.cl
+ccdproc.cl
+    Modified to handle case where the input image name is the same as
+    a logical directory name.  Before the change the imrename would put
+    the temporary image in that directory.  Now if the image name is the
+    same as a logical variable the imrename is done to ./input.  This may
+    not work right if the input has a directory path but it is better
+    than having the image disappear some place.  (3/17/99, Valdes)
+
+msczero.cl
+msczero.key
+    Added 'r' key to reload display and 'm' to mark objects using the
+    new MSCTVMARK.  (3/16/99, Valdes)
+
+mscwcs.x
+    When using a WCSSOL solution the units are done differently.
+    (3/16/99, Valdes)
+
+../mscred.cl
+../mscred.hd
+../mscred.men
+../mscred.par
+msctvmark.cl	+
+    New task to mark coodinates in MSCDISPLAY.  (3/16/99, Valdes)
+
+mscimatch.par
+t_mscimatch.x
+    Added bad pixel mask option.  (3/16/99, Valdes)
+
+ccdproc.cl
+calproc.cl
+    Fixed problem with previous change.  (3/16/99, Valdes)
+
+mscdisplay/src/mosmap.x
+    Modified sprintf statements that format a keyword to not overflow the
+    string buffer.  (3/9/99, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrtdisp.x
+    The "auto" zcombine option would not go to "none" if the PROC flag
+    was not set to yes.  (3/2/99, Valdes)
+
+ccdproc.cl
+calproc.cl
+    Removed use of list format for the expanded extensions to avoid overflow
+    of the list string.  (2/10/99, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+    The fill code was enforcing the same magnification in x and y which does
+    not allow correct display of data binned differently in x and y.
+    (11/24/98, Valdes)
+
+mscdisplay/src/mosmap.x
+    There was a missing statement.  (11/16/98, Valdes)
+
+mscdisplay/src/t_mscrtdisp.x
+    Had to add a FIO cancel to force a refill of the buffers.
+    (11/10/98, Valdes)
+
+mscblkavg.cl		+
+../doc/mscblkavg.hlp	+
+../mscred.cl
+../mscred.hd
+../mscred.men
+    New task to block average a mosaic exposure with update of RDNOISE,
+    GAIN, CCDSUM, DATASEC, BIASSEC, TRIMSEC, and CCDSEC.  (11/7/98, Valdes)
+
+mscdisplay/mscdisplay.par
+mscdisplay/mscrtdisp.par
+mscdisplay/mscexamine.par
+    The mimpars prompt string was expanded.  (10/13/98, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrtdisp.x
+    When the image has been processed and zcom=auto then it needs to do
+    the right zcombine.  (10/11/98, Valdes)
+
+
+ccdred/src/xtfpixix.x	+
+ccdred/src/xtfp.gx	+
+ccdred/src/xtfixpix.h	+
+ccdred/src/proc.gx
+ccdred/src/setfixpix.x
+ccdred/src/setproc.x
+ccdred/src/mkpkg
+ccdred/src/generic/mkpkg
+     Installed bugfixes from V2.11.2.  (10/9/98, Valdes)
+
+ccdred/src/icsetout.x
+    Updated for bug fix dealing with WCS of dimensionally reduced images.
+    (10/6/98, Valdes)
+
+../mkpkg
+    Missing $endif.  (9/21/98, Valdes)
+
+t_fitscopy.x
+    Fixed use of int variable as a bool which is an error on linux.
+    (9/21/98, Valdes)
+
+====
+V1.2
+====
+
+mscred.par
+doc/installation.hlp
+    New version information.  (9/17/98, Valdes)
+
+../mscred.hd
+../mscred.men
+    Update. (9/17/98, Valdes)
+
+../doc/mscguide.hlp
+    New version.  (9/17/98, Valdes)
+
+msctools/pl2msc.cl +
+msctools/msctools.cl
+    New tool to convert a pixel list directory to a mosaic MEF file.
+    (9/16/98, Valdes)
+
+msctools/mkbpm.cl +
+msctools/msctools.cl
+    New tool to create bad pixel mask from ratio of flat fields.
+    (9/10/98, Valdes)
+
+mscwcs.x
+    Fixed problem with the case where the header has no WCS.
+    (9/9/98, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrtdisp.x
+mscdisplay/src/mosmap.x
+    Bug fix for zcombine=auto option.  (6/6/98, Valdes)
+
+t_pupilfit.x
+mscpupil.cl
+rmpupil.cl +
+../mscred.cl
+    Work on pupil correction.  (9/7/98, Valdes)
+
+msctools/fmtastrom.cl +
+msctools/msctools.cl
+    New tool to format KTM data strings from image WCS.
+    (9/6/98, Valdes)
+
+../doc/mscotfflat.hlp +
+mscdisplay/mscotfflat.cl +
+mscdisplay/flatcompress.cl +
+msctools/mkdispflat.cl	-
+msctools/flatcompress.cl	-
+../mscred.cl
+    Installed script task to build OTF calibrations.
+    (9/5/98, Valdes)
+
+mscdisplay/src/mosmap.x
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrtdisp.x
+    Tweaks for printing flat information in the display title and mapping
+    filter names to actual flat field calibrations used.
+    (9/3/98, Valdes)
+
+ccdred/src/proc.gx
+    When the number of pixels in the overscan is less than 3 then use the
+    average if "minmax" overscan is selected.  (9/2/98, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrtdisp.x
+mscdisplay/src/mosmap.x
+mscdisplay/src/mscg.gx
+mscdisplay/src/mosgeom.h
+    1. 	Made changes to real-time display which checks for no data.
+    2. 	It is now ok for sleep to be zero by using a minimum sleep of 1.
+    3. 	The test for stalled readout now waits for several cycles for the
+	data to arrive.
+    (8/31/98, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrtdisp.x
+mscdisplay/src/mosmap.x
+mscdisplay/src/mscg.gx
+mscdisplay/src/mosgeom.h
+mscdisplay/mimpars.par
+    Added to flags to allow independent control of the bias subtraction and
+    the flat fielding when processing is selected.  (8/28/98, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+    Modified the default sample section to exclude edges of image.
+    (8/25/98, Valdes)
+
+../lib/mscdb 	-
+../mscred.cl
+    Made the MSCRED database be an external directory to be defined in
+    extern.pkg.
+    (8/6/98, Valdes)
+
+mscdisplay/mimpars.par	+
+mscdisplay/mscdisplay.par
+mscdisplay/mscrtdisplay.par
+mscdisplay/mscexamine.par
+mscdisplay/src/starfocus/mscstarfocus.par
+../mscred.cl
+    A new PSET defines the mosaic image displayed.  The pset was added to
+    all the tasks which need to access this information.
+    (8/7/98, Valdes)
+
+mscdisplay/src/mosmap.x
+mscdb$noao/kpno/4meter/CCDMosaThin1.dat
+mscdb$noao/kpno/4meter/CCDMosaThin1.cl
+mscdb$noao/kpno/4meter/mosaic1.dat
+mscdb$noao/kpno/36inch/CCDMosaThin1.dat
+mscdb$noao/kpno/36inch/CCDMosaThin1.cl
+mscdb$noao/kpno/36inch/mosaic1.dat
+    1.  The amplifier name mapping now includes translating the extension name.
+	The logic is 1) look for the value of the "amp" keyword (amp is
+	mapped to imageid in the NOAO Mosaic translations), 2) look
+	for "extname" keyword and translate it  (will translate to
+	itself if not in the translation file), 3) extract from the
+	image name.  The purpose of this change is to allow the same
+	amp value during readout and after readout when imageid is not
+	yet set but extname is set.  Then the defaults for detsec, datasec,
+	and the bias trimming can be indexed by the imageid values.
+    2.  Calibration directory and filter parameters were added to map to
+	the calibration files for on-the-fly processing.
+    (8/6/98, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrtdisp.x
+mscdisplay/mscdisplay.par
+mscdisplay/mscrtdisplay.par
+    New zcombine value is "auto" to chose between "none" and "minmax"
+    depending on whether the displayed image is flattened.
+    (8/6/98, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/t_mscrtdisp.x
+mscdisplay/src/sigm2.gx
+    1.  Rounding problem in sigm2_setup was fixed.
+    2.  Calculation of number of pixels when an offset is present was wrong
+	resulting in running off the end of an array.
+    (8/5/98, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/mscdisplay.par
+    1.	Commented out use of im_bufsize since it seems to actually slow things
+	down.
+    2.  Add parameter "onepass" to select the one pass loading.
+    (8/4/98, Valdes)
+
+mscdisplay/src/t_mscrtdisp.x	+
+mscdisplay/mscrtdisplay.par	+
+mscdisplay/x_mscdisplay.x
+mscdisplay/mkpkg
+../mscred.cl
+    The old version of MSCDISPLAY with the individual extension loading and
+    iterative waiting for real time display was renamed to MSCRTDISPLAY.
+    This version includes the changes to MSCDISPLAY to support OTF processing.
+    (8/3/98, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/mscdisplay.par
+    1.	If possible, a buffer the full size of the display is used to
+	build up the displayed data so that display can be filled in
+	on pass with WRITE_ONLY permission to the display.
+    2.	The "im_bufsize parameter is now used to set input I/O buffers for
+	greater efficency.
+    3.	Mapping of the display was changed.  Erase occurs later and
+	display is mapped WRITE_ONLY when displaying in one pass to
+	minimize I/O to display.
+    5.	Changes were made to support OTF processing: new "process" parameter
+	and passing of mg structure instead of im structure.
+    6.	Trimming is now done later rather than with image sections.
+    7.	Flips are implemented with untrimmed image sections.
+    8.	Streamlined by removing all real-time modifications.
+    (8/3/98, Valdes)
+
+mscdisplay/src/mscg.gx		+
+mscdisplay/src/sigm2.gx		+
+mscdisplay/src/mosmap.x
+mscdisplay/src/maxmin.x
+mscdisplay/src/migl2.gx
+mscdisplay/src/mignl.gx
+mscdisplay/src/migs2.gx
+mscdisplay/src/mosgeom.h
+mscdisplay/src/mkpkg
+    1.	All input I/O now goes through the routines in mscg.gx.  These
+	routines implement OTF processing.  They also optimize access
+	to unsigned FITS data.
+    2.  The sigm2.gx file is a version of the one in DISPLAY with the
+	IMIO calls changed to go through the mscg.gx routines.
+    3.	Changes were made to mimap/mgopen to setup the OTF processing.
+    (8/3/98, Valdes)
+
+ccdred$src/t_combine.x
+    Temporarily change the output rejection mask from a pl to a user specified
+    extension.  For large files there is some problem with pl files.
+    (7/31/98, Valdes)
+
+ccdproc.cl
+calproc.cl
+    The call to imextensions would produce a warning if no extensions are
+    present.  Changed to avoid this warning.  (7/30/98, Valdes)
+
+ccdred$src/icgdata.gx
+    If a line had no data then the number of pixels needed to be initialized.
+    (7/29/98, Valdes)
+
+ccdred$src/iclog.x
+    Added logging of rejection mask.
+    (7/29/98, Valdes)
+
+ccdred$src/setproc.x
+    Added workaround for xtools fixpix bug not setting the pixel type.
+    (7/20/98, Valdes)
+
+ccdred/src/ccdtypes.x
+    Fixed bug with stripping whitespace from ccdtype string.
+    (7/20/98, Valdes)
+
+mscstack.cl
+    Added rejmask to internal call to combine.
+    (7/17/98, Valdes)
+
+t_msccmatch.x
+    Now only reports the number of out of bounds coordinates rather than
+    the individual coordinates.  (7/2/98, Valdes)
+
+mscimage.cl
+mscimage.par
+    1.  A new parameter to specify the interpolant for the mask was added.
+    2.  When the interpolated mask image is converted to a pl mask the absolute
+	value of the pixels is taken.  This is to flag negative ringing.
+    (7/2/98, Valdes)
+
+../lib/mscdb/noao/*
+    Modified instrument translation files to have MSCDISPLAY defaults
+    for overscan trim to deal with binned case.
+    (7/2/98, Valdes)
+
+mscdisplay/src/mosmap.x
+    Modified to work with binned data when no header information is
+    present.  The overscan width is obtained from the translation file.
+    (7/2/98, Valdes)
+
+ccdproc.cl
+sflatcombine.cl
+ccdred/src/t_ccdproc.x
+ccdred/ccdproc.par
+ccdred/darkcombine.cl
+ccdred/flatcombine.cl
+ccdred/sflatcombine.cl
+ccdred/zerocombine.cl
+    1.  Added "output" parameter to CCDPROC.
+    2.  The combine scripts behave as before.
+    (6/19/98, Valdes)
+
+../lib/mscdb/noao/*
+    1.  Added information for mosaic2.
+    2.  Restructured directories and files.
+    3.  Modified instrument translation files to have MSCDISPLAY defaults
+	for data and detector sections.
+    (6/18/98, Valdes)
+
+setinstrument.cl
+    Changed this task to have parameters for site, telescope, and instrument.
+    (6/18/98, Valdes)
+
+mscdisplay/src/mosmap.x
+    Modified how default data and detector sections are determined when not
+    present in the image headers (i.e. during readout).  Now it uses
+    information from the instrument translation file.  This was done to
+    support multiple instruments.  (6/18/98, Valdes)
+
+ffpupilcor.cl
+    Changed default statsec.  (6/18/98, Valdes)
+
+t_mscimatch.x
+mscimatch.par
+    Modified to allow constraining either the scale or zero values.
+    (6/10/98, Valdes)
+
+t_mscimatch.x
+    Fixed missing format argument when no good data is found.  Improved
+    error message to hint at possible problem.  (6/9/98, Valdes)
+
+t_pupilfit.x
+    Data array needed to be freed.  (6/1/98, Valdes)
+
+ccdred/src/cor.gx
+ccdred/src/proc.gx
+    New version that normalizes the flat field first and checks for extreme
+    flat field values.  If an extreme flat field value is found then the
+    value is replaced by 1; i.e. the flat field is skipped if the flat field
+    value is extreme.  (6/1/98, Valdes)
+
+_combine.par
+combine.cl
+sflatcombine.cl
+    New parameter for rejection masks added.  (5/18/98, Valdes)
+
+mscpupil.cl		+
+mscpupil.par		+
+../mscred.cl
+../mscred.men
+    A new task to fit and remove a pupil image from mosaic format data.
+    (5/12/98, Valdes)
+
+t_pupilfit.x		+
+pupilfit.par		+
+x_mscred.e
+mkpkg
+../mscred.cl
+    A new task to fit a pupil image.  (5/12/98, Valdes)
+
+t_imstat.x		+
+imstat.h		+
+imstatistic.par		+
+xtpmmap.x		+
+x_mscred.e
+mkpkg
+../mscred.cl
+    Added a version of IMSTAT that uses masks.  The file xtpmmap.x is
+    included to pick up a bug fix to xt_pminvert made for V2.11.2.
+    (4/22/98, Valdes)
+
+ffpupilcor.cl		+
+../doc/ffpupilcor.hlp	+
+../mscred.cl
+../mscred.men
+../mscred.hd
+    Added a new task to correct broad band flat fields for the pupil ghost.
+    (4/16/98, Valdes)
+
+mscdisplay/src/migs2.gx
+    Fixed bug with setting origin.  (4/16/98, Valdes)
+
+mscimage.cl
+    Used a workaround for making the mask image of creating it as a FITS
+    file and then converting to a PL file at the end.  There is some
+    IMIO problem with using a PL file with GEOTRAN as used in MSCIMAGE.
+    (4/10/98, Valdes)
+
+t_msctmplt.x
+    Added parameter to select output pixel type.  (4/10/98, Valdes)
+
+../mkpkg
+    Added Linux architectures.  (4/7/98, Valdes)
+
+mscarith.cl
+    Fixed error in order of deleting temporary files.
+    (4/5/98, Valdes)
+
+sflatcombine.cl
+    Removed enumerated list for scale parameter to allow @file input.
+    (4/5/98, Valdes)
+
+ccsetwcs.x
+    Fixed argument type mismatch in call to cc_nwcsim.  (4/4/98, Valdes)
+
+t_fitscopy.x
+    Removed extra argument in calls to imtopen and strcat.  (4/4/98, Valdes)
+
+mscfinder/cdrfits/fits_read.x
+    fnroot was used as a subroutine instead of an int function.
+    (4/4/98, Valdes)
+
+mscfinder/cdrfits/ftb_rheader.x
+    sscan was used as a function instead of a subroutine.  (4/4/98, Valdes)
+
+mscfinder/t_tpeak.x
+    1. changed tp_colon declaration to bool
+    2. sscan was used as a function instead of a subroutine
+    3. valid declaration changed from bool to int
+    (4/4/98, Valdes)
+
+ccdred/src/t_combine.x
+    1. changed mef from bool to int
+    2. changed delete from bool to int
+    (4/4/98, Valdes)
+
+ccdred/src/fixpix.x
+    1. removed extra argument in imgl1i call
+    2. added missing flag argument to calls to pm_save
+    (4/4/98, Valdes)
+
+ccdred/src/icstat.gx
+    call to asums was declared as short instead of real
+    (4/4/98, Valdes)
+
+ccdred/src/readcor.x
+    modified to take an input and output image and do the in-place operation
+    only if the input and output are the same.
+    (4/4/98, Valdes)
+
+ccdred/src/t_ccdlist.x
+    added missing argument to strcpy
+    (4/4/98, Valdes)
+
+ccdred/src/t_ccdmask.x
+    removed extract argument in call to cm_mask
+    (4/4/98, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+    1.  add an error function for alogr call.
+    2.  fixed typo in parenthesis in clgetr call.
+    (4/4/98, Valdes)
+
+mscdisplay/src/starfocus/rngranges.x
+    added missing argument to two rng_error calls
+    (4/4/98, Valdes)
+
+../doc/mscimage.hlp
+../doc/mscguide2.1.hlp	+
+    Wrote help and updated guide.  (3/24/98, Valdes)
+
+../lib/mscdb/noao/mosaic1/mosaic.dat
+../lib/mscdb/noao/mosaic1/4meter.dat
+../lib/mscdb/noao/mosaic1/36inch.dat
+    Added translation for projector flat.
+    (3/24/98, Valdes)
+
+ccdred/src/proc.gx
+ccdred/src/ccdmean.x
+    The mean computation was changed to do a 2 pass/2 sigma sigma clip
+    on each output line.  The final mean is the mean over all the lines
+    weighted by the number of pixels used in each line mean.
+    (3/24/98, Valdes)
+
+ccdred/src/cor.gx
+    Needed to add a no operation case statement.  (3/20/98, Valdes)
+
+mscimage.cl
+mscimage.par
+    The following changes now put the gaps into an output bad pixel mask
+    and handle the edge pixels better.
+    1.  The output mask is initialized to 10000.
+    2.  The boundary uses "constant" extension.  For the image data the
+	constant is the "blank" value.  For the mask it is 1000.
+    3.  The mask is interpolated even if the mask is empty.  This is
+	done to set mask values at the edge of the image.
+    4.  The default is now to create a pixel mask.
+    (3/17/98, Valdes)
+
+mscarith.cl
+    The script was looking for CCDMEAN and would fail if it was not found.
+    It was changed to only use it if it is present.  (3/9/98, Valdes)
+
+t_mscimatch.x	+
+mscimatch.par	+
+x_mscred.x
+mkpkg
+../mscred.cl
+    A new compiled version of the intensity matching task was added.  This
+    version is much faster and better.  (2/23/98, Valdes)
+
+t_fitscopy.x
+    If the original name is selected and a null output image is given then
+    a temporary image name is used for the output name.  (2/20/98, Valdes)
+
+mscdisplay/mscdisplay.par
+mscdisplay/src/t_mscdisplay.x
+    Added an initial wait parameter for DCA operation.
+    (2/10/98, Valdes)
+
+====
+V1.1
+====
+
+mscred.par
+doc/installation.hlp
+    New version information.  (2/3/98, Valdes)
+
+mscdisplay/src/t_mscdisplay.x
+mscdisplay/src/mosmap.x
+    Modifications to support a flipped detector section.
+    (2/5/98, Conroy/Valdes)
+
+mscdisplay/src/mosmap.x
+mscdisplay/mscdisplay.par
+    If the image name to be displayed is not a MEF file but a root for
+    a list of images then the "exttmplt" parameter specifies a image
+    template to be appended to the root which will expand to the list
+    of images to be displayed as a mosaic.  (2/5/98, Conroy/Valdes)
+
+msczero.cl
+    After determining the physical coordinates for the individual image
+    the coordinates need to be transformed to logical for the rest of
+    the script.  (2/5/98, Conroy/Valdes)
+
+ccdred/src/icsetout.x
+    The WCS updating needed to be corrected.
+    (2/5/98, Valdes)
+
+doc/mscguide.hlp
+    Update to latest version.  (2/3/98, Valdes)
+
+../lib/mscdb/noao/mosaic1/4meter/wcs.dat
+../lib/mscdb/noao/mosaic1/36inch/wcs.dat
+    Change projection type from "tan" to "tnx".
+    (2/3/98, Valdes)
+
+msczero.cl
+    Modified to call the new MSCWCS routine.
+    (2/3/98, Valdes)
+
+t_mscwcs.x	+
+mscwcs.par	+
+t_wcsadjust.x	-
+t_msccmatch.x
+msccmatch.par
+mkpkg
+x_mscred.x
+../mscred.cl
+    1.	The routines for adjusting a WCS for shift, rotation, and
+	magnification were rewritten to modify a tnx (or other) WCS.
+	The routines were previously in t_wcsadjust.x but are now in
+	t_mscwcs.x.  The names were changed and arguments and structure
+	are different.
+    2.  MSCCMATCH was modified to use the new routines to produce a
+	WCS in the header rather than a new database entry.
+    3.  A new task MSCWCS (replacing a script of the same name) modifies
+	the WCS in a list of images for shift, rotation, and
+	magnification.  If there is only a shift then only the tangent
+	point coordinates are modified.
+    (2/3/98, Valdes)
+
+mscwcs.x
+skywcs.x	+
+ccsetwcs.x	+
+skywcsdef.h	+
+skywcs.h	+
+mkpkg
+mscdisplay/mkpkg
+t_mscctran.x
+t_msctmplt.x
+t_msccmatch.x
+t_mscxcor.x
+    1.	Modified to use new "tnx" WCS.
+    2.	When an image with WCSSOL is found the database solution is
+	converted internally to a tnx WCS.
+    3.  The "usewcssol" argument in msc_openim() was removed and all
+	routines calling this procedure were modified.
+    (2/3/98, Valdes)
+
+====
+V1.0
+====
+
+mscred.par
+doc/installation.hlp
+    New version information.  (1/27/98, Valdes)
+
+doc/mscguide.hlp
+    New version.  (1/27/98, Valdes)
+
+ccdred/src/mscarith.cl
+    This task now specially handles CCDMEAN.  (1/26/98, Valdes)
+
+ccdred/src/t_combine.x
+    The BPM keyword is removed for the output image.  (1/23/98, Valdes)
+
+mscimage.cl
+    1.  The NEXTEND keyword is removed for the output image.
+    2.  The pixel mask now ends with _bpm to distinguish it from the data image.
+    (1/23/98, Valdes)
+
+curfit/*		+
+x_mscred.e
+mkpkg
+../mscred.cl
+    Added a version of utilities.curfit, called msccurfit, which has a
+    separate output results parameter.
+    (1/23/98, Valdes)
+
+ccdproc.cl
+../lib/mscdb/noao/mosaic1/mosaic.cl
+    Removed parameters relating to max_cache, illumination and fringe
+    corrections, readout axis, and scanning from this task to simplify the
+    parameters.  (1/16/97, Valdes)
+
+ccdred/src/t_combine.x
+ccdred/coutput.par	+
+ccdred/x_ccdred.x
+ccdred/ccdred.cl
+../mscred.cl
+    A new task to print the output names generated by COMBINE when combining
+    by subsets was added.  This allows scripts to figure out what images
+    are/will be created.  This is used in SFLATCOMBINE to allow resetting
+    the image type for the output sky flats.
+    (1/16/98, Valdes)
+
+../mscred.cl
+ccdred/ccdred.cl
+sflatcombine.cl		+
+ccdred/sflatcombine.cl	+
+    A new task to process and then combine dithered object exposures to
+    create a sky flat was added.  This task changes the final image type
+    to "skyflat".
+    (1/16/98, Valdes)
+
+ccdred/src/setzero.x
+ccdred/src/settrim.x
+ccdred/src/setdark.x
+ccdred/src/setfixpix.x
+ccdred/src/setflat.x
+ccdred/src/setfringe.x
+ccdred/src/setillum.x
+ccdred/src/setoverscan.x
+ccdred/src/setsflat.x
+    The CCDPROC log and header keyword strings were shorttened.
+    (1/16/98, Valdes)
+
+_ccdtool.par
+calproc.cl
+ccdproc.cl
+ccdred/ccdproc.par
+ccdred/src/ccdtypes.h
+ccdred/src/ccdcheck.x
+ccdred/src/setheader.x
+ccdred/src/cor.gx
+ccdred/src/proc.gx
+ccdred/src/calimage.x
+ccdred/src/ccdproc.x
+ccdred/src/t_ccdlist.x
+ccdred/src/setsflat.x	+
+ccdred/src/ccdred.h
+../lib/mscdb/noao/mosaic1/mosaic.cl
+    1.  A new ccdtype "skyflat" was added.
+    2.  New processing parameters "sflatcor" and "sflat" were added to apply
+	a sky flat correction.
+    3.  CCDPROC now includes a sky flat correction.
+    (1/16/98, Valdes)
+
+../mscred.par
+../lib/mscdb/noao/mosaic1/mosaic.cl
+ccdred/src/ccddelete.x
+    1.  The package backup parameter was changed to select an ennumerated backup
+	mode of none, once, or all.
+    2.  The backup prefix/directory is now specified by the package "bkuproot"
+	parameter.
+    3.  The backup can now be set to none, once, or all.
+    4.  In verbose mode whenever data is backed up by renaming a message is
+	printed.
+    (1/16/98, Valdes)
+
+ccdred/src/mkpkg
+ccdred/x_ccdred.x
+    The tasks and procedures for cosmicrays, mkskyflat, mkskycor, mkillumcor,
+    and mkillumflat were removed from compiling and linking.  The code
+    is still present.
+    (1/16/98, Valdes)
+
+src/combine.cl
+src/_combine.par
+src/mscstack.par
+src/ccdred/combine.par
+src/ccdred/src/icombine.com
+src/ccdred/src/icaclip.gx
+src/ccdred/src/iccclip.gx
+src/ccdred/src/icgdata.gx
+src/ccdred/src/iclog.x
+src/ccdred/src/icpclip.gx
+src/ccdred/src/icsclip.gx
+src/ccdred/src/t_combine.x
+    Changed combine grow parameter to real 2D radius.  (12/26/97, Valdes)
+
+src/ccdred/src/icombine.gx
+src/ccdred/src/icgrow.gx
+    Modified to allow 2D grow rejection.  (12/26/97, Valdes)
+
+src/msczero.cl
+src/msczero.key
+    Improved task.  (12/18/97, Valdes)
+
+src/mscimatch.cl	+
+doc/mscimatch.hlp	+
+mscred.cl
+mscred.men
+mscred.hd
+    New task to match intensity scales in dithered images.
+    (12/17/97, Valdes)
+
+src/t_msctmplt.x
+    Modified to use new WCS functions.  (12/17/97, Valdes)
+
+src/msczero.cl
+src/msczero.key
+    Modified to work on list of images, to remember the last zeropoint
+    coordinate, and to use astrometry WCS.  (12/10/97, Valdes)
+
+src/mscdither.cl
+src/mscdither.par
+mscred.cl
+mscred.men
+mscred.hd
+    1.  Updated mscdither to use msccoordfit.
+    2.  Removed mscdither package use pending further development.
+    (12/9/97, Valdes)
+
+src/t_msccmatch.x	+
+src/msccmatch.par	+
+src/mscdpars.par	+
+src/msccpars.par	+
+src/doc/msccoordfit	+
+src/x_mscred.x
+src/mkpkg
+mscred.cl
+mscred.men
+mscred.hd
+    New task to match coordinates in dithered mosaic exposures.
+    (12/8/97, Valdes)
+
+src/t_wcsadjust.x	+
+src/wcsadjust.par	+
+src/mkpkg
+    Added routines to adjust WCS for shift, scale, and rotation.
+    (12/8/97, Valdes)
+
+src/mscwcs.x
+src/t_mscctran.x
+    1.  Added "astrometry" coordinate system.
+    2.  Added wcsstat function.
+    (12/8/97, Valdes)
+
+src/t_mscxcor.x
+src/mscxcor.par
+src/x_mscred.x
+src/mkpkg
+doc/mscxcor.hlp
+mscred.cl
+mscred.men
+mscred.hd
+    Renamed mscregister to mscxcor.  (12/8/97, Valdes)
+
+src/mscstat.cl
+    This script no longer needs to deal with image sections since this is
+    now done by imextensions.  (12/1/97, Valdes)
+
+src/t_imext.x
+    Modified to allow image sections.  (12/1/97, Valdes)
+
+src/mscdisplay/src/mkoverscan.x
+src/mscdisplay/src/gamma.x
+    Fixed intrinsic function type mismatch in mkoverscan.x and use of the
+    same variable name as the function name in gamma.x.  These are errors
+    with the Dec Alpha compiler.  (11/18/97, Valdes)
+
+====
+V0.2
+====
+
+mscred.par
+doc/installation.hlp
+    New version information.  (11/4/97, Valdes)
+
+src/msczero.cl
+src/msczero.key +
+    The key '?' prints help, <space> only reports coordinate without centering
+    or writing to a file, 'w' centers and writes coordinate to a file,
+    'z' centers and accumulates offset, 'u' updates the image header and
+    database.  (11/4/97, Valdes)
+
+src/ccdred/src/icscale.x
+    For MEF files the statistics section can be an @file with sections
+    for each subset and any line that is not a section will cause that
+    subset not to be used.
+    (10/31/97, Valdes)
+
+src/ccdred/src/t_combine.x
+src/ccdred/src/icscale.x
+src/ccdred/src/icombine.gx
+src/ccdred/src/icombine.com
+src/ccdred/combine.par
+src/ccdred/src/iclog.x
+src/mscstack.cl
+src/combine.cl	-
+src/_combine.par	-
+mscred.cl
+    COMBINE will now operate on both regular images and MEF files.
+    1.  The scales, zeros, and wts arrays are not passed down from the
+	top of the program rather than created in icombine$t.  This allows
+	values to be set earlier which are then not changed by lower
+	levels such as in icscale.
+    2.  The common block now includes the statistics section so that it
+	will only be queried once.
+    3.  cmb_images detects the type of input data.  The "extensions" parameter
+	is not needed and the functions are determined by detecting the type
+	of input data.
+    4.  cmb_images reads any scale factors from a file and assigned to
+	the images before the images are reordered by grouping.  For
+	MEF data there is then one value per file.
+    5.  For MEF data there are new routines that take care of extracting
+	the extensions and compute scaling factors from image statistics
+	by combining the statistics from the extensions into one value.
+    6.  icscale now checks for previously defined scaling factors and
+	leaves them unchanged.
+    7.  The use _combine and combine.cl as an interface to MEF files is
+	no longer needed.
+    (10/29/97, Valdes)
+
+src/msczero.cl
+    1.  The prompts for ra/dec are no longer updated for previously
+	accumulated offsets.
+    2.  Added missing cos(dec) terms.
+    (10/28/97, Valdes)
+
+src/mscdisplay/src/t_fitscopy.x
+src/mscdisplay/src/fitscopy.par
+src/mscdisplay/src/mscrfits.cl
+src/mscdisplay/src/mscwfits.cl
+src/mscdisplay/doc/mscwfits.hlp
+src/mscdisplay/doc/msc4fits.hlp
+    1.  Added parameters "listonly", "shortlist", and "longlist" and removed
+	"list".
+    2.  The listing information now includes the filename and the
+	number of extensions given by the NEXTEND keyword.
+    3.  The listing format has one line with the input/output filenames,
+	the original filename, the number of extensions, and the title.
+    4.  The short listing consists of the one line while the long listing
+	shows each extension.
+    5.  When doing a "listonly" with "shortlist" then after reading the
+	first header block the task closes the file rather than reading
+	to the end of the file.  This makes for a much faster listing
+	mode.
+    6.  Any pathname in the disk file name is removed when setting the
+	FILENAMEkeywords.
+    7.  If FILENAME is not present but IRAFNAME is present then the latter
+	is used for the original name.
+    8.  Help pages were competed.
+    (10/24/97, Valdes)
+
+src/mscdisplay/src/t_mscdisplay.x
+    Rearrange the code so it puts the final WCS information in the image
+    display before displaying to allow MSCEXAM to run while MSCDISPLAY
+    is running in automatic display mode.  (10/23/97, Valdes)
+
+src/mscdisplay/src/imexam/mscexam.h
+src/mscdisplay/src/imexam/iemw.x
+    Modified to use new coordinate routines.  Now world coordinates are
+    reported using the full database solution.
+    (10/22/97, Valdes)
+
+src/t_mscreg.x
+src/mscregister.par
+    1.  Modified to use new coordinate routines.
+    2.  Added a sigma clipping average for the mean shifts which links
+	the wx and wy shifts together; i.e. if a wx shift is rejected then
+	so is the corresponding wy shift.
+    3.  Added parameter to allow correlation plots to be show even if
+	not doing interactive review.
+    (10/22/97, Valdes)
+
+src/mscxreg.cl
+    1.  Removed call to mscctran and modified to only do the pixel shifts.
+    2.  Added parameter to allow correlation plots to be shown even if
+	not doing interactive review.
+    (10/22/97, Valdes)
+
+src/mscimage.cl
+src/msczero.cl
+    Modified to use new version of MSCCTRAN.  (10/22/97, Valdes)
+
+src/t_mscctran.x		+
+src/mscctran.par		+
+src/liststr.gx		+
+src/rgstr.gx		+
+src/liststr.x		+
+src/rgstr.x		+
+src/mkpkg
+src/x_mscred.x
+mscred.cl
+    A compiled version of MSCCTRAN using the new coordinate routines.
+    (10/22/97, Valdes)
+
+src/mscwcs.x		+
+src/mkpkg
+    A package of coordinate routines for using database solutions
+    specified in images with the WCSSOL keyword.  (10/22/97, Valdes)
+
+src/mscimage.cl
+src/mscimage.par
+    1.  Changed boundary for GEOTRAN to "nearest".
+    2.  Added trim parameter to trim edges of output pieces.
+    (10/13/97, Valdes)
+
+src/mscxreg.dat +
+src/mscxreg.cl
+src/msczero.cl
+src/mscregister.par
+src/t_mscreg.x
+    Changes to allow specifying an input coordinate list (generated for
+    example using the <space> in MSCZERO which now writes the coordinates
+    to the log file) to be used to select regions for correlation.
+    (10/10/97, Valdes)
+
+src/mscarith.cl +
+src/mscstat.cl +
+    New tasks.  (10/10/97, Valdes)
+
+src/msccmd.cl +
+mscred.cl
+mscred.men
+    New task to expand image extensions and excute general command.
+    (10/7/97, Valdes)
+
+src/mscimage.cl
+src/mscimage.par
+    Added "fluxconserve" parameter.  (10/7/97, Valdes)
+
+src/ccdred/src/icscale.x
+    No longer does zero level correction if zero offsets are input from
+    a file.  (10/3/97, Valdes)
+
+*
+    New package created.
+    (10/28/96, Valdes)
+.endhelp

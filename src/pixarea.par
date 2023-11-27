@@ -1,0 +1,4 @@
+input,s,a,,,,List of input images
+output,s,a,,,,List of output images
+outtype,s,h,"area","area|multiply|divide",,Output type
+norm,r,h,1.,,,Normalization

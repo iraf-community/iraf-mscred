@@ -1,0 +1,4 @@
+input,s,a,,,,List of input images
+output,s,a,,,,List of output mosaic MEF files
+description,f,h,mscred$lib/mkmsc/quad.dat,,,Description file
+verbose,b,h,yes,,,Verbose output?

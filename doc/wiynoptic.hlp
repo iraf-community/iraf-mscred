@@ -1,0 +1,267 @@
+.help wiynoptic Oct03 mscred
+.sp 3
+.ce
+\fBUsing MSCRED with the WIYN/Optic Camera\fR
+
+.ce
+Francisco Valdes
+.ce
+October 2003: Version 0
+.cl
+
+.sh
+1. Introduction
+
+This guide describes how to convert the raw format from the Optic camera,
+on loan to WIYN, to a form which can be processed by the \fBmscred\fR
+package.  Once the package setup and format issues are taken care of the
+reduction of WIYN/Optic data is essentially the same as the WIYN Minimosaic
+and other NOAO mosaic cameras.  This is the first version of the guide and
+associated setup files provided with the \fBmscdb\fR database.  It
+currently does not include bad pixel masks and WCS support.  This may be
+added in future.
+
+The raw Optic data is in a "flat" format where the amplifier outputs from
+the two OTCCDs are pasted into a simple image raster in a way that allows a
+simple display to show the mosaic in an approximation of the sky.  The
+overscan bias information is also pasted into the image format on the right
+edge.  The MSCRED reduction package expects a "multiextension" FITS format
+(also referred to as MEF format) where each amplifier, with its overscan,
+are separate images in a multi-image FITS format.  The package also makes
+use of certain keywords to allow automatic display and data reduction.  So
+the additional steps required for Optic data are to transform the flat
+format to the MEF format and add keywords.  There is also a step of
+customizing the task parameters for this particular data.
+
+The MSCRED package provides the tools for the transformations and
+task parameter customization.  All that is needed are configuration files.
+These configuration files are provided through a standard database
+(file tree) called \fBmscdb\fR.  NOAO supplies a database directory tree
+to support all its mosaic cameras.  This database has been extended to
+support WIYN/Optic data.
+
+.sh
+2. SETINSTRUMENT
+
+The configuration of MSCRED is performed by the task \fBsetinstrument\fR.
+The root of the database tree for NOAO data is specified by the logical
+variable "mscdb$".  This variable is generally defined when the MSCRED
+is installed.
+
+.nf
+    ms> path mscdb$
+    ursa!/shared/iraf/extern/mscdb/
+.fi
+
+SETINSTRUMENT may be used with command line arguments or with query
+prompts.  The following shows the most verbose form, querying without using
+the menus, and on the command line.
+
+.nf
+    ms> setinst
+    Site (? for menu): ?
+
+    Sites:
+
+    kpno    Kitt Peak National Observatory
+    ctio    Cerro Tololo Inter-American Observatory
+
+    Site (? for menu or q to quit): kpno
+    Telescope (? for menu): ?
+
+    Telescopes:
+
+    36inch          36inch/0.9m telescope
+    4meter          Mayall 4meter telescope
+    wiyn            WIYN telescope
+
+    Telescope (? for menu or q to quit): wiyn
+    Instrument (? for a list): ?
+
+    Instruments:
+
+    minimosaic      WIYN MiniMosaic
+    wttm            WIYN Tip-Tilt
+    optic1          OPTIC full format (no guide regions)
+
+    Instrument (? for menu or q to quit): optic1
+    ms> setinst
+    Site (? for menu): kpno
+    Telescope (? for menu): wiyn
+    Instrument (? for a list): optic1
+    ms> setinst kpno wiyn optic1
+.fi
+
+The other thing SETINST does is allow you to review the parameter settings
+for the MSCRED package and the CCDPROC task.  You can turn the review off
+with the "review" parameter otherwise adjust parameters and exit EPAR as usual.
+Note that you only need to run SETINST once even if you logout and return
+later.  If you run it again some parameters you may have changed during the
+session may be reset.  The only times you need to run SETINST is when
+you are switching between cameras.  Also note that SETINST is just a script
+and you can manually set the "mscred.instrument" and "mkmsc.description"
+parameters manually to the files provided in \fBmscdb\fR:
+
+.nf
+    mscred.instrument = "mscdb$noao/kpno/wiyn/optic1.dat"
+    mscred.description = "mscdb$noao/kpno/wiyn/Optic/optic1.mkmsc"
+.fi
+
+.sh
+3. MKMSC
+
+One of the primary things SETINST does is set a configuration file for the
+task \fBmkmsc\fR.  This is the task that converts the raw Optic flat format
+to a raw MEF format for MSCRED.  It does this with a configuration file
+that identifies the extensions to be created, the regions of the flat
+image for each extension, and other keyowrds.  You can read about this
+task with the IRAF help topic "mkmsc".
+
+The configuration file for the full format is shown below.
+
+.nf
+# MKMSC description file for a basic OPTIC exposure.
+
+imageid(ccd0)	1
+datasec(ccd0)	[1:2048,1:2052]
+trimsec(ccd0)	[1:2048,1:2052]
+biassec(ccd0)	[4097:4128,1:2052]
+ccdsec(ccd0)	[1:2048,1:2052]
+detsec(ccd0)	[1:2048,1:2052]
+ccdname(ccd0)	"CCD1"
+ampname(ccd0)	"AMP1"
+rdnoise(ccd0)	4.
+gain(ccd0)	!CCD0GAIN
+optfilt(ccd0)	!FILTER
+filter(ccd0)	!TELFILT
+dtv1(ccd0)	0.
+dtv2(ccd0)	0.
+dtm1_1(ccd0)	1.
+dtm2_2(ccd0)	1.
+
+imageid(ccd1)	2
+datasec(ccd1)	[1:2048,2053:4104]
+trimsec(ccd1)	[1:2048,2053:4104]
+biassec(ccd1)	[4097:4128,2053:4104]
+ccdsec(ccd1)	[1:2048,2053:4104]
+detsec(ccd1)	[1:2048,2053:4104]
+ccdname(ccd1)	"CCD1"
+ampname(ccd1)	"AMP2"
+rdnoise(ccd1)	4.
+gain(ccd1)	!CCD1GAIN
+optfilt(ccd1)	!FILTER
+filter(ccd1)	!TELFILT
+dtv1(ccd1)	0.
+dtv2(ccd1)	0.
+dtm1_1(ccd1)	1.
+dtm2_2(ccd1)	1.
+
+imageid(ccd2)	3
+datasec(ccd2)	[2049:4096,1:2052]
+trimsec(ccd2)	[2049:4096,1:2052]
+biassec(ccd2)	[4129:4160,1:2052]
+ccdsec(ccd2)	[1:2048,1:2052]
+detsec(ccd2)	[2049:4096,1:2052]
+ccdname(ccd2)	"CCD2"
+ampname(ccd2)	"AMP1"
+rdnoise(ccd2)	4.
+gain(ccd2)	!CCD2GAIN
+optfilt(ccd2)	!FILTER
+filter(ccd2)	!TELFILT
+dtv1(ccd2)	2048.
+dtv2(ccd2)	0.
+dtm1_1(ccd2)	1.
+dtm2_2(ccd2)	1.
+
+imageid(ccd3)	4
+datasec(ccd3)	[2049:4096,2053:4104]
+trimsec(ccd3)	[2049:4096,2053:4104]
+biassec(ccd3)	[4129:4160,2053:4104]
+ccdsec(ccd3)	[1:2048,2053:4104]
+detsec(ccd3)	[2049:4096,2053:4104]
+ccdname(ccd3)	"CCD2"
+ampname(ccd3)	"AMP2"
+rdnoise(ccd3)	4.
+gain(ccd3)	!CCD3GAIN
+optfilt(ccd3)	!FILTER
+filter(ccd3)	!TELFILT
+dtv1(ccd3)	2048.
+dtv2(ccd3)	0.
+dtm1_1(ccd3)	1.
+dtm2_2(ccd3)	1.
+.fi
+
+Note that you can copy this file to your working area and modify it.  For
+instance if you would rather use the extension names "im1", "im2", etc.
+rather than "ccd0", "ccd1", etc. you can do so.  (Note you would also
+need to reset the parameter "ccdlist.extension".)
+
+The MKMSC task can be used to create new MEF files or to transform and
+replace your flat format files.  I suggest that you test this on
+one file to a new output.  When you are satisfied it is working correctly
+I would simply transform all the data in-place.  The following two examples
+shows creating new MEF files for all fits files in your directory and
+also doing an in-place transformation.
+
+.nf
+    ms> mkmsc *.fits mef//*.fits	# New files prefixed with mef
+
+    ms> mkmsc *.fits ""			# Replace flat format with mef
+.fi
+
+
+The verbose option allows you to monitor the progress and also illustrates
+the copying of sections from the flat file to extensions in the MEF
+file.  The two lines are for the data section and the overscan bias section.
+
+.nf
+    ms> mkmsc obj052 ""
+  Reading description file mscdb$noao/kpno/wiyn/Optic/optic1.mkmsc
+  Create obj052[ccd0][2080,2052]: 
+    obj052[1:2048,1,2052] -> obj052[ccd0][1:2048,1:2052]
+    obj052[4097:4128,1,2052] -> obj052[ccd0][2049:2080,1:2052]
+  Create obj052[ccd1][2080,2052]: 
+    obj052[1:2048,2053,4104] -> obj052[ccd1][1:2048,1:2052]
+    obj052[4097:4128,2053,4104] -> obj052[ccd1][2049:2080,1:2052]
+  Create obj052[ccd2][2080,2052]: 
+    obj052[2049:4096,1,2052] -> obj052[ccd2][1:2048,1:2052]
+    obj052[4129:4160,1,2052] -> obj052[ccd2][2049:2080,1:2052]
+  Create obj052[ccd3][2080,2044]: 
+    obj052[2049:4096,2053,4096] -> obj052[ccd3][1:2048,1:2044]
+    obj052[4129:4160,2053,4096] -> obj052[ccd3][2049:2080,1:2044]
+.fi
+
+
+After converting one or more files the first thing you are likely to do
+is use \fBmscdisplay\fR to display the data.  Obviously, it should display
+correctly if everything worked properly.  Note that the gap between the
+two CCDs is set by the parameter "mimpars.xgap" and is not inherently
+in the data header.  The actual physical gap is not produced until
+the mosaic is reconstructed into a single image using a calibrated
+world coordinate solution.
+
+.nf
+    ms> mscdisplay obj052 1 xgap=104
+.fi
+
+
+.sh
+4.  Data Reductions
+
+
+After producing the MEF format and configuring MSCRED package the reductions
+proceed as described from other mosaic instruments.  You will be able to
+combine calibrations, use \fBccdproc\fR, etc.  A quick initial test that
+the keywords and translations are reasonable is the task \fBccdlist\fR:
+
+.nf
+    ms> ccdlist *fits
+    adflat152.fits[ccd0][2048,4104][real][dflat][1][V][OTZ]:
+    aobj052.fits[ccd0][2048,4104][real][object][1][V][OTZF]:
+    azero141.fits[ccd0][2048,4104][real][zero][1][B][OT]:
+    obj051.fits[ccd0][2080,2052][ushort][object][1][V]:
+.fi
+
+The first one is from an unprocessed exposure and the others have been
+processed by CCDPROC.
+.endhelp

@@ -1,0 +1,17 @@
+input,s,a,,,,List of input images
+output,s,a,,,,List of output images
+pattern,s,a,,,,Pattern or list of patterns
+weight,s,h,"",,,Weight or list of weights
+masks,s,h,"",,,List of input image masks (optional)
+patmasks,s,h,"",,,List of pattern image masks (optional)
+background,s,h,"",,,List of input backgrounds (optional)
+bkgpattern,s,h,"",,,List of pattern backgrounds (optional)
+bkgweight,s,h,"",,,List of weight backgrounds (optional)
+ncblk,i,h,1,,,Column smoothing
+nlblk,i,h,1,,,Line smoothing
+extfit,s,h,"",,,List of extension names to fit
+extout,s,h,"",,,List of extension names to output
+outtype,s,h,"none","none|fit|diff|ratio|flat|pfit|pdiff|pratio|pflat|sfit|sdiff|sratio|sflat",,Output type
+logname,s,h,"PATFIT",,,Name for log and keyword identification
+logfile,s,h,"",,,Logfile
+verbose,b,h,yes,,,Verbose output?

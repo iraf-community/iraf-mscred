@@ -1,0 +1,8 @@
+# Global environment definitions for the package.
+
+reset	mscbin			= "mscred$bin(arch)/"
+reset	mscsrc			= "mscred$src/"
+reset	msclib			= "mscred$lib/"
+reset	pkglibs			= "mscbin$,tables$bin(arch)/,tables$lib/"
+
+keep

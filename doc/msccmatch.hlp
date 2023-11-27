@@ -1,0 +1,175 @@
+.help msccmatch Dec97 mscred
+.ih
+NAME
+msccmatch -- match coordinates and adjust WCS
+.ih
+SYNOPSIS
+A list of reference celestial coordinates, either from an astrometry
+catalog or measured from a reference image, for stars in the field is
+matched against objects in the mosaic data.  A linear relation between the
+observed positions and the reference coordinates is fit.  The relation may
+include a zero point shift, scale change, and axis rotation for both
+coordinate axes.  The removes pointing errors, rotation errors, and
+atmospheric refraction effects.  The fit is used to update the image world
+coordinate system to register the WCS to the input coordinate system.
+.ih
+USAGE	
+msccmatch input coords
+.ih
+PARAMETERS
+.ls input
+List of input mosaic exposures to be calibrated.
+.le
+.ls coords
+Coordinate filename or command to execute to produce a coordinate file.
+The file contains the right ascension and declination in the first two
+columns.  Any other columns are ignored.  When an explicit file is
+specified it used for all input exposures.
+
+A command to execute is specified by beginning the parameter string with
+"!".  The special arguments $I will be replaced by the input mosaic
+exposure and $C by the filename for the coordinate file to be used.
+A typical command is
+
+.nf
+    !mscgetcatalog $I $C
+.fi
+
+Note that any hidden parameters either need to be set first or be given
+explicitly as part of the command.
+.le
+.ls outcoords = ""
+Optional list of updated coordinate files to output.  The list is matched
+with the input list of mosaic exposures.  If the list is shorter than the
+input list then no output files are created for the remaining exposures.
+The output coordinate file consists of those lines in the input coordinates
+which were used; i.e. were found to be in the field, were not rejected due
+to bad pixels, and which where centered without error.
+.le
+.ls usebpm = yes
+Use bad pixel masks given by the BPM header keywords to reject sources
+that contain bad pixels?
+.le
+
+The following parameters are for a coarse correlation search with large
+offsets but small rotation.
+
+.ls nsearch = 50
+Maximum number of positions to use in search.  If this is zero then the
+coarse search is skipped and the coordinates are assumed to be close enough
+to centroid directly on the objects.  If the coarse search is selected then
+this number should not be too large, otherwise the execution time will
+become long.
+.le
+.ls search = 0.
+Translation search radius in arcsec.  If this is zero then the coarse
+serach is skipped and the coordinates are assumed to be close enough to
+centroid directly.  This defines how far from the initial coordinates to
+search using the \fInsearch\fR objects.  It should be just large enough to
+include the expected error in the initial coordinates.
+.le
+.ls rsearch = 0.
+Rotation search radius in degrees.  This defines a range of rotations about
+the current tangent point that might be needed to find the correlation match.
+The correlation algorithm only works with small rotations or order a
+degree.
+.le
+
+The follwoing parameters are for the fine centroiding and coordinate
+solution based on the centroiding.
+
+.ls nfit = 4
+The minimum number of sources which must be found and centroided for an
+acceptable coordinate fit.  If the value is negative then this is the
+maximum number of objects which failed to be found for an acceptable
+solution.
+.le
+.ls rms = 2.
+The maximum RMS in arcsec for an acceptable solution. 
+.le
+.ls maxshift = 5
+Maximum centering shift in arcsec when centroiding.  Sources that produce
+centroids (from the \fBcenter\fR task) that differ from the initial
+position by more than this amount are considered to have failed to be
+centroided.
+.le
+.ls fitgeometry = "general" (shift|xyscale|rotate|rscale|rxyscale|general)
+Fitting geometry for the coordinate adjustment.  This should normally be
+"general" to all allow for all effects of atmospheric refraction.  The
+other options are only used when looking for specific effects.
+.le
+.ls reject = 3.
+Iterative rejection sigma for fitting the position residuals as a function
+of arcsec from the field tangent point.
+.le
+.ls update = yes
+Update the coordinate system in the mosaic exposures?  If the value is no then
+the input data is not modified.  This option might be used just to check
+the coordinate system.  If the the value is yes and the fit satisfies the
+parameters defining an acceptable solution the coordinate system will be
+updated if \fIinteractive\fR=no, otherwise there is a query whether to
+accept the solution and update the input data.
+
+.le
+.ls interactive = yes
+Is this task to be run interactively?  If yes then the fitting can be
+examined and adjusted interactively if the \fIfit\fR parameter is yes and
+the final solution will be printed followed by a query to accept the
+solution provided the \fIupdate\fR parameter is yes.
+.le
+.ls fit = yes
+Do the coordinate fitting interactively?  This required the \fIinteractive\fR
+parameter to be yes.  If the fitting is done interactively the \fBgeomap\fR
+task used to do the fitting will be executed interactively.  The graphical
+fitting is exited using the 'q' key.  See the help for \fBgeomap\fR
+for more on the interactive fitting.
+.le
+.ls verbose = yes
+Verbose output?  This determines whether various terminal output is
+produced.
+.le
+.ls listcoords = yes
+List centroiding results for all sources in verbose mode?
+.le
+.ls graphics = "stdgraph"
+Graphics device for the interactive fitting.
+.le
+.ls cursor = ""
+Graphics cursor input for the interactive fitting.  The default null
+string value selects the graphics window cursor.
+.le
+
+.ls accept = yes
+This is a query parameter when \fIupdate\fR and \fIinteractive\fR are yes.
+You are queried after printing the statistics of the coordinate fit whether
+to accept the solution and update the coordinate system of the mosaic
+exposure.
+.le
+.ih
+DESCRIPTION
+A list of reference celestial coordinates, either from an astrometry
+catalog or measured from a reference image, for stars in the field is
+matched against objects in the mosaic data.  A linear relation between the
+observed positions and the reference coordinates is fit.  The relation may
+include a zero point shift, scale change, and axis rotation for both
+coordinate axes.  The removes pointing errors, rotation errors, and
+atmospheric refraction effects.  The fit is used to update the image world
+coordinate system to register the WCS to the input coordinate system.
+
+A full description of this task remains to be written.
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls MSCCMATCH - V4.0: August 22, 2000
+This version includes the ability to get the list of catalogs directly from
+a web-based catalog server and to find large offsets (provided any rotation
+is small) using a correlation algorithm.
+.le
+.ls MSCCMATCH - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+msczero, mscgetcatalog, geomap, center
+.endhelp

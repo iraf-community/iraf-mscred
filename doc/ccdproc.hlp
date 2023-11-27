@@ -1,0 +1,846 @@
+.help ccdproc Jan01 mscred
+.ih
+NAME
+ccdproc -- Process mosaic/multiple amplifier CCD data
+.ih
+USAGE	
+ccdproc images
+.ih
+PARAMETERS
+.ls images
+List of mosaic or multiple amplifier CCD data to process.  The data is
+typically in multiextension files though simple single images are allowed.  If
+the input includes processed data requiring no further processing it
+will be silently skipped.  Calibration data may be included in the input
+list and it will be selected and processed as needed provided the data has
+a keyword identifying the type of data.  However, more commonly the
+calibration data is specified separately with the calibration data
+parameters.
+.le
+.ls output = ""
+List of output processed data.  If no list is given then the
+processing will replace the input images with the processed images,
+possibly after making a backup of the input if the package "bkuproot"
+parameter is defined.  If a list is given it must match the input
+list.  \fINote that dependent calibration data requiring processing will
+be processed in-place (with optional backup).\fR
+.le
+.ls bpmasks = ""
+List of output bad pixel files or directories to contain bad pixel masks
+created for each input.  If the input is a single image then the output
+is a bad pixel file while if the input is a multiextension file then
+the output is a directory to contain a bad pixel mask file for each
+extension.  If no list is specified then no output masks will be
+produced.  The output mask will be a combination of pixels specified
+in the "\fIfixfile\fR" parameter and identified as saturated or bleed
+trail pixels.
+.le
+.ls ccdtype = ""
+CCD type to select from the input list.  If no type is given
+then all input will be selected.  The recognized types are described
+in \fBccdtypes\fR.
+.le
+.ls noproc = no
+Only list processing steps to be performed for each input file?
+.le
+
+.ce
+PROCESSING SWITCHES
+.ls xtalkcor = no
+Apply a crosstalk correction?  The crosstalk file is specified by
+the "xtalkfile" parameter.
+.le
+.ls fixpix = yes
+Fix bad CCD pixels by linear interpolation from neighboring
+lines and columns?  If a file is specified by the "\fIfixfile\fR" parameter
+then the identified pixels will be interpolated upon input either along
+lines or columns depending on the mask value and dimensions of the regions.
+If saturated or bleed trail pixels are defined in this task, these will
+be interpolated on output (i.e. after all other processing) along
+lines.
+.le
+.ls overscan = yes
+Apply overscan or prescan bias correction?  If yes then the overscan
+section must be specified with the "biassec" parameter.
+.le
+.ls trim = yes
+Trim the image of the overscan region and bad edge lines and columns?
+If yes then the data section must be specified with the "trimsec" parameter.
+.le
+.ls zerocor = yes
+Apply zero level correction?  If yes a zero level image must be specified
+with the "zero" parameter.
+.le
+.ls darkcor = yes
+Apply dark count correction?  If yes a dark count image must be specified
+with the "dark" parameter.
+.le
+.ls flatcor = yes
+Apply flat field correction?  If yes flat field images must be specified
+with the "flat" parameter.
+.le
+.ls sflatcor = no
+Apply sky flat field correction?  If yes sky flat field images must be
+specified with the "sflat" parameter.
+.le
+.ls merge = yes
+Merge amplifiers from the same CCD?  If yes then the amplifier extensions
+with the same CCD name will be merged into a single extension with the
+header and extension name of the first amplifier extension in the file.
+If only a single extension results from the merging then a simple image
+file is produced.  If the input has only one amplifier per CCD then
+nothing is done.  The merging also creates new bad pixel masks if
+an output bad pixel mask is specified and if the merged masks differ from
+the current bad pixel masks.
+.le
+
+.ce
+PROCESSING PARAMETERS
+
+The parameters, "xtalkfile", "fixfile", "saturation", "bleed", "biassec",
+"trimsec", "zero", "dark", "flat", and "sflat" may reference keywords
+containing the desired value by preceding the keyword name with '!'.  This
+allows each image or image extension in each input to have different
+values.  Note that keyword name specified may be translated through the
+instrument file to another keyword or to a default value.
+
+.ls xtalkfile = ""
+Crosstalk file for the crosstalk correction.  Only one crosstalk file may
+be specified and it applies to all the input data being processed.
+A keyword reference may be used to specify the file by preceding
+the keyword name with '!'.
+.le
+.ls fixfile = ""
+Bad pixel mask, image, or file.  specified in the image header or
+instrument translation file.  A bad pixel mask is a compact format (".pl"
+extension) with zero values indicating good pixels and non-zero values
+indicating bad pixels.  A bad pixel image is a regular image in which zero
+values are good pixels and non-zero values are bad pixels.  A bad pixel
+file specifies bad pixels or rectangular bad pixel regions as described
+later.  The direction of interpolation is determined by the mask value with
+a value of two interpolating across columns, a value of three interpolating
+across lines, and any other non-zero value interpolating along the
+narrowest dimension.  A keyword reference may be used to specify the mask
+by preceding the keyword name with '!'.  The special value "BPM" may also
+be used reference the standard BPM keyword for a bad pixel mask.
+.le
+.ls saturation = "INDEF"
+Pixels with values equal to or greater than this value in the input data
+are identified as saturated by the mask value 4.  The saturation value is
+specified by two words.  The first word is a number giving the saturation
+pixel value.  The value INDEF is equivalent to positive infinity and will
+identify no pixels as saturated.  The second word is the units which may be
+"ADUs" or "electrons".  If the units are "electrons" then the conversion
+from ADUs to electrons (in electrons per ADU) will be obtained from the
+"gain" keyword (which may be translated to some other keyword in the
+instrument file.  The units may abbreviated or be omitted, which then
+defaults to "ADUs".  If the first word is not a number (with or
+without a preceding '!') then the word is considered to be a keyword
+reference.  The value of the keyword is interpreted in the same way as a
+number with optional units.  Note that numeric keywords cannot not have a
+units specification so they will always be understood as being in ADUs.
+Since there is only one parameter value a keyword is the way to provide
+different saturation values for the extensions and list of input data.
+.le
+.ls sgrow = 0
+Number of neighboring pixels along rows and columns from a saturated
+pixel which are also identified as saturated pixels.
+.le
+.ls bleed = "INDEF"
+Threshold for identifying bleed trail pixels.  This may be specified in
+the same way as the saturation value including use of "ADUs" and "electrons"
+and reference to a header keyword.  In addition the value may be set
+in relation to the saturation value or the mean of the data with one
+of the following specifications
+
+.nf
+    saturation-X, saturation/X, mean+X, mean*X
+.fi
+
+where X is a number and the values are in ADU.  For example the value
+"mean+5000" would define candidate bleed trail pixels as those which are
+5000 counts above the mean.  Note that for a pixel to actually be
+identified as a bleed pixel there must be a consecutive number of pixels
+(parameter \fIbtrail\fR) along a column which are above this threshold.
+.le
+.ls btrail = 20
+Number of consecutive pixels with values above the bleed pixel threshold
+along a column to qualify as a bleed trail.  The threshold is specified
+by the \fIbleed\fR parameter.
+.le
+.ls bgrow = 0
+Number of neighboring pixels along rows and columns from a bleed trail
+pixel which are also identified as bleed trail pixels.
+.le
+Radius
+.ls biassec = ""
+Overscan bias image section.  Only the part of the bias section along the
+lines is used.  The column length of the bias region fit is defined by the
+trim section.  If one wants to limit the region of the overscan used in the
+fit to be less than that of the trim section then the sample region
+parameter, \fIsample\fR, should be used.  It is an error if no section or
+the whole image is specified.  A keyword reference may be used to specify
+the file by preceding the keyword name with '!'.  The older form of the
+special word "image" to reference the keyword BIASSEC is also allowed.
+.le
+.ls trimsec = ""
+Image section defining the trimmed output.  A keyword reference may be used
+to specify the file by preceding the keyword name with '!'.  The older form
+of the special word "image" to reference the keyword TRIMSEC is also
+allowed.
+.le
+.ls fixfile = ""
+Bad pixel mask, image, or file.  specified in the image header or
+instrument translation file.  A bad pixel mask is a compact format (".pl"
+extension) with zero values indicating good pixels and non-zero values
+indicating bad pixels.  A bad pixel image is a regular image in which zero
+values are good pixels and non-zero values are bad pixels.  A bad pixel
+file specifies bad pixels or rectangular bad pixel regions as described
+later.  The direction of interpolation is determined by the mask value with
+a value of two interpolating across columns, a value of three interpolating
+across lines, and any other non-zero value interpolating along the
+narrowest dimension.  A keyword reference may be used to specify the mask
+by preceding the keyword name with '!'.  The special value "BPM" may also
+be used reference the standard BPM keyword for a bad pixel mask.
+.le
+.ls zero = ""
+List of zero level calibration files.  The first image or image extension
+matching the amplifier of the input image to be calibrated is used.  The
+CCD type and subset are not checked for these images.  If no calibration
+image is found as specified by this parameter then the input list is
+checked for files of the appropriate CCD type.  The zero level calibration
+images may be one or two dimensional.  If the calibration file has not been
+processed it is processed as approprate for this type of calibration using
+the same parameters as for the input data being processed.  A keyword
+reference may be used to specify the file by preceding the keyword name
+with '!'.
+.le
+.ls dark = ""
+List of dark count calibration files.  The first image or image extension
+matching the amplifier of the input image to be calibrated is used.  The
+CCD type and subset are not checked for these images.  If no calibration
+image is found as specified by this parameter then the input list is
+checked for files of the appropriate CCD type.  If the calibration file has
+not been processed it is processed as approprate for this type of
+calibration using the same parameters as for the input data being
+processed.  A keyword reference may be used to specify the file by
+preceding the keyword name with '!'.
+.le
+.ls flat = ""
+List of flat field calibration files.  The first image or image extension
+matching the amplifier and subset of the input image to be calibrated is
+used.  The CCD type and subset are not checked for these images.  If no
+calibration image is found as specified by this parameter then the input
+list is checked for files of the appropriate CCD type.  If the calibration
+file has not been processed it is processed as approprate for this type of
+calibration using the same parameters as for the input data being
+processed.  The flat field images may be one or two dimensional.  A keyword
+reference may be used to specify the file by preceding the keyword name
+with '!'.
+.le
+.ls sflat = ""
+List of sky flat field calibration files.  The first image or image
+extension matching the amplifier and subset of the input image to be
+calibrated is used.  The CCD type and subset are not checked for these
+images.  If no calibration image is found as specified by this parameter
+then the input list is checked for files of the appropriate CCD type.  If
+the calibration file has not been processed it is processed as approprate
+for this type of calibration using the same parameters as for the input
+data being processed.  The sky flat field images may be one or two
+dimensional.  A keyword reference may be used to specify the file by
+preceding the keyword name with '!'.
+.le
+.ls minreplace = 1.
+When processing flat fields, pixel values below this value (after all other
+processing such as overscan, zero, and dark corrections) are replaced by
+this value.  This allows flat fields processed by \fBccdproc\fR to be
+certain to avoid divide by zero problems when applied to object images.
+.le
+
+.ce
+OVERSCAN BIAS FITTING PARAMETERS
+
+There are two types of overscan (or prescan) bias determinations.  One
+determines a independent bias value for each line.  The other averages the
+overscan columns to make an overscan vector, fits a smooth bias function to
+the vector, and then evaluates the bias function to get the bias at each
+line.  The line-by-line bias determination only uses the \fIfunction\fR
+parameter.  The bias function determination uses the \fBicfit\fR
+procedure with the following parameters.
+
+.ls interactive = no
+Fit the overscan bias vector interactively?  If yes and the bias function
+type is one of the \fBicfit\fR types then the average overscan bias vector
+is fit interactively using the \fBicfit\fR package.  If no then the fitting
+parameters are used in a non-interactive fit.
+.le
+.ls function = "legendre"
+Line-by-line determination of the bias is specified by:
+
+.nf
+         mean - the mean of the biassec columns at each line
+       median - the median of the biassec columns at each line
+       minmax - the mean at each line with the min and max excluded
+.fi
+
+The bias vector may be fit by one of the functions:
+
+.nf
+     legendre - legendre polynomial
+    chebyshev - chebyshev polynomial
+      spline1 - linear spline
+      spline3 - cubic spline
+.fi
+.le
+.ls order = 1
+Number of polynomial terms or spline pieces in the overscan fit.  To simply
+use the average bias use a polynomial function of order 1.
+.le
+.ls sample = "*"
+Sample points to use in the overscan bias fit.  The string "*" specifies all
+points otherwise an \fBicfit\fR range string is used.
+.le
+.ls naverage = 1
+Number of points to average or median to form fitting points.  Positive
+numbers specify averages and negative numbers specify medians.
+.le
+.ls niterate = 1
+Number of rejection interations to remove deviant points from the overscan fit.
+If 0 then no points are rejected.
+.le
+.ls low_reject = 3., high_reject = 3.
+Low and high sigma rejection factors for rejecting deviant points from the
+overscan fit.
+.le
+.ls grow = 0.
+One dimensional growing radius for rejection of neighbors to deviant points.
+.le
+
+.ce
+PACKAGE PARAMETERS
+.ls pixeltype = "real real"
+Output pixel datatype and calculation datatype.  When images are processed
+or created, the output pixel datatype is the highest precision of the input
+pixel datatype and the specified output datatype.  The allowed datatypes
+and order of precision are "short", "ushort", "int", "long", "real", or
+"double".  The calculation datatype may either be short or real.
+Real is the default if no calculation type is specified.
+.le
+.ls verbose = no
+Print log information to the standard output?
+.le
+.ls logfile = "logfile"
+Logfile to append log information.  If no filename is specified then no
+logfile is kept.
+.le
+.ls plotfile = ""
+Metacode plotfile for appending plots of the overscan bias fits.  If
+no filename is specified then no metacode plotfile is kept.
+.le
+.ls backup = "once" (none|once|all)
+Backup the input data when the input file is replaced by the processed data?
+If the value is "none" then no backup of the input data is made.  If the
+value is "once" then only the first backup of the input is made.  If
+the value is "all" than if the input is repeatedly replaced by additional
+processing then additional backups will be made.
+.le
+.ls bkuproot = "Raw/"
+When a backup of the input data is made the string given by this parameter
+is used as a prefix to the original input data filename.  If the root
+is a directory name (ends with '$' or '/') the directory will be
+created if needed and the input data moved to the directory.  When
+the backup type is "all" and a second version of the input is backed up
+a digit is prepended to the input filename.
+.le
+.ls instrument = ""
+CCD instrument file.  See help for \fBinstrument\fR.
+.le
+.ls ampfile = "amps"
+The "amp" keyword (which may be translated in the instrument file) produces
+a string identifying the amplifier for each image.  A mapping between the
+full string and a short version (based on the first word) is stored in
+this file.
+.le
+.ls ssfile = "subsets"
+The "subset" keyword (which may be translated in the instrument file)
+produces a string identifying a subset for each image. A mapping between
+the full string and a short version (based on the first word) is stored
+in this file.
+.le
+.ls im_bufsize = 0.065536
+When a line of an image is read a larger block of data is actually read.
+This parameter defines the block size in megabytes.  For large images
+this I/O buffering often makes the processing more efficient.  Note
+however that setting this to the size of the image does not necessarily
+make the processing faster.  Once the block size reaches an optimal size
+for the disk I/O system it does not improve performance further and might
+actually degrade performance if too much memory is tied up.
+.le
+.ls graphics = "stdgraph"
+Graphics output device for interactive graphics.
+.le
+.ls cursor = ""
+Graphics cursor input.  If null the standard terminal graphics cursor
+is used.
+.le
+.ls version
+Package version string.
+.le
+.ih
+DESCRIPTION
+\fBCcdproc\fR applies various calibrations and corrections to CCD data in
+multiextension (mosaic or multiamplifier) or single image formats.  The
+calibrations and corrections are for amplifier crosstalk, detector defects,
+electronic bias, zero level bias, dark counts, and pixel responses.  The
+task also identifies saturated pixels and bleed trails, trims unwanted edge
+lines and columns, merges multiple amplfiers from the same CCD into single
+images, and changes the pixel datatype.
+
+The task is designed to be efficient and easy to use.  All one has to do is
+set the parameters and begin processing the data.  The task takes care of
+most of the record keeping and automatically does the prerequisite
+processing of calibration images.  Beneath this simplicity there is much
+going on.  In this section a brief description of the usage is given.  The
+following sections present detailed discussions on the different operations
+performed and the order and logic of the processing steps.
+
+One begins by setting the task parameters.  There are many parameters but
+they may be easily reviewed and modified using "\fBeparam\fR".  The CCD
+data to be processed is specified with the "input" parameter list as a
+combination of filenames, filename templates, and @files.  Previously
+processed data are silently ignored and calibration files are recognized
+provided the CCD image types are identified in the image headers (see
+\fBinstruments\fR and \fBccdtypes\fR).  Therefore it is permissible to use
+simple image templates such as "*.fits".   However, it is recommended that
+calibration data by specified explicitly with the appropriated parameters.
+
+The "\fIccdtype\fR" parameter may be used to select only certain types of
+CCD data to process.  If the data does not contain a CCD type
+identification keyword then the parameter can be set to the null string
+"".  In this case it is the user's responsibility to select the correct
+processing steps for the type of data, and the calibration data cannot be
+determined automatically from the input list.
+
+The names for processed data are specified by the "\fIoutput\fR" parameter
+list of names which are matched in order against the input list.  However,
+if no output list is given the processed data replaces the input data with
+an option to make a backup of the original input file (see the package
+"\fIbkuproot\fR" parameter).  The output file will be in the same format as
+the input file except that if a multiextension input consists of multiple
+amplifiers from a single CCD and the amplifiers are merged, a single simple
+image will be produced.
+
+Other (optional) output includes pixel masks and processing log information.
+Output pixel masks are specified by the "\fIbpmasks\fR" parameter.  The
+masks merge any input pixel mask data with identification of saturated or
+non-linear pixels and bleed trails.  The processing information consists of
+a logfile and/or terminal output for text and a plotfile for plots of the
+overscan bias fitting.  These are select with the package "\fIlogfile\fR",
+"\fIverbose\fR", and "\fIplotfile\fR" parameters.
+
+The processing operations are selected by boolean (yes/no) parameters.
+When the input data includes CCD type identifications the processing
+options may be set for object data and only the appropriate subset of
+operations will be performed on the calibration data.  Any combination of
+operations may be specified.  While it is possible to do operations in
+separate steps some sets of operations are done in a single pass through
+the data and will be more efficiently performed if done at the same time.
+
+The processing steps selected have related parameters which must be
+specified.  These are things like image sections defining the electronic
+bias overscan and trim regions, parameters for identifying saturated pixels
+and bleed trails, and calibration files.  There are a number of parameters
+used for fitting the overscan or prescan electronic bias data.  These are
+parameters used by the standard IRAF curve fitting package \fBicfit\fR.
+
+Calibration data are specified by task parameters and/or in the input
+list.  The task paramters are lists so more than one calibration file may
+be specified.  Zero and dark count calibrations generally only need one
+file but flat field calibrations need one for each subset which is
+typically the filter.  When more than one calibration file is specified
+then the first one encountered that matches the input is used and a warning
+is issued for the extra files.  Calibration files specified by task
+parameters take precedence over calibration files in the input list.
+
+In addition to the task parameters there are package parameters which
+affect \fBccdproc\fR.  These include the instrument, amplifier, and subset
+files, the verbose, text and plot output log settings, the output and
+calculation pixel datatype, the amount of memory to use for image I/O
+buffering, and the backup option.  The instrument file is used to define
+the keywords to be used, translations of CCD type strings to a standard
+set, and defaults for missing keywords.  The amplifier and subset files
+translate arbitrary keyword values for the amplifier and subset to short
+one word identifiers.  Users may edit these files to change the mapping.
+The image I/O buffering may be increased to improve I/O efficiency.  Note
+that this is just how much is read in one I/O request and is not a means to
+cache an image in memory.  The backup option allows input files to be saved
+with a new name or in a directory when the processed data replaces the
+input.  One may backup once, every time, or not at all.  When a backup is
+requested the prefix string is added to the input name or the input is
+moved to the backup directory.  The datatype parameter determines the type
+of the output pixel and the calculation mode.  Typically raw CCD data is in
+short integers and processed data is saved as real (32-bit floating point)
+values.
+
+When an input file is processed the task first determines the processing
+parameters and calibration files.  If a requested operation has been done
+it is skipped and if all requested operations have been completed then no
+processing takes place.  When it determines that a calibration file is
+required it checks for the file from the task parameter and then for a
+calibration file of the proper type in the input list.  Having selected a
+calibration file it checks if it has been processed.  If it has not been
+processed, based on the current settings of the processing options
+appropriate for that type of calibration, it is processed automatically.
+Once the processing parameters and calibration files have been determined
+the input file is processed.  The output processed data will include
+keywords identifying the processing steps and calibration files used.
+
+.sh
+xtalkcor: Amplifier Crosstalk Correction
+
+When multiple amplifiers are readout, such as occurs when using multiple
+amplifiers in a single CCD or multiple CCDs in a mosaic, there is the
+possibilty of crosstalk in the controller electronics.  The crosstalk
+causes pixel values produced by one amplifier to be affected by the signal
+in another amplifier.  There are many ways this crosstalk may affect the
+data.  \fBCcdproc\fR includes a way to correct pixels based on a
+simple crosstalk model.
+
+In this model the signal for a pixel in one amplifier, which we call the
+"source", adds or subtracts a small amount to the pixel value read at the
+same time in another amplifier, called the "victim".  A correction is
+obtained by multiplying the pixel value of the source image by a crosstalk
+coefficient and adding or subtracting it from the matching pixel in the
+victim image.
+
+Note that it is possible that a source may also be a victim and that a
+victim may be affected by multiple sources.  In our simple model each pair
+of source and victim are treated independently and the source pixel values
+used to correct a victim are treated as unaffected by other amplifiers.
+
+The crosstalk coefficients are given by a crosstalk calibration file.  This
+may be specified explicitly through reference to a keyword.  The correction
+is performed by the task \fBxtalkcor\fR which is called from
+\fBccdproc\fR.  Information about the format of the crosstalk calibration
+file and details of the algorithm are found in the description for that
+task.  The crosstalk coefficients may provided by the observatory as a
+standard calibration file or they may be estimated from the data using the
+task \fBxtcoeff\fR.
+
+The crosstalk correction is performed before any other operation.  The
+simple model of the crosstalk is that the raw data from the amplifier
+readout is used.  Therefore the correction should generally be applied
+only to the raw data.
+
+.sh
+Saturated Pixels
+
+Saturated pixels are identified as those pixels with values above a fixed
+threshold in the input image before they are modified by any other
+calibration.  Any pixels identified as bad in a pixel file given by the
+"\Ifixfile\fR" parameter are excluded.  Neighboring pixels, those within a
+distance of "\fIsgrow\fR" pixels along lines or columns, of the threshold
+selected saturation pixels are also identified as saturated.
+
+To identify saturated pixels a saturation threshold is specified by the
+"\fIsaturation\fR" parameter.  The saturation value may be given in units
+of digital counts as recorded in the image data or as electrons related to
+the digital counts through a gain keyword in the header.  The parameter
+description explains how to specify the saturation threshold.  The term
+"saturated" can really be used to apply to any pixels which are non-linear
+and not correctable.  Thus the saturation threshold need not be the actual
+saturation of the CCD but some lower value where the pixels become
+uncorrectably non-linear.
+
+The identified pixels are recorded in the output bad pixel mask specified
+by the "\fIbpmasks\fR" parameter with a mask value of 4.  If the
+"\fIfixpix\fR" processing option is selected the saturated pixels are
+replaced by linear interpolation along lines.  If a pixel identified as bad
+in an input mask or file touches a saturated pixel it is also
+interpolated.  This is done to avoid funny effects where the bad pixel is
+first interpolated using data which has not yet been identified as a bleed
+trail or saturated pixel and which is not subsequently replaced by more
+reasonable data values.
+
+Note that if no output pixel mask or pixel replacement are specified then
+the saturated pixels will have no effect.  Therefore, the identification of
+such pixels is not done by the task even if the other parameters are set to
+identify saturated pixels.  This operation does not apply to data
+identified as zero, dark, or flat.
+
+.sh
+Bleed Trails
+
+Bleed trails are identifed as regions with some minimum number of
+consecutive pixels along a columns having values above a fixed threshold.
+The pixel values are before they are modified by any other calibration.
+Neighboring pixels, those within a distance of "\fIbgrow\fR" pixels along
+lines or columns, of the threshold selected bleed trail pixels are also
+identified as part of the bleed trail.  Any pixels identified as bad in a
+pixel file given by the "\Ifixfile\fR" parameter are excluded.
+
+To identify bleed trails a threshold is specified by the "\fIbleed\fR"
+parameter.  The value may be given in units of digital counts as recorded
+in the image data or as electrons related to the digital counts through a
+gain keyword in the header.  The parameter description explains how to
+specify the bleed threshold.  In addition to an explicit value specified by
+the parameter or in the header the threshold may be specified in relation
+to the saturation threshold or to the mean value in the data.
+
+Note that it is not individual pixels above a threshold but a consecutive
+number of pixels.  This means the threshold can be fairly low provided the
+minimum bleed trail length, specified by the "\fIbtrail\fR" parameter, is
+greater than would occur in objects.  For this reason specifying the
+threshold as some number times the mean or above the mean is very useful.
+A recommendation is to use "mean+5000" when the data in counts are from 15
+or 16 bit A/D converters.
+
+The identified pixels are recorded in the output bad pixel mask specified
+by the "\fIbpmasks\fR" parameter with a mask value of 5.  If the
+"\fIfixpix\fR" processing option is selected the bleed trails are replaced
+by linear interpolation along lines.  If pixel identified as bad in an
+input mask or file touches the bleed trail it is also interpolated.
+This is done to avoid funny effects where the bad pixel is first interpolated
+using data which has not yet been identified as a bleed trail or saturated
+pixel and which is not subsequently replaced by more reasonable data values.
+
+Note that if no output pixel mask or
+pixel replacement are specified then the bleed trails will have no effect.
+Therefore, the identification of such pixels is not done by the task even
+if the other parameters are set to identify saturated pixels.
+This operation does not apply to data identified as zero, dark, or flat.
+
+.sh
+Output Pixel Masks
+
+An output pixel mask is created when a name is specified with the
+"\fIbpmasks\fR" parameter and the mask does not exist.  If the processing
+does not involved any modification to the input data then only the mask
+will be produced.  The mask is a combination of the input mask specified
+by the "\fIfixfile\fR" parameter and pixels identified as saturated and
+bleed trails.  Note that the "\fIfixfile\fR" parameter is used even if
+"\fIfixpix\fR" is not set.
+
+An input bad pixel mask is not required and if none is specified then
+the output will be just the pixels identified as bleed trails or
+saturated.  If the saturated pixels and bleed trails are not identified
+and no input mask is specified then the output will simply be an
+empty mask.
+
+The specified output mask is currently used as a directory name.
+It is created if it is not found.  The individual bad pixel masks,
+in pixel list format, are created in this directory.  In a future
+version the multiple pixel masks will be stored as extensions in
+the multiextension file specified by the output mask name.
+
+.sh
+fixpix: Replacing Bad Pixels by Interpolation
+
+Regions of bad lines and columns may be replaced by linear
+interpolation from neighboring lines and columns when the parameter
+\fIfixpix\fR is set.  This algorithm is the same as used in the
+task \fBfixpix\fR.  The bad pixels may be specified by a pixel mask,
+an image, or a text file.  For a mask or image, values of zero indicate
+good pixels and other values indicate bad pixels to be replaced.
+
+A text file consists of lines with four fields, the starting and
+ending columns and the starting and ending lines.  Any number of
+regions may be specified.  Comment lines beginning with the character
+'#' may be included.  The description applies directly to the input
+image (before trimming) so different files are needed for previously
+trimmed or subsection readouts.  The data in this file is internally
+turned into the same description as a bad pixel mask with values of
+two for regions which are narrower or equal across the columns and
+a value of three for regions narrower across lines.
+
+The direction of interpolation is determined from the values in the
+mask, image, or the converted text file.  A value of two interpolates
+across columns, a value of three interpolates across lines, and any
+other value interpolates across the narrowest dimension of bad pixels
+and using column interpolation if the two dimensions are equal.
+
+The bad pixel description may be specified explicitly or by
+reference to a keyword with the name.  The special value "BPM" or "image"
+references the keyword BPM.
+
+.sh
+overscan: Removing Electronic Bias Using Overscan/Prescan Data
+
+If an overscan or prescan correction is specified (\fIoverscan\fR
+parameter) then the image section (\fIbiassec\fR parameter) defines
+the overscan region.
+
+There are two types of overscan (or prescan) determinations.  One determines
+a independent overscan value for each line  and is only available for a
+\fIreadaxis\fR of 1.  The other averages the overscan along the readout
+direction to make an overscan vector, fits a smoothing function to the vector,
+and then evaluate and then evaluates the smooth function at each readout
+line or column.
+
+The line-by-line determination provides an mean, median, or
+mean with the minimum and maximum values excluded.  The median
+is lowest value of the middle two when the number of overscan columns
+is even rather than the mean.
+
+The smoothed overscan vector determination uses the \fBicfit\fR options
+including interactive fitting.  The fitting function is generally either a
+constant (polynomial of 1 term) or a high order function which fits the
+large scale shape of the overscan vector.  Bad pixel rejection is also
+available to eliminate cosmic ray events.  The function fitting may be done
+interactively using the standard \fBicfit\fR iteractive graphical curve
+fitting tool.  Regardless of whether the fit is done interactively, the
+overscan vector and the fit may be recorded for later review in a metacode
+plot file named by the parameter \fIccdred.plotfile\fR.  The mean value of
+the bias function is also recorded in the image header and log file.
+.sh
+trim: Trimming Unwanted Data
+When the parameter \fItrim\fR is set the input image will be trimmed to
+the image section given by the parameter \fItrimsec\fR.  This trim
+should, of course, be the same as that used for the calibration images.
+.sh
+zerocor: Applying a Zero Bias Calibration
+After the readout bias is subtracted, as defined by the overscan or prescan
+region, there may still be a zero level bias.  This level may be two
+dimensional or one dimensional (the same for every readout line).  A
+zero level calibration is obtained by taking zero length exposures;
+generally many are taken and combined.  To apply this zero
+level calibration the parameter \fIzerocor\fR is set.  In addition if
+the zero level bias is only readout dependent then the parameter \fIreadcor\fR
+is set to reduce two dimensional zero level images to one dimensional
+images.  The zero level images may be specified by the parameter \fIzero\fR
+or given in the input image list (provided the CCD image type is defined).
+
+When the zero level image is needed to correct an input image it is checked
+to see if it has been processed and, if not, it is processed automatically.
+Processing of zero level images consists of bad pixel replacement,
+overscan correction, trimming, and averaging to one dimension if the
+readout correction is specified.
+.sh
+darkcor: Applying a Dark Count Calibration
+Dark counts are subtracted by scaling a dark count calibration image to
+the same exposure time as the input image and subtracting.  The
+exposure time used is the dark time which may be different than the
+actual integration or exposure time.  A dark count calibration image is
+obtained by taking a very long exposure with the shutter closed; i.e.
+an exposure with no light reaching the detector.  The dark count
+correction is selected with the parameter \fIdarkcor\fR and the dark
+count calibration image is specified either with the parameter
+\fIdark\fR or as one of the input images.  The dark count image is
+automatically processed as needed.  Processing of dark count images
+consists of bad pixel replacement, overscan and zero level correction,
+and trimming.
+.sh
+flatcor: Applying a Flat Field Calibration
+The relative detector pixel response is calibrated by dividing by a
+scaled flat field calibration image.  A flat field image is obtained by
+exposure to a spatially uniform source of light such as an lamp or
+twilight sky.  Flat field images may be corrected for the spectral
+signature in spectroscopic images (see \fBresponse\fR and
+\fBapnormalize\fR), or for illumination effects (see \fBmkillumflat\fR
+or \fBmkskyflat\fR).  For more on flat fields and illumination corrections
+see \fBflatfields\fR.  The flat field response is dependent on the
+wavelength of light so if different filters or spectroscopic wavelength
+coverage are used a flat field calibration for each one is required.
+The different flat fields are  automatically selected by a subset
+parameter (see \fBsubsets\fR).
+
+Flat field calibration is selected with the parameter \fBflatcor\fR
+and the flat field images are specified with the parameter \fBflat\fR
+or as part of the input image list.  The appropriate subset is automatically
+selected for each input image processed.  The flat field image is
+automatically processed as needed.  Processing consists of bad pixel
+replacement, overscan subtraction, zero level subtraction, dark count
+subtraction, and trimming.  Also if a scan mode is used and the
+parameter \fIscancor\fR is specified then a scan mode correction is
+applied (see below).  The processing also computes the mean of the
+flat field image which is used later to scale the flat field before
+division into the input image.  For scan mode flat fields the ramp
+part is included in computing the mean which will affect the level
+of images processed with this flat field.  Note that there is no check for
+division by zero in the interest of efficiency.  If division by zero
+does occur a fatal error will occur.  The flat field can be fixed by
+replacing small values using a task such as \fBimreplace\fR or
+during processing using the \fIminreplace\fR parameter.  Note that the
+\fIminreplace\fR parameter only applies to flat fields processed by
+\fBccdproc\fR.
+
+.sh
+sflatcor: Applying a Sky Flat Field Calibration
+
+A sky flat field calibration is just a second flat field derived from
+data which has been flat fielded by the first flat field.  Typically
+a sky flat field is created from sky data.  This is either exposures
+of the twilight sky or combinations of dark sky observations where
+objects are eliminated by stacking disregistered exposures.  The
+operation is similar to the primary flat field in that a scaling
+is determined from the CCDMEAN information in the image or by computing
+a mean value.  The calibration data is scaled and divided into the
+input data.
+
+.sh
+merge: Merging Amplifiers from the Same CCD
+
+When an input file consists of multiple amplifiers from the same
+CCD they may be merged together into a single image or extension.
+If the input file has only one CCD then the output is a simple
+single image otherwise it is a multiextension file with fewer
+extensions.  The image header of the merged output is from the
+first amplifier encountered for each CCD.  For multiextension
+output the merged extension name will be the extension name
+of the first amplifier.
+
+If an output mask is specified then the input masks will also be
+merged.  In cases where the masks for the input data are already
+in merged form, where the masks for all the extensions to be merged
+are the same mask, the task will not create a new mask.  
+.ih
+EXAMPLES
+The user's \fBguide\fR presents a tutorial in the use of this task.
+
+1. In general all that needs to be done is to set the task parameters
+and enter
+
+	cl> ccdproc *.imh &
+
+This will run in the background and process all images which have not
+been processed previously.
+.ih
+TIME REQUIREMENTS
+.nf
+o SUN-3, 15 MHz 68020 with 68881 floating point hardware (no FPA)
+o 8 Mb RAM, 2 Fuji Eagle disks.
+o Input images = 544 x 512 short
+o Output image = 500 x 500 real
+o Operations are overscan subtraction (O), trimming to 500x500 (T),
+  zero level subtraction (Z), dark count scaling and subtraction (D),
+  and flat field scaling and subtraction (F).
+o UNIX statistics
+  (user, system, and clock time, and misc. memory and i/o statistics):
+
+[OTF] One calibration image and 9 object images:
+No caching:  110.6u 25.5s 3:18 68% 28+ 40K 3093+1645io   9pf+0w
+Caching:     111.2u 23.0s 2:59 74% 28+105K 2043+1618io   9pf+0w
+
+[OTZF] Two calibration images and 9 object images:
+No caching:  119.2u 29.0s 3:45 65% 28+ 50K 4310+1660io   9pf+0w
+Caching:     119.3u 23.0s 3:07 75% 28+124K 2179+1601io   9pf+0w
+
+[OTZDF] Three calibration images and 9 object images:
+No caching:  149.4u 31.6s 4:41 64% 28+ 59K 5501+1680io  19pf+0w
+Caching:     151.5u 29.0s 4:14 70% 27+227K 2346+1637io 148pf+0w
+
+[OTZF] 2 calibration images and 20 images processed:
+No caching:  272.7u 63.8u 8:47 63% 28+ 50K 9598+3713io  12pf+0w
+Caching:     271.2u 50.9s 7:00 76% 28+173K 4487+3613io  51pf+0w
+.fi
+.ih
+REVISIONS
+.ls CCDPROC: MSCRED - V4.5: March 19, 2001
+This help page describes the options for the above version of MSCRED.
+.le
+.ih
+SEE ALSO
+.nf
+mscguide, xtalkcor
+.fi
+.endhelp

@@ -1,0 +1,44 @@
+# Help directory for the MSCRED package.
+
+$doc = "./doc/"
+$mscsrc = "./src/"
+
+revisions	sys=Revisions
+
+ccdproc		hlp=doc$ccdproc.hlp
+ccdlist		hlp=doc$ccdlist.hlp
+
+mkmsc		hlp=doc$mkmsc.hlp,		src=mscsrc$t_mkmsc.x
+mscarith	hlp=doc$mscarith.hlp,		src=mscsrc$mscarith.cl
+mscblkavg	hlp=doc$mscblkavg.hlp,		src=mscsrc$mscblkavg.cl
+msccmatch	hlp=doc$msccmatch.hlp
+msccmd		hlp=doc$msccmd.hlp,		src=mscsrc$msccmd.cl
+mscctran	hlp=doc$mscctran.hlp
+mscdisplay	hlp=doc$mscdisplay.hlp
+mscexamine	hlp=doc$mscexamine.hlp
+mscfinder	hlp=doc$mscfinder.hlp
+mscfindgain	hlp=doc$mscfindgain.hlp,	src=mscsrc$mscfindgain.cl
+mscfocus	hlp=doc$mscfocus.hlp
+mscgetcatalog	hlp=doc$mscgetcatalog.hlp,	src=mscsrc$mscgetcatalog.cl
+mscguide	hlp=doc$mscguide.hlp
+mscimage	hlp=doc$mscimage.hlp,		src=mscsrc$mscimage.cl
+mscimatch	hlp=doc$mscimatch.hlp
+mscjoin		hlp=doc$mscjoin.hlp,		src=mscsrc$mscjoin.cl
+mscotfflat	hlp=doc$mscotfflat.hlp,		src=mscsrc$mscdisplay/mscotfflat.cl
+mscpixarea	hlp=doc$mscpixarea.cl,		src=mscsrc$mscpixarea.cl
+mscrfits	hlp=doc$mscrfits.hlp
+mscshutcor	hlp=doc$mscshutcor.hlp,		src=mscsrc$mscshutcor.cl
+mscskysub	hlp=doc$mscskysub.hlp
+mscsplit	hlp=doc$mscsplit.hlp,		src=mscsrc$mscsplit.cl
+mscstack	hlp=doc$mscstack.hlp,		src=mscsrc$mscstack.cl
+mscstat		hlp=doc$mscstat.hlp,		src=mscsrc$mscstat.cl
+msctvmark	hlp=doc$msctvmark.hlp,		src=mscsrc$msctvmark.cl
+mscwcs		hlp=doc$mscwcs.hlp,		src=mscsrc$mscwcs.cl
+mscwfits	hlp=doc$mscwfits.hlp
+msczero		hlp=doc$msczero.hlp,		src=mscsrc$msczero.cl
+patfit		hlp=doc$patfit.hlp,		src=mscsrc$t_patfit.x
+rmpupil		hlp=doc$rmpupil.hlp,		src=mscsrc$rmpupil.cl
+rmfringe	hlp=doc$rmfringe.hlp,		src=mscsrc$rmfringe.cl
+wiynoptic	hlp=doc$wiynoptic.hlp
+xtalkcor	hlp=doc$xtalkcor.hlp,		src=mscsrc$xtalkcor.cl
+xtcoeff		hlp=doc$xtcoeff.hlp,		src=mscsrc$t_xtcoeff.x

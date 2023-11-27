@@ -1,0 +1,15 @@
+$checkout libfinder.a mscbin$
+$update   libfinder.a
+$checkin  libfinder.a mscbin$
+$exit
+
+libfinder.a:
+	select.x	reloperr.h 
+	allrows.x	<tbset.h> 
+	change.x	reloperr.h <ctype.h> <chars.h>
+	mjd.x		reloperr.h <ctype.h>
+	tbleval.x	reloperr.h tblterm.com <config.h> <evexpr.h> \
+			<error.h> <xwhen.h>
+	tblterm.x	reloperr.h tblterm.com <config.h> <evexpr.h> \
+			<tbset.h> <xwhen.h>
+	;

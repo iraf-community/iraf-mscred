@@ -1,0 +1,15 @@
+# MULTAMPCCD package parameter file
+
+pixeltype,s,h,"real real",,,Output and calculation pixel datatypes
+verbose,b,h,no,,,Print log information to the standard output?
+logfile,f,h,"logfile",,,Text log file
+plotfile,f,h,"",,,Log metacode plot file
+backup,s,h,"once","none|once|all",,Backup data (none|once|all)?
+bkuproot,s,h,"Raw/",,,Backup root (directory or prefix)
+instrument,s,h,"mscdb$noao/mosaic1/mosaic.dat",,,CCD instrument file
+ampfile,s,h,"amps",,,Amplifier translation file
+ssfile,s,h,"subsets",,,Subset translation file
+im_bufsize,r,h,0.065536,0.001024,,Image I/O buffer size (in Mbytes)
+graphics,s,h,"stdgraph",,,Interactive graphics output device
+cursor,*gcur,h,"",,,Graphics cursor input
+version,s,h,"V2.1: November 1998"

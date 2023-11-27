@@ -1,0 +1,190 @@
+                  MSCRED: CCD MOSAIC REDUCTION PACKAGE
+              Release Notes and Installation Instructions
+
+SUMMARY
+
+The MSCRED external package is used to reduce CCD mosaic data  in  which
+the data is in the mosaic MEF data format.
+
+
+
+RELEASE INFORMATION
+
+The  following  summary  only  highlights the major changes.  There will
+also be minor changes and bug fixes.
+
+V5.05: August 9, 2012
+Fixed a problem in mscfinder.msctpeak which complained about not being
+able to open a temporary file.
+
+V5.04: August 17, 2011
+Relinked against IRAF 2.15.1a to pick up core library changes.
+
+V5.04: February 18, 2011
+Fixed a bug with a missing argument to a  procedure which caused a crash
+with combine in the macintel architecture.
+
+V5.03: February 3, 2011
+Fixed 64-bit bug in xtalkcor.
+
+V5.02: January 20, 2011
+Fixed bug in ccdproc.
+
+V5.01: January 10, 2011
+Fixed bug in mscdisplay.
+
+V5.0: December 16, 2010
+
+
+
+INSTALLATION INSTRUCTIONS
+
+Installation of this external package consists of obtaining  the  files,
+unpacking  them, optionally compiling the executables if not included in
+the distribution, and defining the  environment  to  load  and  run  the
+package.   Note  that  starting  with  IRAF V2.15 there are installation
+utilities  which  automate  this   process.    So   these   installation 
+instructions  here  are  for  primarily  for earlier versions of IRAF or
+those wishing to use the older method.
+
+The package may be installed for a site or as a  personal  installation.
+If  you need help with these installation instructions post a request at
+the iraf.net website.
+
+The first step is determining your host IRAF architecture.  If  you  are
+not  sure  but have a running IRAF installation then, after starting the
+command language, type
+
+    cl> show arch
+    .redhat
+
+This is the value you need to know without the  leading  '.';  i.e.  the
+IRAF architecture is "redhat" in the example.
+
+The distributions files may be found in various places.  If you got this
+document from an  ftp  directory  the  files  should  also  be  in  that
+directory  with names of the form "mscred-<arch>.tar.gz.  These are gzip
+compressed tar files.  The  files  for  each  architecture  include  the
+binaries except for "src" which is only the source.
+
+Unlike  earlier  distributions  (prior  to  Dec  2010) the tar files are
+created so that they are unpacked in the external package  directory  of
+your choosing and the "mscred" subdirectory will be created.
+
+    % cd <path>                  # e.g. /iraf/extern or <mydir>/extern
+    % tar xzf <file.gz>
+    % ls -d mscred
+    mscred
+
+If  you  want  to  have  multiple  binaries,  such  as for a server, the
+simplest thing  is  to  untar  each  architecture  version.   This  will
+redundantly install the same source files which is harmless.
+
+If  you  already  have an older mscred directory you should first remove
+it.  If you want to have multiple versions  you  can  rename  it  as  an
+older  version,  make  a  directory  for  the  new version, for instance
+"mscredV5.0", and unpack in that directory.
+
+    % cd <path>         # e.g. /iraf/extern
+    % mv mscred <mscredOld> # if this is a directory
+    % mkdir <mscredV>   # e.g. mscredV5.0
+    % cd <mscredV>
+    % tar xzf <gzfile>
+    % cd ..
+    % rm mscred         # if this is a previous link
+    % ln -s <mscredV>/mscred .
+
+Instead of using a link, as shown above, you can also specify paths  and
+directories  as  you  wish  in the $iraf/unix/hlib/extern.pkg file, your
+loginuser.cl file, or interactively as follows.
+
+To define the package you need to an IRAF logical  path  to  the  mscred
+directory  and a "task" declaration.  As noted above, this is often done
+in the $iraf/unix/hlib/extern.pkg file but it can also be done  in  your
+irafuser.csh  file  or  even interactively.  The statements you need are
+something like:
+
+    reset mscred = /local/mscred/
+    task  mscred.pkg = mscred$mscred.cl
+
+Be sure to end the directory path with '/'.
+
+For the help files you must include
+
+    mscred$lib/helpdb.mip
+
+in the "helpdb" path.  A template of this is  found  in  the  extern.pkg
+file or something like
+
+    printf ("reset helpdb=%s,mscred$lib/helpdb.mip\nkeep\n",
+        envget("helpdb")) | cl
+    flpr
+
+in  your  login.cl  or  loginuser.cl  file.   Make  sure there is "keep"
+statement at the end of the file.
+
+
+
+MSCDB
+
+For NOAO Mosaic Imager data a separate instrument database  distribution
+should    also    be    installed.     The    distribution    file    is   
+"mscdb-univeral.tar.gz.  This is unpacked in some directory such as  the
+directory   containing   the   mscred   package.   Then  in  extern.pkg, 
+loginuser.cl, or login.cl add
+
+    set mscdb = <path>/         # ending with '/'
+
+This is usually done in the same way  and  place  that  you  define  the
+mscred package.
+
+
+
+COMPILING
+
+If  you will be compiling the package, as opposed to installing a binary
+distribution, then you need to  define  various  environment  variables.
+The following is for Unix/csh which is the main supported environment.
+
+    % setenv iraf /iraf/iraf/             # Path to IRAF root (example)
+    % source $iraf/unix/hlib/irafuser.csh # Define rest of environment
+    % setenv IRAFARCH redhat              # IRAF architecture
+    % setenv mscred <path>/               # Path to package
+
+where  you  need to supply the appropriate path to the IRAF installation
+root in the first step and the IRAF  architecture  identifier  for  your
+machine in the last step.
+
+If  you  are  updating  to  a  newer  version  and you earlier built the
+libraries and executables it is necessary to delete  these.   Otherwise,
+depending  on  the  dates  of  files  in the new version and the locally
+built libraries, it may cause the new version  to  be  ignored.   To  do
+this  the  package  is  configured  "generic"  which puts all the binary
+files in one binary directory,  the  files  are  deleted  and  then  you
+continue in the same way as a completely new installation.
+
+    cl> mkpkg generic
+    cl> delete bin.<arch>/*      # Substitute redhat, etc.
+
+Configure the package for the particular architecture to be built.
+
+    cl> mkpkg <arch>            # Substitute redhat, etc.
+
+This  will  change  the  bin  link  from bin.generic to bin.<arch>.  The
+binary directory will be created if not present.  If an error occurs  in
+setting  the  architecture then you may need to add an entry to the file
+"mkpkg".  Just follow the examples in the file.
+
+To create the executables and move them to the binary directory
+
+    cl> mkpkg -p mscred         # build executables
+    cl> mkpkg generic           # optionally restore generic setting
+
+Check for errors.  If the  executables  are  not  moved  to  the  binary
+directory  then the $mscred path package was not done correctly (such as
+not having a trailing '/'.  The last step  restores  the  package  to  a
+generic  configuration.  This is not necessary if you will only have one
+architecture for the package.
+
+This should complete the installation.  You can  now  load  the  package
+and begin testing and use.

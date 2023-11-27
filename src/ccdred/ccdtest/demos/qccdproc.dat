@@ -1,0 +1,120 @@
+\O=NOAO/IRAF V2.5 valdes@lyra Mon 15:42:35 12-Oct-87
+\T=vt640
+\G=vt640
+clear\n\{%V-%!200\}
+\n\{
+			CCD REDUCTION DEMONSTRATION
+
+    In this demonstration we are going to make some (artificial) CCD
+    observations which we will reduce using the CCDRED package.  The
+    dome is opening and we are ready to begin observing...\}
+\n\{%V-\}
+unlearn\sccdred;unlearn\sccdtest\n\{	# Initialize parameters and data...\}
+imdelete\s%B%%*.??h\sv-\n\{%V-\}
+imrename\sB*.??h\s%B%%*.??h\sv-\n\{%V-\}
+delete\sDemo*\sv-\n\{%V-\}
+\n\{%V-\}
+setinstrument\sdemo\sreview-\n\{		# Set instrument parameters...\}
+lpar\sartobs\n\{				# List observing parameters...\}
+artobs\sZero\s0.\szero\n\{      		# Observe zero level images...\}
+\n\{%V-\}
+artobs.skyrate=0\n\{			# Observe a long dark count...\}
+artobs\sDark\s1000.\sdark\n\{%V-\}
+\n\{%V-\}
+artobs.filter="V"\n\{			# Observe V flat fields...\}
+artobs.skyrate=2000\n\{%V-\}
+artobs\sFlatV\s1.\sflat\n\{%V-\}
+\n\{%V-\}
+artobs.filter="B"\n\{			# Observe B flat fields...\}
+artobs.skyrate=1000\n\{%V-\}
+artobs\sFlatB\s1.\sflat\n\{%V-\}
+\n\{%V-\}
+artobs.filter="V"\n\{			# Observe objects...\}
+artobs.skyrate=100\n\{%V-\}
+artobs\sobs001\s10.\sobject\simdata=dev$pix\n\{%V-\}
+artobs.filter="B"\n\{%V-\}
+artobs\sobs002\s30.\sobject\simdata=dev$pix\n\{%V-\}
+dir\n\{					# Check directory of observations...\}
+clear\n\{%5000				# Continue...\}
+\n\{
+			INSTRUMENT SETUP
+
+    Because there are a variety of instruments, observatories, and data
+    formats there are many parameters.  To set all of these conveniently
+    there is a task which reads setup files prepared by the observing
+    staff.  The setup task:
+	1.  Defines an instrument header translation file which
+	    translates the image header parameters to something
+	    the CCDRED package understands.  This is an important
+	    feature of the package.
+	2.  It runs a setup script which sets parameters and performs
+	    other functions desired by the observing staff.
+	3.  The user is then given the opportunity to modify the
+	    package and processing parameters...\}
+\n\{%V-\}
+setinstrument\smode=m\n\{		# Set demo instrument parameters...\}
+demo\r
+\{%1000\}^Z
+\{%1000\}^Z
+\{%1000\}\r
+\r
+\r
+\r
+\r
+\r
+\r
+\r
+\r
+\r
+\r
+\r
+\r
+\r
+\r
+\r
+\r
+\r
+Zero\r
+Dark\r
+Flat*.??h\r
+^Z
+clear\n\{%5000				# Continue...\}
+\n\{
+			PROCESS OBSERVATIONS
+
+    We are now ready to process our observations.  The processing steps we
+    have selected are to replace bad pixels by interpolation, fit and
+    subtract a readout bias given by an overscan strip, subtract the zero
+    level calibration image, scale and subtract a dark count calibration,
+    divide by a flat field, trim the image of the overscan strip and border
+    columns and lines.  The task which does this is "ccdproc".  The task is
+    expert at reducing CCD observations easily and efficiently.  It checks
+    the image types, applies the proper filter flat field, applies the
+    proper part of the calibration images to subsection readouts, does only
+    the processing steps selected if not done previously, and automatically
+    processes the calibration images as needed.  As before we simply specify
+    all the images and the task selects the appropriate images to process.
+    Watch the log messages to see what the task is doing...\}
+\n\{%V-\}
+ccdproc\sobs*.??h\n\{			# Process object images...\}
+\n\{%V-\}
+\{%V-\}q0,+,\r
+NO\n\{%V-\}
+\n\{
+    That's it!  We're done.  Now lets check the results.  The "ccdlist"
+    listing will show the processing status and the images are now smaller
+    and of pixel datatype real.  The CCDSEC parameter identifies the relation
+    of the image to the actual CCD pixels of the detector...\}
+\n\{%V-\}
+ccdlist\sobs*.??h\sccdtype=object\n\{		# List short CCD status...\}
+ccdlist\sobs001\sl+\n\{     			# List long CCD status...\}
+imhead\sobs001\sl+\n\{     			# List object image header...\}
+dir\n\{     				# Check the data directory...\}
+\n\{%V-
+    We specified that the original images be saved by using the prefix B.
+    We are also left with a text log file, a metacode file containing the
+    fits to the overscan regions, and a file which maps the filter subset
+    strings to short identifiers used in CCDLIST and when creating the
+    combined images "FlatV" and "FlatB".  You may look through these files,
+    or use GKIMOSAIC to examine the metacode file, now if you want.
+\}

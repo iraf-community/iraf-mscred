@@ -1,0 +1,32 @@
+# Make the FINDER package
+
+$call	lfinder
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+install:
+	$move	xx_finder.e mscbin$x_finder.e
+	;
+
+relink:
+	$checkout x_finder.o mscbin$
+	$omake	x_finder.x
+	$link	x_finder.o -lfinder -ltbtables -lxtools -o xx_finder.e
+	$checkin x_finder.o mscbin$
+	;
+
+lfinder:
+	$checkout libfinder.a mscbin$
+	$update	libfinder.a
+	$checkin libfinder.a mscbin$
+	;
+
+libfinder.a:
+	@select
+	t_tpeak.x	<error.h> <fset.h> <imhdr.h> <mach.h> <tbset.h>
+	;

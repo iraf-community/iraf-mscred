@@ -1,0 +1,39 @@
+input,s,a,,,,Dithered input mosaic exposures
+output,f,a,,,,Output combined image
+
+coords,f,a,"",,,Coordinate file (ra/dec)
+nfit,i,h,0,,,Min coordinates (>0) or max not found (<=0) for fit
+rms,r,h,2.,0.,,Maximum fit RMS to accept (arcsec)
+maxshift,r,h,5,,,Maximum centering shift (arcsec)
+fittype,s,h,"rxyscale","shift|xyscale|rotate|rscale|rxyscale",,Coordinate fit type
+interactive,b,h,no,,,Interactive?
+fit,b,h,yes,,,Interactive fitting?
+accept,b,q,yes,,,Accept coordinate solution?
+
+# Mosaicking parameters"
+pixmask,b,h,no,,,"Create pixel mask?"
+wcssol,b,h,yes,,,"Use WCS plate solution?"
+nx,i,h,10,,,"Number of x grid points"
+ny,i,h,20,,,"Number of y grid points"
+fitgeometry,s,h,"general",|shift|xyscale|rotate|rscale|rxyscale|general,,"Fitting geometry"
+function,s,h,"chebyshev",|chebyshev|legendre|polynomial,,"Surface type"
+xxorder,i,h,4,2,,"Order of x fit in x"
+xyorder,i,h,4,2,,"Order of x fit in y"
+xxterms,s,h,"half",,,"X fit cross terms type"
+yxorder,i,h,4,2,,"Order of y fit in x"
+yyorder,i,h,4,2,,"Order of y fit in y"
+yxterms,s,h,"half",,,"Y fit cross terms type"
+interpolant,s,h,"linear",|nearest|linear|poly3|poly5|spline3|,,"Interpolant (nearest,linear,poly3,poly5,spline3)"
+nxblock,i,h,2048,,,"X dimension of working block size in pixels"
+nyblock,i,h,1024,,,"Y dimension of working block size in pixels"
+fluxconserve,b,h,no,,,"Preserve flux per unit area?"
+ntrim,i,h,7,0,,"Number of edge pixels to trim in each output piece
+
+# Combining parameters"
+combine,s,h,"median",average|median,,"Type of combine operation (median|average)"
+scale,s,h,"none",,,"Image scaling"
+zero,s,h,"none",,,"Image zero point offset"
+statsec,s,h,"",,,"Image section for computing statistics"
+lthreshold,r,h,1.,,,"Lower threshold"
+hthreshold,r,h,INDEF,,,"Upper threshold"
+fd,*struct,h

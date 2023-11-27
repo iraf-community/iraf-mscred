@@ -1,0 +1,60 @@
+# MSCDISPLAY
+
+lmscdisp:
+	$checkout libmscdisp.a mscbin$
+	$update   libmscdisp.a
+	$checkin  libmscdisp.a mscbin$
+	;
+
+limexam:
+	$call	limexam@imexam
+	;
+
+lsf:
+	$call	lsf@starfocus
+	;
+
+libmscdisp.a:
+
+	$ifolder (mscg.x, mscg.gx)
+	    $generic -k -o mscg.x mscg.gx $endif
+	$ifolder (sigm2.x, sigm2.gx)
+	    $generic -k -o sigm2.x sigm2.gx $endif
+	$ifolder (mignl.x, mignl.gx)
+	    $generic -k -o mignl.x mignl.gx $endif
+	$ifolder (migl2.x, migl2.gx)
+	    $generic -k -o migl2.x migl2.gx $endif
+	$ifolder (migs2.x, migs2.gx)
+	    $generic -k -o migs2.x migs2.gx $endif
+	$ifolder (miproc.x, miproc.gx)
+	    $generic -k -o miproc.x miproc.gx $endif
+	$ifolder (linebias.x, linebias.gx)
+	    $generic -k -o linebias.x linebias.gx $endif
+	$ifolder (akavg.x, akavg.gx)
+	    $generic -k -o akavg.x akavg.gx $endif
+
+	akavg.x		<mach.h>
+	ampset.x	ampinfo.com <ctotok.h> <error.h>
+	gamma.x		<mach.h>
+	linebias.x	lbias.com mosgeom.h
+	maskcolor.x	ace.h <ctotok.h> <evvexpr.h>
+	maxmin.x	<imhdr.h> <mach.h> mosgeom.h
+	migl2.x		mosgeom.h mosim.h mosproc.com mosproc.h
+	mignl.x		<imhdr.h> mosgeom.h mosim.h mosproc.com\
+			mosproc.com mosproc.h
+	migs2.x		mosgeom.h mosim.h mosproc.com mosproc.h
+	miproc.x	mosgeom.h mosproc.com mosproc.h
+	mitemplate.x	
+	mkoverscan.x	<imhdr.h> <imset.h> lbias.com mosgeom.h
+	moscoords.x	
+	mosmap.x	ampinfo.com <ctype.h> <error.h> <imhdr.h> <imset.h>\
+			mosgeom.h mosim.h mosproc.h
+	mscg.x		<imhdr.h> mosgeom.h
+	proc.x		mosgeom.h mosproc.com mosproc.h
+	sigm2.x		<error.h> <imhdr.h> mosgeom.h <pmset.h> xtfixpix.h
+	t_mscdisplay.x	display.h <error.h> gwindow.h <imhdr.h> <imset.h>\
+			<mach.h> mosgeom.h mosim.h mosproc.com mosproc.h
+	t_mscrtdisp.x	display.h <error.h> <fset.h> gwindow.h <imhdr.h>\
+			<imset.h> <mach.h> mosgeom.h mosim.h mosproc.com\
+			mosproc.h
+	;

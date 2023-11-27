@@ -1,0 +1,19 @@
+# COUTPUT
+
+input,s,a,,,,List of images to combine
+output,s,a,,,,List of output images
+list,f,a,,,,Output file for list of output names
+headers,s,h,"",,,List of header files (optional)
+bpmasks,s,h,"",,,List of bad pixel masks (optional)
+rejmasks,s,h,"",,,List of rejection masks (optional)
+nrejmasks,s,h,"",,,List of number rejected masks (optional)
+expmasks,s,h,"",,,List of exposure masks (optional)
+sigmas,s,h,"",,,"List of sigma images (optional)
+"
+ccdtype,s,h,"",,,CCD image type to combine (optional)
+amps,b,h,yes,,,Combine images by amplifier?
+subsets,b,h,yes,,,"Combine images by subset?
+"
+scale,s,h,"none",,,Image scaling
+zero,s,h,"none",,,Image zero point offset
+weight,s,h,"none",,,Image weights

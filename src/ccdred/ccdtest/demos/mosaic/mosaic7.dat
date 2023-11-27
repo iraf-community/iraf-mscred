@@ -1,0 +1,41 @@
+EXTNAME = 'im7     '           / Extension name
+IMAGEID =                    7 / Image identification
+
+OBSID   = 'kpno.4m.961225.257752' / Observation identification
+OBJECT  = 'M51     '           / Observation title
+OBSTYPE = 'OBJECT  '           / Observation type
+EXPTIME =               600.15 / Exposure time (sec)
+DARKTIME=               600.21 / Dark time (sec)
+FILTER  = 'V       '           / Filter name
+DETRA   = '13:29:24.00'        / Detector right ascension (hours)
+DETDEC  = '47:15:34.00'        / Detector declination (deg)
+
+CCDNAME = 'Mosaic 7 [3,2]'     / CCD identification
+CCDNAMPS=                    1 / Number of amplifiers used
+AMPNAME = 'Amplifier 7-1'      / Amplifier identification
+CCDSUM  = '1 1     '           / CCD on-chip summing
+DETSEC  = '[300:201,200:101]'  / Section of detector
+CCDSIZE = '[1:100,1:100]'      / CCD size
+CCDSEC  = '[1:100,1:100]'      / Region of CCD read
+BIASSEC = '[103:130,1:100]'    / Bias section
+DATASEC = '[1:100,1:100]'      / Data section
+TRIMSEC = '[3:98,3:98]'        / Section of useful data
+GAIN    =                  3.2 / Amplifier gain (e/ADU)
+RDNOISE =                  3.9 / Readout noise (e)
+ARCONGI =                    2 / Gain selection (index into Gain Table)
+ARCONPG =                  3.2 / Predicted gain (e/ADU)
+ARCONPRN=                  3.9 / Predicted readout noise (e)
+CCDTEM  =                -104. / CCD temperature (deg C)
+
+CTYPE1  = 'PIXEL   '           / Coordinate type
+CRVAL1  =                 300. / Coordinate reference value
+CRPIX1  =                   1. / Coordinate reference pixel
+CTYPE2  = 'PIXEL   '           / Coordinate type
+CRVAL2  =                 200. / Coordinate reference value
+CRPIX2  =                   1. / Coordinate reference pixel
+CD1_1   =                  -1. / Coordinate scale matrix
+CD2_2   =                  -1. / Coordinate scale matrix
+
+CHECKSUM= '0WDA3T940TA90T99'   / Header checksum
+DATASUM = 'aMmjbMkhaMkhaMkh'   / Data checksum
+CHECKVER= 'complement'         / Checksum version

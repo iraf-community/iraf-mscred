@@ -1,0 +1,8 @@
+output,s,h,"STDOUT",,,Output
+c1,s,a,,,,Column 1
+c2,s,a,,,,Column 2
+c3,s,a,,,,Column 3
+c4,s,a,,,,Column 4
+c5,s,a,,,,Column 5
+c6,s,a,,,,Column 6
+c7,s,a,,,,Column 7

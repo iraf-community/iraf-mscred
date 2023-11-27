@@ -1,0 +1,10 @@
+images,s,a,,,,Images
+mask,f,h,"",,,Mask
+fields,s,h,"image,npix,mean,stddev,min,max",,,Fields to be printed
+lower,r,h,INDEF,,,Lower cutoff for pixel values
+upper,r,h,INDEF,,,Upper cutoff for pixel values
+nclip,i,h,0,0,,Number of clipping iterations
+lclip,r,h,3,0,,Lower clipping sigma factor
+uclip,r,h,3,0,,Upper clipping sigma factor
+binwidth,r,h,0.1,,,Bin width of histogram in sigma
+format,b,h,yes,,,Format output and print column labels?

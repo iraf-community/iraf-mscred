@@ -1,0 +1,7 @@
+input,s,a,,,,List of input images
+output,f,a,,,,Output template image
+reference,f,h,,,,Reference image
+blank,r,h,0,,,Blank value
+border,i,h,0,0,,Border size
+projection,s,h,"",,,WCS projection
+pixtype,s,h,"real","short|real",,Pixel type

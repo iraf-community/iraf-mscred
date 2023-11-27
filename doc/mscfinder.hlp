@@ -1,0 +1,28 @@
+.help mscfinder Aug97 mscred
+.ih
+NAME
+mscfinder -- package to do astrometry on Mosaic data
+.ih
+SYNOPSIS
+This package is currently intended for use only by instrument support
+personnel to determine plate solutions for Mosaic data.  It is based
+on an interim tool derived from the \fBfinder\fR package that
+takes input from a simple coordinate file and Mosaic images.
+.ih
+USAGE	
+mscfinder
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls MSCFINDER - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+finder
+.endhelp

@@ -1,0 +1,32 @@
+.help msczero Aug97 mscred
+.ih
+NAME
+msczero -- display, measure coordinates, and set WCS zeropoint offsets
+.ih
+SYNOPSIS
+If the specified Mosaic exposure is not in the display it is displayed.
+The cursor is used to report WCS coordinates (space bar).  Pointing at a
+star and typing 'z' applys a centering to the star data, reports the
+coordinate based on the current WCS, and queries for a corrected
+coordinate.  The difference between the current and corrected coordinate is
+used to compute an offset to the current WCS.  When 'q' is typed the last
+offset may be recorded in the parameters for \fBmscwcs\fR for adjusting
+other exposures and it can be used to update the WCS of the image.
+.ih
+USAGE	
+msczero images
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls MSCZERO - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+mscdisplay mscexamine mscwcs
+.endhelp

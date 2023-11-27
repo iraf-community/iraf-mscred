@@ -1,0 +1,12 @@
+# TVMARK front end
+
+frame,i,a,1,,,Default frame number for display
+coords,f,a,,,,Input coordinate list
+mark,s,h,"point","point|circle|rectangle|line|plus|cross|none",,The mark type
+color,i,h,255,,,Gray level of marks to be drawn
+radii,s,h,"10",,,Radii in image pixels of concentric circles
+lengths,s,h,"0",,,Lengths and width in image pixels of concentric rectangles
+label,b,h,no,,,Label the marked coordinates
+number,b,h,no,,,Number the marked coordinates
+pointsize,i,h,3,,,Size of dot in display pixels
+txsize,i,h,4,,,Size of text and numbers in font units

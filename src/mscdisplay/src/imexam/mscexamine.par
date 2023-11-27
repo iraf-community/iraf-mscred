@@ -1,0 +1,32 @@
+input,s,a,,,,images to be examined
+output,s,h,"",,,output root image name
+zero,f,h,"",,,root name for sky subtraction
+frame,i,q,1,1,,display frame
+mimpars,pset,h,"",,,"mosaic image parameters (extensions, gaps, processing)"
+image,s,q,,,,image name
+ncoutput,i,h,101,1,,Number of columns in image output
+nloutput,i,h,101,1,,Number of lines in image output
+logfile,s,h,"",,,logfile
+keeplog,b,h,no,,,log output results
+defkey,s,h,"a",,,default key for cursor list input
+autoredraw,b,h,yes,,,automatically redraw graph
+allframes,b,h,yes,,,use all frames for displaying new images
+nframes,i,h,0,,,number of display frames (0 to autosense)
+ncstat,i,h,5,1,,number of columns for statistics
+nlstat,i,h,5,1,,number of lines for statistics
+graphcur,*gcur,h,"",,,graphics cursor input
+imagecur,*imcur,h,"",,,image display cursor input
+wcs,s,h,"logical",,,Coordinate system
+xformat,s,h,"%.2H",,,X axis coordinate format
+yformat,s,h,"%.1h",,,Y axis coordinate format
+graphics,s,h,"stdgraph",,,graphics device
+display,s,h,"mscdisplay(image='$1',frame=$2)",,,display command template
+use_display,b,h,yes,,,enable direct display interaction
+
+## PROCESSING PARAMETERS"
+#procpars,pset,h,"",,,"Processing parameters
+#
+## AMPLIFIER INFORMATION"
+#ampinfo,pset,h,"",,,"Amplifier Information pset
+#"
+mode,s,h,"a",,,

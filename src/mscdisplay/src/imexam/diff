@@ -1,0 +1,2018 @@
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//iecimexam.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/iecimexam.x
+5a6
+> include "../mosim.h"
+75c76
+< 	    call pargstr (IM_TITLE(im))
+---
+> 	    call pargstr (Memc[MI_RNAME(im)])
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//iecolon.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/iecolon.x
+18c18
+< 		|xformat|yformat|fitplot|sigma|axes|fittype|beta|iterations|"
+---
+> 		|xformat|yformat|fitplot|sigma|axes|"
+90,92d89
+< define	FITTYPE		71
+< define	BETA		72
+< define	ITERATIONS	73
+287c284
+< 		    call clcmdw ("eparam kimexam2")
+---
+> 		    call clcmdw ("eparam jimexam2")
+785c782
+< int	nscan(), clgeti(), btoi(), strdic()
+---
+> int	nscan(), clgeti(), btoi()
+960,997d956
+< 		    redraw = YES
+< 	    }
+< 	case FITTYPE:
+< 	    call gargwrd (Memc[cmd], SZ_LINE)
+< 	    if (nscan() == 1) {
+< 		call clgstr ("rimexam2.fittype", Memc[cmd], SZ_LINE)
+< 		call printf ("fittype %s\n")
+< 		    call pargstr (Memc[cmd])
+< 	    } else {
+< 		ncmd = strdic (Memc[cmd], Memc[cmd], SZ_LINE,
+< 		    "|gaussian|moffat|")
+< 		if (ncmd == 0) {
+< 		    call printf ("Profile fit types are %s\n")
+< 			call pargstr ("|gaussian|moffat|")
+< 		} else {
+< 		    call clpstr ("rimexam2.fittype", Memc[cmd])
+< 		    if (gtype == 'r')
+< 			redraw = YES
+< 		}
+< 	    }
+< 	case BETA:
+< 	    call gargr (rval1)
+< 	    if (nscan() == 1) {
+< 		call printf ("beta %g\n")
+< 		    call pargr (clgetr ("rimexam2.beta"))
+< 	    } else {
+< 		call clputr ("rimexam2.beta", rval1)
+< 		if (gtype == 'r')
+< 		    redraw = YES
+< 	    }
+< 	case ITERATIONS:
+< 	    call gargi (ival)
+< 	    if (nscan() == 1) {
+< 		call printf ("iterations %d\n")
+< 		    call pargi (clgeti ("rimexam2.iterations"))
+< 	    } else {
+< 		call clputi ("rimexam2.iterations", ival)
+< 		if (gtype == 'r')
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//iedisplay.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/iedisplay.x
+20c20
+< pointer	immap()
+---
+> pointer	mimap()
+29c29
+< 	iferr (im = immap (image, READ_ONLY, 0)) {
+---
+> 	iferr (im = mimap (image, READ_ONLY, 0)) {
+34c34
+< 	    call imunmap (im)
+---
+> 	    call miunmap (im)
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//ieeimexam.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/ieeimexam.x
+10a11
+> include "../mosim.h"
+117c118
+< 			call pargstr (IM_TITLE(im))
+---
+> 			call pargstr (Memc[MI_RNAME(im)])
+218c219
+< 		    call pargstr (IM_TITLE(im))
+---
+> 		    call pargstr (Memc[MI_RNAME(im)])
+228c229
+< 		    call pargstr (IM_TITLE(im))
+---
+> 		    call pargstr (Memc[MI_RNAME(im)])
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//iegcur.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/iegcur.x
+6a7,8
+> include "../mosim.h"
+> include "../mosgeom.h"
+26a29
+> pointer	mg
+77c80,82
+< 			    y = IM_LEN(IE_IM(ie),2)
+---
+> #			    y = IM_LEN(IE_IM(ie),2)
+> 			    mg = MI_CMG(IE_IM(ie))
+> 			    x = NX(mg)
+115c120,122
+< 			    x = IM_LEN(IE_IM(ie),1)
+---
+> #			    x = IM_LEN(IE_IM(ie),1)
+> 			    mg = MI_CMG(IE_IM(ie))
+> 			    x = NX(mg)
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//iegdata.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/iegdata.x
+3a4,5
+> include "../mosim.h"
+> include "../mosgeom.h"
+6c8,9
+<  
+---
+> # Version modified for mosaic images. 
+> 
+11a15
+> pointer	mg
+13,14c17,20
+< pointer	imgs2r()
+< errchk	imgs2r
+---
+> int	cx1, cx2, cy1, cy2
+> 
+> pointer	migs2r()
+> errchk	migs2r
+17,18c23,29
+< 	nc = IM_LEN(im,1)
+< 	nl = IM_LEN(im,2)
+---
+> 	mg  = MI_CMG(im)
+> 	nc  = NX(mg)
+> 	nl  = NY(mg)
+> 	cx1 = CX1(mg)
+> 	cx2 = CX2(mg)
+> 	cy1 = CY1(mg)
+> 	cy2 = CY2(mg)
+21c32
+< 	    x1 = 1
+---
+> 	    x1 = cx1
+23c34
+< 	    x2 = nc
+---
+> 	    x2 = cx2
+25c36
+< 	    y1 = 1
+---
+> 	    y1 = cy1
+27c38
+< 	    y2 = nl
+---
+> 	    y2 = cy2
+29c40,41
+< 	i = max (x1, x2)
+---
+> 	# Reorder limits if necessary
+> 	i  = max (x1, x2)
+32c44
+< 	i = max (y1, y2)
+---
+> 	i  = max (y1, y2)
+36,42c48,52
+< 	if (x2 < 1 || x1 > nc || y2 < 1 || y1 > nl)
+< 	    call error (1, "Pixels out of bounds")
+< 	
+< 	x1 = max (1, x1)
+< 	x2 = min (nc, x2)
+< 	y1 = max (1, y1)
+< 	y2 = min (nl, y2)
+---
+> 	# Clip coordinates at edge of CCD section
+> 	x1 = max (x1, cx1)
+> 	x2 = min (x2, cx2)
+> 	y1 = max (y1, cy1)
+> 	y2 = min (y2, cy2)
+44c54,62
+< 	return (imgs2r (im, x1, x2, y1, y2))
+---
+> #call eprintf ("IE_GDATA: x1=%d x2=%d y1=%d y2=%d nx=%d ny=%d\n")
+> #call pargi (x1)
+> #call pargi (x2)
+> #call pargi (y1)
+> #call pargi (y2)
+> #call pargi (nc)
+> #call pargi (nl)
+> 
+> 	return (migs2r (im, x1, x2, y1, y2))
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//iegimage.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/iegimage.x
+5a6
+> include "../mosim.h"
+23c24
+< int	imtrgetim()
+---
+> int	mitrgetim()
+25,26c26,27
+< pointer	imd_mapframe(), immap()
+< errchk	imd_mapframe, immap, ie_display, ie_mwinit
+---
+> pointer	imd_mapframe(), mimap()
+> errchk	imd_mapframe, mimap, ie_display, ie_mwinit
+43c44
+< 	    if (imtrgetim (IE_LIST(ie), IE_INDEX(ie), Memc[image],
+---
+> 	    if (mitrgetim (IE_LIST(ie), IE_INDEX(ie), Memc[image],
+120c121
+< 	    iferr (im = immap (Memc[imname], READ_ONLY, 0)) { 
+---
+> 	    iferr (im = mimap (Memc[imname], READ_ONLY, 0)) { 
+122,134c123,135
+< 		# Access the display frame buffer as the data image.
+< 		if (IE_USEDISPLAY(ie) == YES && IE_LIST(ie) == NULL) {
+< 		    if (IE_IM(ie) != NULL && IE_IM(ie) != IE_DS(ie))
+< 			iferr (call imunmap (IE_IM(ie)))
+< 			    ;
+< 		    IE_IM(ie) = IE_DS(ie)
+< 		    call sprintf (IE_IMAGE(ie), IE_SZFNAME, "Frame.%d(%s)")
+< 			call pargi (IE_MAPFRAME(ie))
+< 			call pargstr (Memc[image])
+< 		    call strcpy ("Contents of raw image frame buffer\n",
+< 			IM_TITLE(IE_IM(ie)), SZ_IMTITLE)
+< 		} else
+< 		    call erract (EA_WARN)
+---
+> #		# Access the display frame buffer as the data image.
+> #		if (IE_USEDISPLAY(ie) == YES && IE_LIST(ie) == NULL) {
+> #		    if (IE_IM(ie) != NULL && IE_IM(ie) != IE_DS(ie))
+> #			iferr (call imunmap (IE_IM(ie)))
+> #			    ;
+> #		    IE_IM(ie) = IE_DS(ie)
+> #		    call sprintf (IE_IMAGE(ie), IE_SZFNAME, "Frame.%d(%s)")
+> #			call pargi (IE_MAPFRAME(ie))
+> #			call pargstr (Memc[image])
+> #		    call strcpy ("Contents of raw image frame buffer\n",
+> #			IM_TITLE(IE_IM(ie)), SZ_IMTITLE)
+> #		} else
+> 		    call erract (EA_ERROR)
+140c141
+< 		    iferr (call imunmap (IE_IM(ie)))
+---
+> 		    iferr (call miunmap (IE_IM(ie)))
+149c150
+< 			call pargstr (IM_TITLE(IE_IM(ie)))
+---
+> 			call pargstr (Memc[MI_RNAME(im)])
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//iehimexam.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/iehimexam.x
+5a6
+> include "../mosim.h"
+178c179
+< 	        call pargstr (IM_TITLE(im))
+---
+> 		call pargstr (Memc[MI_RNAME(im)])
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//iejimexam.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/iejimexam.x
+7a8,9
+> include "../mosim.h"
+> include "../mosgeom.h"
+27c29
+< real	xc, yc, bkg, r, dr, fit[5], xfit, yfit, asumr(), amedr()
+---
+> real	xc, yc, bkg, r, fit[5], xfit, yfit, asumr(), amedr()
+42,45c44
+< 	if (axis == 1)
+< 	    IE_PP(ie) = clopset ("jimexam2")
+< 	else
+< 	    IE_PP(ie) = clopset ("kimexam2")
+---
+> 	IE_PP(ie) = clopset ("jimexam2")
+137,139c136
+< 	    call ie_mwctran (ie, xc, yc, xfit, yfit)
+< 	    call ie_mwctran (ie, xc+sigma, yc, r, yfit)
+< 	    dr = abs (xfit - r)
+---
+> 	    call ie_mwctran (ie, xc, yc, fit[4], r)
+141c138
+< 		call ie_mwctran (ie, real(x1+i), yc, Memr[xs+i], yfit)
+---
+> 		call ie_mwctran (ie, real(x1+i), yc, Memr[xs+i], r)
+143,145c140
+< 	    call ie_mwctran (ie, yc, xc, yfit, xfit)
+< 	    call ie_mwctran (ie, yc, xc+sigma, yfit, r)
+< 	    dr = abs (xfit - r)
+---
+> 	    call ie_mwctran (ie, yc, xc, r, fit[4])
+147c142
+< 		call ie_mwctran (ie, yc, real(x1+i), yfit, Memr[xs+i])
+---
+> 		call ie_mwctran (ie, yc, real(x1+i), r, Memr[xs+i])
+155,156c150,151
+< 	fit[4] = xfit
+< 	fit[5] = dr
+---
+> 	fit[4] = xc
+> 	fit[5] = sigma
+192c187
+< 	    call pargstr (IM_TITLE(im))
+---
+>             call pargstr (Memc[MI_RNAME(im)])
+204c199
+< 	xfit = min (Memr[xs+j], Memr[xs+k])
+---
+> 	xfit = Memr[xs+j]
+206d200
+< 	dr = abs ((Memr[xs+k] - Memr[xs+j]) / (k - j))
+213c207
+< 	    xfit = xfit + 0.2 * dr
+---
+> 	    xfit = xfit + 0.2
+220c214
+< 	} until (xfit >= max (Memr[xs+j], Memr[xs+k]))
+---
+> 	} until (xfit >= Memr[xs+k])
+224c218
+< 	call printf ("%s: center=%7g peak=%7g sigma=%7.4g fwhm=%7.4g bkg=%7g\n")
+---
+> 	call printf ("%s: center=%7g peak=%7g sigma=%5.3f fwhm=%5.3f bkg=%7g\n")
+308c302
+< 	dyda[4] = fac / a[5]
+---
+> 	dyda[4] = fac
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//ielimexam.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/ielimexam.x
+5a6
+> include "../mosim.h"
+75c76
+< 	    call pargstr (IM_TITLE(im))
+---
+>             call pargstr (Memc[MI_RNAME(im)])
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//iemw.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/iemw.x
+5a6
+> include "../mosim.h"
+21c22,26
+< 	im = IE_IM(ie)
+---
+> 	if (IE_IM(ie) == NULL)
+> 	    return
+> 
+> 	# For now use wcs of first image in mosaic. Almost certainly wrong!
+> 	im = MI_IM(IE_IM(ie), 1)
+114c119
+< 	IE_CTWL(ie) = ctwl
+---
+> 	IE_CTWL(ie) = ctlw
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//ieopenlog.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/ieopenlog.x
+5a6
+> include "../mosim.h"
+33c34
+< 			call pargstr (IM_TITLE(IE_IM(ie)))
+---
+> 			call pargstr (Memc[MI_RNAME(IE_IM(ie))])
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//ierimexam.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/ierimexam.x
+9a10
+> include "../mosim.h"
+11,13d11
+< define	FITTYPES	"|gaussian|moffat|"
+< define	FITGAUSS	1
+< define	FITMOFFAT	2
+15d12
+< 
+31,32c28,29
+< real	radius, buffer, width, magzero, rplot, beta, clgpsetr()
+< int	nit, fittype, xorder, yorder, clgpseti(), strdic()
+---
+> real	radius, buffer, width, magzero, rplot, clgpsetr()
+> int	xorder, yorder, clgpseti()
+34,35c31
+< int	i, j, ns, no, np, nx, ny, npts, x1, x2, y1, y2
+< int	coordlen, plist[3], nplist, strlen()
+---
+> int	i, j, ns, no, np, nx, ny, npts, x1, x2, y1, y2, plist[2]
+37,39c33,35
+< real	params[3]
+< real	fwhm, dbkg, dfwhm, gfwhm, efwhm
+< pointer	sp, fittypes, title, coords, im, data, pp, ws, xs, ys, zs, gs, ptr, nl
+---
+> real	params[2], dparams[2]
+> real	fwhm, dbkg, dpeak, dfwhm, efwhm
+> pointer	sp, title, coords, im, data, pp, ws, xs, ys, zs, gs, ptr, nl
+43c39
+< extern	ie_gauss(), ie_dgauss(), ie_moffat(), ie_dmoffat()
+---
+> extern	ie_gauss(), ie_dgauss()
+46,50c42,46
+< begin
+< 	call smark (sp)
+< 	call salloc (fittypes, SZ_FNAME, TY_CHAR)
+< 	call salloc (title, IE_SZTITLE, TY_CHAR)
+< 	call salloc (coords, IE_SZTITLE, TY_CHAR)
+---
+> data	plist/1,2/
+> string	label1 "#   \
+> COL    LINE                             ---- FULL WIDTH AT HALF-MAXIMUM ---\n"
+> string	label2 "#   \
+> MAG    FLUX     SKY    PEAK ELLIP    PA   MOMENT ENCLOSED GAUSSIAN   DIRECT\n"
+51a48
+> begin
+54d50
+< 	    call sfree (sp)
+78,79d73
+< 	nit = clgpseti (pp, "iterations")
+< 
+83,91d76
+< 	call clgpseta (pp, "fittype", Memc[fittypes], SZ_FNAME)
+< 	fittype = strdic (Memc[fittypes], Memc[fittypes], SZ_FNAME, FITTYPES)
+< 	if (fittype == 0) {
+< 	    call eprintf ("WARNING: Unknown profile fit type `%s'.\n")
+< 		call pargstr (Memc[fittypes])
+< 	    call sfree (sp)
+< 	    return
+< 	}
+< 	beta = clgpsetr (pp, "beta")
+111d95
+< 		call sfree (sp)
+118,121c102,103
+< 	call stf_measure (im, xcntr, ycntr, beta, 0.5, radius, nit, buffer,
+< 	    width, INDEF, NULL, NULL, dbkg, r, dfwhm, gfwhm, efwhm)
+< 	if (fittype == FITGAUSS)
+< 	    efwhm = gfwhm
+---
+> 	call stf_measure (im, xcntr, ycntr, 0.5, radius, 1, buffer, width,
+> 	    INDEF, NULL, NULL, dbkg, dpeak, dfwhm, efwhm)
+131d112
+< 	    call sfree (sp)
+138a120,122
+> 	call smark (sp)
+> 	call salloc (title, IE_SZTITLE, TY_CHAR)
+> 	call salloc (coords, IE_SZTITLE, TY_CHAR)
+293c277
+< 	# Compute the photometry and profile fit parameters.
+---
+> 	# Compute the photometry and gaussian fit parameters.
+295,355d278
+< 	switch (fittype) {
+< 	case FITGAUSS:
+< 	    plist[1] = 1
+< 	    plist[2] = 2
+< 	    nplist = 2
+< 	    params[2] = dfwhm**2 / (8 * log(2.))
+< 	    params[1] = zcntr
+< 	    call nlinitr (nl, locpr (ie_gauss), locpr (ie_dgauss), 
+< 		params, params, 2, plist, nplist, .001, 100)
+< 	    call nlfitr (nl, Memr[xs], Memr[ys], Memr[ws], no, 1, WTS_USER, i)
+< 	    if (i == SINGULAR || i == NO_DEG_FREEDOM) {
+< 		call eprintf ("WARNING: Gaussian fit did not converge\n")
+< 		call tsleep (5)
+< 		zcntr = INDEF
+< 		fwhm = INDEF
+< 	    } else {
+< 		call nlpgetr (nl, params, i)
+< 		if (params[2] < 0.) {
+< 		    zcntr = INDEF
+< 		    fwhm = INDEF
+< 		} else {
+< 		    zcntr = params[1]
+< 		    fwhm = sqrt (8 * log (2.) * params[2])
+< 		}
+< 	    }
+< 	case FITMOFFAT:
+< 	    plist[1] = 1
+< 	    plist[2] = 2
+< 	    if (IS_INDEF(beta)) {
+< 		params[3] = -3.0
+< 		plist[3] = 3
+< 		nplist = 3
+< 	    } else {
+< 		params[3] = -beta
+< 		nplist = 2
+< 	    }
+< 	    params[2] = dfwhm / 2. / sqrt (2.**(-1./params[3]) - 1.)
+< 	    params[1] = zcntr
+< 	    call nlinitr (nl, locpr (ie_moffat), locpr (ie_dmoffat), 
+< 		params, params, 3, plist, nplist, .001, 100)
+< 	    call nlfitr (nl, Memr[xs], Memr[ys], Memr[ws], no, 1, WTS_USER, i)
+< 	    if (i == SINGULAR || i == NO_DEG_FREEDOM) {
+< 		call eprintf ("WARNING: Moffat fit did not converge\n")
+< 		call tsleep (5)
+< 		zcntr = INDEF
+< 		fwhm = INDEF
+< 		beta = INDEF
+< 	    } else {
+< 		call nlpgetr (nl, params, i)
+< 		if (params[2] < 0.) {
+< 		    zcntr = INDEF
+< 		    fwhm = INDEF
+< 		    beta = INDEF
+< 		} else {
+< 		    zcntr = params[1]
+< 		    beta = -params[3]
+< 		    fwhm = abs (params[2])*2.*sqrt (2.**(-1./params[3]) - 1.)
+< 		}
+< 	    }
+< 	}
+< 
+364,370c287
+< 		switch (fittype) {
+< 		case FITGAUSS:
+< 		    r = 2 * sqrt (log (2.) * r2 / sumo)
+< 		case FITMOFFAT:
+< 		    if (beta > 2.)
+< 			r = 2 * sqrt ((beta-2.)*(2.**(1./beta)-1) * r2 / sumo)
+< 		}
+---
+> 	        r = 2 * sqrt (log (2.) * r2 / sumo)
+382a300,323
+> 	params[1] = zcntr
+> 	if (IS_INDEFR(r))
+> 	    params[2] = 0.25 * radius
+> 	else
+> 	    params[2] = r**2 / (8 * log(2.))
+> 	call nlinitr (nl, locpr (ie_gauss), locpr (ie_dgauss), 
+> 	    params, dparams, 2, plist, 2, .001, 100)
+> 	call nlfitr (nl, Memr[xs], Memr[ys], Memr[ws], no, 1, WTS_USER, i)
+> 	if (i == SINGULAR || i == NO_DEG_FREEDOM) {
+> 	    call eprintf ("WARNING: Gaussian fit did not converge\n")
+> 	    call tsleep (5)
+> 	    zcntr = INDEF
+> 	    fwhm = INDEF
+> 	} else {
+> 	    call nlpgetr (nl, params, i)
+> 	    if (params[2] < 0.) {
+> 		zcntr = INDEF
+> 		fwhm = INDEF
+> 	    } else {
+> 		zcntr = params[1]
+> 		fwhm = sqrt (8 * log (2.) * params[2])
+> 	    }
+> 	}
+> 
+407c348
+< 	        call pargstr (IM_TITLE(im))
+---
+> 		call pargstr (Memc[MI_RNAME(im)])
+424,425c365,366
+< 	    call printf ("%6.2f %6.2f %7.4g %7.4g %7.4g %4.2f %4d")
+< 		call pargr (radius)
+---
+> 	    call printf (
+> 		"%7.2f %7.4g %7.4g %7.4g %5.2f %5d %8.2f %8.2f %8.2f %8.2f\n")
+432,444c373,376
+< 	    switch (fittype) {
+< 	    case FITGAUSS:
+< 		call printf (" %4w %8.2f %8.2f %6.2f\n")
+< 		    call pargr (efwhm)
+< 		    call pargr (fwhm)
+< 		    call pargr (dfwhm)
+< 	    case FITMOFFAT:
+< 		call printf (" %4.2f %8.2f %8.2f %6.2f\n")
+< 		    call pargr (beta)
+< 		    call pargr (efwhm)
+< 		    call pargr (fwhm)
+< 		    call pargr (dfwhm)
+< 	    }
+---
+> 	        call pargr (r)
+> 		call pargr (efwhm)
+> 	        call pargr (fwhm)
+> 		call pargr (dfwhm)
+448,473c380,381
+< 		coordlen = max (11, strlen (Memc[coords]))
+< 		call printf ("# %5s %7s %-*s\n# %5s %6s %7s %7s %7s %4s %4s")
+< 		    call pargstr ("COL")
+< 		    call pargstr ("LINE")
+< 		    call pargi (coordlen)
+< 		    call pargstr ("COORDINATES")
+< 		    call pargstr ("R")
+< 		    call pargstr ("MAG")
+< 		    call pargstr ("FLUX")
+< 		    call pargstr ("SKY")
+< 		    call pargstr ("PEAK")
+< 		    call pargstr ("E")
+< 		    call pargstr ("PA")
+< 		switch (fittype) {
+< 		case FITGAUSS:
+< 		    call printf (" %4w %8s %8s %6s\n")
+< 			call pargstr ("ENCLOSED")
+< 			call pargstr ("GAUSSIAN")
+< 			call pargstr ("DIRECT")
+< 		case FITMOFFAT:
+< 		    call printf (" %4s %8s %8s %6s\n")
+< 			call pargstr ("BETA")
+< 			call pargstr ("ENCLOSED")
+< 			call pargstr ("MOFFAT")
+< 			call pargstr ("DIRECT")
+< 		}
+---
+> 		call printf (label1)
+> 		call printf (label2)
+475a384,395
+> 	    if (xcntr != wxcntr || ycntr != wycntr) {
+> 		call printf ("%7.2f %7.2f: %s = %s\n")
+> 		    call pargr (xcntr)
+> 		    call pargr (ycntr)
+> 		    call pargstr (IE_WCSNAME(ie))
+> 		    call pargstr (Memc[coords])
+> 	    } else {
+> 		call printf ("%7.2f %7.2f\n")
+> 		    call pargr (xcntr)
+> 		    call pargr (ycntr)
+> 		    call pargstr (IE_WCSNAME(ie))
+> 	    }
+477,482c397
+< 		"%7.2f %7.2f %-*s\n %6.2f %6.2f %7.4g %7.4g %7.4g %4.2f %4d")
+< 		call pargr (xcntr)
+< 		call pargr (ycntr)
+< 		call pargi (coordlen)
+< 		call pargstr (Memc[coords])
+< 		call pargr (radius)
+---
+> 		"%7.2f %7.4g %7.4g %7.4g %5.2f %5d %8.2f %8.2f %8.2f %8.2f\n")
+489,501c404,407
+< 	    switch (fittype) {
+< 	    case FITGAUSS:
+< 		call printf (" %4w %8.2f %8.2f %6.2f\n")
+< 		    call pargr (efwhm)
+< 		    call pargr (fwhm)
+< 		    call pargr (dfwhm)
+< 	    case FITMOFFAT:
+< 		call printf (" %4.2f %8.2f %8.2f %6.2f\n")
+< 		    call pargr (beta)
+< 		    call pargr (efwhm)
+< 		    call pargr (fwhm)
+< 		    call pargr (dfwhm)
+< 	    }
+---
+> 	        call pargr (r)
+> 		call pargr (efwhm)
+> 	        call pargr (fwhm)
+> 		call pargr (dfwhm)
+506,532c412,413
+< 		coordlen = max (11, strlen (Memc[coords]))
+< 		call fprintf (IE_LOGFD(ie),
+< 		    "# %5s %7s %-*s %6s %6s %7s %7s %7s %4s %4s")
+< 		    call pargstr ("COL")
+< 		    call pargstr ("LINE")
+< 		    call pargi (coordlen)
+< 		    call pargstr ("COORDINATES")
+< 		    call pargstr ("R")
+< 		    call pargstr ("MAG")
+< 		    call pargstr ("FLUX")
+< 		    call pargstr ("SKY")
+< 		    call pargstr ("PEAK")
+< 		    call pargstr ("E")
+< 		    call pargstr ("PA")
+< 		switch (fittype) {
+< 		case FITGAUSS:
+< 		    call fprintf (IE_LOGFD(ie), " %4w %8s %8s %6s\n")
+< 			call pargstr ("ENCLOSED")
+< 			call pargstr ("GAUSSIAN")
+< 			call pargstr ("DIRECT")
+< 		case FITMOFFAT:
+< 		    call fprintf (IE_LOGFD(ie), " %4s %8s %8s %6s\n")
+< 			call pargstr ("BETA")
+< 			call pargstr ("ENCLOSED")
+< 			call pargstr ("MOFFAT")
+< 			call pargstr ("DIRECT")
+< 		}
+---
+> 		call fprintf (IE_LOGFD(ie), label1)
+> 		call fprintf (IE_LOGFD(ie), label2)
+534a416,427
+> 	    if (xcntr != wxcntr || ycntr != wycntr) {
+> 		call fprintf (IE_LOGFD(ie), "%7.2f %7.2f: %s = %s\n")
+> 		    call pargr (xcntr)
+> 		    call pargr (ycntr)
+> 		    call pargstr (IE_WCSNAME(ie))
+> 		    call pargstr (Memc[coords])
+> 	    } else {
+> 		call fprintf (IE_LOGFD(ie), "%7.2f %7.2f\n")
+> 		    call pargr (xcntr)
+> 		    call pargr (ycntr)
+> 		    call pargstr (IE_WCSNAME(ie))
+> 	    }
+536,541c429
+< 		"%7.2f %7.2f %-*s %6.2f %6.2f %7.4g %7.4g %7.4g %4.2f %4d")
+< 		call pargr (xcntr)
+< 		call pargr (ycntr)
+< 		call pargi (coordlen)
+< 		call pargstr (Memc[coords])
+< 		call pargr (radius)
+---
+> 		"%7.2f %7.4g %7.4g %7.4g %5.2f %5d %8.2f %8.2f %8.2f %8.2f\n")
+548,560c436,439
+< 	    switch (fittype) {
+< 	    case FITGAUSS:
+< 		call fprintf (IE_LOGFD(ie), " %4w %8.2f %8.2f %6.2f\n")
+< 		    call pargr (efwhm)
+< 		    call pargr (fwhm)
+< 		    call pargr (dfwhm)
+< 	    case FITMOFFAT:
+< 		call fprintf (IE_LOGFD(ie), " %4.2f %8.2f %8.2f %6.2f\n")
+< 		    call pargr (beta)
+< 		    call pargr (efwhm)
+< 		    call pargr (fwhm)
+< 		    call pargr (dfwhm)
+< 	    }
+---
+> 	        call pargr (r)
+> 		call pargr (efwhm)
+> 	        call pargr (fwhm)
+> 		call pargr (dfwhm)
+659c538
+< int	np			#I Number of parameters
+---
+> real	np			#I Number of parameters
+682c561
+< int	np			#I Number of parameters
+---
+> real	np			#I Number of parameters
+698,751d576
+< 	}
+< end
+< 
+< 
+< # IE_MOFFAT -- Moffat function used in NLFIT.  The parameters are the
+< # amplitude, alpha squared, and beta and the input variable is the radius.
+< 
+< procedure ie_moffat (x, nvars, p, np, z)
+< 
+< real	x[nvars]		#I Input variables
+< int	nvars			#I Number of variables
+< real	p[np]			#I Parameter vector
+< int	np			#I Number of parameters
+< real	z			#O Function return
+< 
+< real	y
+< 
+< begin
+< 	y = 1 + (x[1] / p[2]) ** 2
+< 	if (abs (y) > 20.)
+< 	    z = 0.
+< 	else
+< 	    z = p[1] * y ** p[3]
+< end
+< 
+< 
+< # IE_DMOFFAT -- Moffat function and derivatives used in NLFIT.  The parameters
+< # are the amplitude, alpha squared, and beta and the input variable is the
+< # radius.
+< 
+< procedure ie_dmoffat (x, nvars, p, dp, np, z, der)
+< 
+< real	x[nvars]		#I Input variables
+< int	nvars			#I Number of variables
+< real	p[np]			#I Parameter vector
+< real	dp[np]			#I Dummy array of parameters increments
+< int	np			#I Number of parameters
+< real	z			#O Function return
+< real	der[np]			#O Derivatives
+< 
+< real	y
+< 
+< begin
+< 	y = 1 + (x[1] / p[2]) ** 2
+< 	if (abs (y) > 20.) {
+< 	    z = 0.
+< 	    der[1] = 0.
+< 	    der[2] = 0.
+< 	    der[3] = 0.
+< 	} else {
+< 	    der[1] = y ** p[3]
+< 	    z = p[1] * der[1]
+< 	    der[2] = -2 * z / y * p[3] / p[2] * (x[1] / p[2]) ** 2
+< 	    der[3] = z * log (y)
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//iesimexam.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/iesimexam.x
+7a8
+> include "../mosim.h"
+114c115
+< 		    call pargstr (IM_TITLE(im))
+---
+> 		    call pargstr (Memc[MI_RNAME(im)])
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//ievimexam.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/ievimexam.x
+10a11,12
+> include "../mosgeom.h"
+> include "../mosim.h"
+32c34
+< pointer	sp, title, boundary, im, x_vec, y_vec, pp
+---
+> pointer	sp, title, boundary, im, x_vec, y_vec, pp, mg
+59,60c61,63
+< 	nxvals = IM_LEN(im,1)
+< 	nyvals = IM_LEN(im,2)
+---
+> 	mg = MI_CMG(im)
+> 	nxvals = NX(mg)
+> 	nyvals = NY(mg)
+109c112
+< 	    call pargstr (IM_TITLE(im))
+---
+> 	    call pargstr (Memc[MI_RNAME(im)])
+140c143
+< int	i, j, k, nedge, col1, col2, line1, line2
+---
+> int	i, j, k, nedge, col1, col2, line1, line2, cx1, cx2, cy1, cy2
+142c145
+< pointer sp, oxs, oys, xs, ys, yvals, msi, buf
+---
+> pointer sp, oxs, oys, xs, ys, yvals, msi, buf, mg
+144c147
+< pointer	imgs2r()
+---
+> pointer	migs2r()
+174c177
+< 	call msiinit (msi, II_BILINEAR]
+---
+> 	call msiinit (msi, II_BILINEAR)
+177,182c180,185
+< 	# Set the boundary.
+< 	col1 = int (min (x1, x2)) - nedge
+< 	col2 = nint (max (x1, x2)) + nedge
+< 	line1 = int (min (y1, y2)) - nedge
+< 	line2 = nint (max (y2, y1)) + nedge
+< 	call ie_setboundary (im, col1, col2, line1, line2, btype, bconstant)
+---
+> #	# Set the boundary.
+> #	col1 = int (min (x1, x2)) - nedge
+> #	col2 = nint (max (x1, x2)) + nedge
+> #	line1 = int (min (y1, y2)) - nedge
+> #	line2 = nint (max (y2, y1)) + nedge
+> #	call ie_setboundary (im, col1, col2, line1, line2, btype, bconstant)
+183a187,202
+> 	# We can't (easily) handle boundary extension. Clip ends of vector
+> 	# instead.
+>  	col1  = int (min (x1, x2))
+>  	col2  = nint (max (x1, x2))
+>  	line1 = int (min (y1, y2))
+>  	line2 = nint (max (y2, y1))
+> 	mg    = MI_CMG(im)
+> 	cx1   = CX1(mg)
+> 	cx2   = CX2(mg)
+> 	cy1   = CY1(mg)
+> 	cy2   = CY2(mg)
+> 	col1  = max (col1,  cx1)
+> 	col2  = min (col2,  cx2)
+> 	line1 = max (line1, cy1)
+> 	line2 = min (line2, cy2)
+> 
+211c230
+< 		buf = imgs2r (im, colb, colc, lineb, linec)
+---
+> 		buf = migs2r (im, colb, colc, lineb, linec)
+225c244
+< 		buf = imgs2r (im, colb, colc, lineb, linec)
+---
+> 		buf = migs2r (im, colb, colc, lineb, linec)
+276,277c295,296
+< int	line, linea, lineb, linec
+< pointer sp, xs, ys, msi, yvals, buf
+---
+> int	line, linea, lineb, linec, cx1, cx2, cy1, cy2
+> pointer sp, xs, ys, msi, yvals, buf, mg
+280c299
+< pointer	imgs2r()
+---
+> pointer	migs2r()
+295,299c314,318
+< 	col1 = int (x1) - nedge
+< 	col2 = nint (x1) + nedge
+< 	line1  = int (min (y1, y2)) - nedge
+< 	line2 =  nint (max (y1, y2)) + nedge
+< 	call ie_setboundary (im, col1, col2, line1, line2, btype, bconstant)
+---
+> #	col1 = int (x1) - nedge
+> #	col2 = nint (x1) + nedge
+> #	line1  = int (min (y1, y2)) - nedge
+> #	line2 =  nint (max (y1, y2)) + nedge
+> #	call ie_setboundary (im, col1, col2, line1, line2, btype, bconstant)
+300a320,335
+> 	# We can't (easily) handle boundary extension. Clip ends of vector
+> 	# instead.
+>  	col1  = int (min (x1, x2))
+>  	col2  = nint (max (x1, x2))
+>  	line1 = int (min (y1, y2))
+>  	line2 = nint (max (y2, y1))
+> 	mg    = MI_CMG(im)
+> 	cx1   = CX1(mg)
+> 	cx2   = CX2(mg)
+> 	cy1   = CY1(mg)
+> 	cy2   = CY2(mg)
+> 	col1  = max (col1,  cx1)
+> 	col2  = min (col2,  cx2)
+> 	line1 = max (line1, cy1)
+> 	line2 = min (line2, cy2)
+> 
+329c364
+< 		buf = imgs2r (im, col1, col2, lineb, linec)
+---
+> 		buf = migs2r (im, col1, col2, lineb, linec)
+336c371
+< 		buf = imgs2r (im, col1, col2, lineb, linec)
+---
+> 		buf = migs2r (im, col1, col2, lineb, linec)
+385c420
+< int	i, j, nedge, col1, col2, line1, line2
+---
+> int	i, j, nedge, col1, col2, line1, line2, cx1, cx2, cy1, cy2
+387,389c422,424
+< pointer sp, oys, xs, ys, yvals, msi, buf
+< errchk	imgs2r, msifit, msiinit
+< pointer	imgs2r()
+---
+> pointer sp, oys, xs, ys, yvals, msi, buf, mg
+> errchk	migs2r, msifit, msiinit
+> pointer	migs2r()
+404,408c439,443
+< 	col1 = int (min (x1, x2)) - nedge
+< 	col2 = nint (max (x1, x2)) + nedge
+< 	line1 = int (y1) - nedge
+< 	line2 = nint (y1) + nedge
+< 	call ie_setboundary (im, col1, col2, line1, line2, btype, bconstant)
+---
+> #	col1 = int (min (x1, x2)) - nedge
+> #	col2 = nint (max (x1, x2)) + nedge
+> #	line1 = int (y1) - nedge
+> #	line2 = nint (y1) + nedge
+> #	call ie_setboundary (im, col1, col2, line1, line2, btype, bconstant)
+409a445,460
+> 	# We can't (easily) handle boundary extension. Clip ends of vector
+> 	# instead.
+>  	col1  = int (min (x1, x2))
+>  	col2  = nint (max (x1, x2))
+>  	line1 = int (min (y1, y2))
+>  	line2 = nint (max (y2, y1))
+> 	mg    = MI_CMG(im)
+> 	cx1   = CX1(mg)
+> 	cx2   = CX2(mg)
+> 	cy1   = CY1(mg)
+> 	cy2   = CY2(mg)
+> 	col1  = max (col1,  cx1)
+> 	col2  = min (col2,  cx2)
+> 	line1 = max (line1, cy1)
+> 	line2 = min (line2, cy2)
+> 
+444c495
+< 		buf = imgs2r (im, col1, col2, lineb, linec)
+---
+> 		buf = migs2r (im, col1, col2, lineb, linec)
+453c504
+< 		buf = imgs2r (im, col1, col2, lineb, linec)
+---
+> 		buf = migs2r (im, col1, col2, lineb, linec)
+489c540
+< procedure ie_setboundary (im, col1, col2, line1, line2, btype, bconstant)
+---
+> procedure ie_setboundary (mi, col1, col2, line1, line2, btype, bconstant)
+491c542
+< pointer	im			# IMIO pointer
+---
+> pointer	mi			# MOSIM pointer
+496a548
+> pointer	mg, im
+498c550
+< int	nbndrypix
+---
+> int	nbndrypix, nims, i
+501a554,556
+> 	mg = MI_CMG(mi)
+> 	nims = MI_NIMS(mi)
+> 
+504c559
+< 	nbndrypix = max (nbndrypix, col2 - IM_LEN(im, 1))
+---
+> 	nbndrypix = max (nbndrypix, col2 - NX(mg))
+506c561
+< 	nbndrypix = max (nbndrypix, line2 - IM_LEN(im, 2))
+---
+> 	nbndrypix = max (nbndrypix, line2 - NY(mg))
+508,511c563,569
+< 	call imseti (im, IM_TYBNDRY, btypes[btype])
+< 	call imseti (im, IM_NBNDRYPIX, nbndrypix + 1)
+< 	if (btypes[btype] == BT_CONSTANT)
+< 	    call imsetr (im, IM_BNDRYPIXVAL, bconstant)
+---
+> 	do i = 1, nims {
+> 	    im = MI_IM (mi, i)
+> 	    call imseti (im, IM_TYBNDRY, btypes[btype])
+> 	    call imseti (im, IM_NBNDRYPIX, nbndrypix + 1)
+> 	    if (btypes[btype] == BT_CONSTANT)
+> 		call imsetr (im, IM_BNDRYPIXVAL, bconstant)
+> 	}
+530,531c588,589
+< errchk	malloc, realloc, imgs2r
+< pointer	imgs2r()
+---
+> errchk	malloc, realloc, migs2r
+> pointer	migs2r()
+559c617
+< 		    buf1 = imgs2r (im, col1, col2, i, i)
+---
+> 		    buf1 = migs2r (im, col1, col2, i, i)
+569c627
+< 		    buf1 = imgs2r (im, col1, col2, i, i)
+---
+> 		    buf1 = migs2r (im, col1, col2, i, i)
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//mkpkg /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/mkpkg
+2,3c2,3
+<  
+< $checkout libpkg.a ../
+---
+> 
+> $checkout libpkg.a ..
+5c5
+< $checkin  libpkg.a ../
+---
+> $checkin  libpkg.a ..
+7c7,11
+<  
+---
+> 
+> update:
+> 	$update	libpkg.a
+> 	;
+> 
+14,15c18,19
+< 	iegcur.x	imexam.h
+< 	iegdata.x	<imhdr.h>
+---
+> 	iegcur.x	imexam.h ../mosim.h ../mosgeom.h <imhdr.h> <ctype.h>
+> 	iegdata.x	<imhdr.h> ../mosim.h ../mosgeom.h
+23,24c27,28
+< 	iemw.x		imexam.h <imhdr.h> <mwset.h>
+< 	ieopenlog.x	imexam.h <error.h> <imhdr.h>
+---
+> 	iemw.x		imexam.h <imhdr.h> <mwset.h> ../mosim.h
+> 	ieopenlog.x	imexam.h <error.h> <imhdr.h> ../mosim.h
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//starfocus.h /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/starfocus.h
+13,15d12
+< # Radius types
+< define	SF_WTYPES	"|Radius|FWHM|GFWHM|MFWHM|"
+< 
+23c20
+< define	SF_SZWTYPE	7		# Length of width type string
+---
+> define	SF_SZRTYPE	7		# Length of radius type string
+26c23
+< define	SF		40
+---
+> define	SF		38
+28,63c25,58
+< define	SF_WTYPE	Memc[P2C($1+1)]	# Width type string
+< define	SF_WCODE	Memi[$1+5]	# Width code
+< define	SF_BETA		Memr[$1+6]	# Moffat beta
+< define	SF_SCALE	Memr[$1+7]	# Pixel scale
+< define	SF_LEVEL	Memr[$1+8]	# Profile measurement level
+< define	SF_RADIUS	Memr[$1+9]	# Profile radius
+< define	SF_SBUF		Memr[$1+10]	# Sky region buffer
+< define	SF_SWIDTH	Memr[$1+11]	# Sky region width
+< define	SF_SAT		Memr[$1+12]	# Saturation
+< define	SF_NIT		Memi[$1+13]	# Number of iterations for radius
+< define	SF_OVRPLT	Memi[$1+14]	# Overplot the best profile?
+< define	SF_NCOLS	Memi[$1+15]	# Number of image columns
+< define	SF_NLINES	Memi[$1+16]	# Number of image lines
+< define	SF_XF		Memr[$1+17]	# X field center
+< define	SF_YF		Memr[$1+18]	# Y field center
+< define	SF_GP		Memi[$1+19]	# GIO pointer
+< define	SF_F		Memr[$1+20]	# Best focus
+< define	SF_W		Memr[$1+21]	# Width at best focus
+< define	SF_M		Memr[$1+22]	# Brightest star magnitude
+< define	SF_XP1		Memr[$1+23]	# First derivative point to plot
+< define	SF_XP2		Memr[$1+24]	# Last derivative point to plot
+< define	SF_YP1		Memr[$1+25]	# Minimum of derivative profile
+< define	SF_YP2		Memr[$1+26]	# Maximum of derivative profile
+< define	SF_N		Memi[$1+27]	# Number of points not deleted
+< define	SF_NSFD		Memi[$1+28]	# Number of data points
+< define	SF_SFDS		Memi[$1+29]	# Pointer to data structures
+< define	SF_NS		Memi[$1+30]	# Number of stars not deleted
+< define	SF_NSTARS	Memi[$1+31]	# Number of stars
+< define	SF_STARS	Memi[$1+32]	# Pointer to star groups
+< define	SF_NF		Memi[$1+33]	# Number of focuses not deleted
+< define	SF_NFOCUS	Memi[$1+34]	# Number of different focus values
+< define	SF_FOCUS	Memi[$1+35]	# Pointer to focus groups
+< define	SF_NI		Memi[$1+36]	# Number of images not deleted
+< define	SF_NIMAGES	Memi[$1+37]	# Number of images
+< define	SF_IMAGES	Memi[$1+38]	# Pointer to image groups
+< define	SF_BEST		Memi[$1+39]	# Pointer to best focus star
+---
+> define	SF_RTYPE	Memc[P2C($1+1)]	# Radius type string
+> define	SF_SCALE	Memr[$1+5]	# Pixel scale
+> define	SF_LEVEL	Memr[$1+6]	# Profile measurement level
+> define	SF_RADIUS	Memr[$1+7]	# Profile radius
+> define	SF_SBUF		Memr[$1+8]	# Sky region buffer
+> define	SF_SWIDTH	Memr[$1+9]	# Sky region width
+> define	SF_SAT		Memr[$1+10]	# Saturation
+> define	SF_NIT		Memi[$1+11]	# Number of iterations for radius
+> define	SF_OVRPLT	Memi[$1+12]	# Overplot the best profile?
+> define	SF_NCOLS	Memi[$1+13]	# Number of image columns
+> define	SF_NLINES	Memi[$1+14]	# Number of image lines
+> define	SF_XF		Memr[$1+15]	# X field center
+> define	SF_YF		Memr[$1+16]	# Y field center
+> define	SF_GP		Memi[$1+17]	# GIO pointer
+> define	SF_F		Memr[$1+18]	# Best focus
+> define	SF_R		Memr[$1+19]	# Radius at best focus
+> define	SF_M		Memr[$1+20]	# Brightest star magnitude
+> define	SF_XP1		Memr[$1+21]	# First derivative point to plot
+> define	SF_XP2		Memr[$1+22]	# Last derivative point to plot
+> define	SF_YP1		Memr[$1+23]	# Minimum of derivative profile
+> define	SF_YP2		Memr[$1+24]	# Maximum of derivative profile
+> define	SF_N		Memi[$1+25]	# Number of points not deleted
+> define	SF_NSFD		Memi[$1+26]	# Number of data points
+> define	SF_SFDS		Memi[$1+27]	# Pointer to data structures
+> define	SF_NS		Memi[$1+28]	# Number of stars not deleted
+> define	SF_NSTARS	Memi[$1+29]	# Number of stars
+> define	SF_STARS	Memi[$1+30]	# Pointer to star groups
+> define	SF_NF		Memi[$1+31]	# Number of focuses not deleted
+> define	SF_NFOCUS	Memi[$1+32]	# Number of different focus values
+> define	SF_FOCUS	Memi[$1+33]	# Pointer to focus groups
+> define	SF_NI		Memi[$1+34]	# Number of images not deleted
+> define	SF_NIMAGES	Memi[$1+35]	# Number of images
+> define	SF_IMAGES	Memi[$1+36]	# Pointer to image groups
+> define	SF_BEST		Memi[$1+37]	# Pointer to best focus star
+71c66
+< define	SFD		94
+---
+> define	SFD		89
+85c80
+< define	SFD_W		Memr[$1+52]	# Width to use
+---
+> define	SFD_R		Memr[$1+52]	# Radius
+89,108c84,98
+< define	SFD_R		Memr[$1+56]	# Radius at given level
+< define	SFD_DFWHM	Memr[$1+57]	# Direct FWHM
+< define	SFD_GFWHM	Memr[$1+58]	# Gaussian FWHM
+< define	SFD_MFWHM	Memr[$1+59]	# Moffat FWHM
+< define	SFD_ASI1	Memi[$1+60]	# Pointer to enclosed flux profile
+< define	SFD_ASI2	Memi[$1+61]	# Pointer to derivative profile
+< define	SFD_YP1		Memr[$1+62]	# Minimum of derivative profile
+< define	SFD_YP2		Memr[$1+63]	# Maximum of derivative profile
+< define	SFD_FWHM	Memr[$1+$2+63]	# FWHM vs level=0.5*i (i=1-19)
+< define	SFD_BKGD	Memr[$1+83]	# Background value
+< define	SFD_BKGD1	Memr[$1+84]	# Original background value
+< define	SFD_MISO	Memr[$1+85]	# Moment isophote
+< define	SFD_SIGMA	Memr[$1+86]	# Moffat alpha
+< define	SFD_ALPHA	Memr[$1+87]	# Moffat alpha
+< define	SFD_BETA	Memr[$1+88]	# Moffat beta
+< define	SFD_STATUS	Memi[$1+89]	# Status
+< define	SFD_NSAT	Memi[$1+90]	# Number of saturated pixels
+< define	SFD_SFS		Memi[$1+91]	# Pointer to star group
+< define	SFD_SFF		Memi[$1+92]	# Pointer to focus group
+< define	SFD_SFI		Memi[$1+93]	# Pointer to image group
+---
+> define	SFD_ASI1	Memi[$1+56]	# Pointer to enclosed flux profile
+> define	SFD_ASI2	Memi[$1+57]	# Pointer to derivative profile
+> define	SFD_YP1		Memr[$1+58]	# Minimum of derivative profile
+> define	SFD_YP2		Memr[$1+59]	# Maximum of derivative profile
+> define	SFD_FWHM	Memr[$1+$2+59]	# FWHM vs level=0.5*i (i=1-19)
+> define	SFD_BKGD	Memr[$1+79]	# Background value
+> define	SFD_BKGD1	Memr[$1+80]	# Original background value
+> define	SFD_MISO	Memr[$1+81]	# Moment isophote
+> define	SFD_PEAK	Memr[$1+82]	# Peak estimate
+> define	SFD_DFWHM	Memr[$1+83]	# Direct FWHM
+> define	SFD_STATUS	Memi[$1+84]	# Status
+> define	SFD_NSAT	Memi[$1+85]	# Number of saturated pixels
+> define	SFD_SFS		Memi[$1+86]	# Pointer to star group
+> define	SFD_SFF		Memi[$1+87]	# Pointer to focus group
+> define	SFD_SFI		Memi[$1+88]	# Pointer to image group
+115c105
+< define	SFS_W		Memr[$1+2]	# Best width
+---
+> define	SFS_R		Memr[$1+2]	# Best radius
+126c116
+< define	SFF_W		Memr[$1+1]	# Average width
+---
+> define	SFF_R		Memr[$1+1]	# Average radius
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//stfmeasure.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/stfmeasure.x
+4d3
+< include	<math/nlfit.h>
+5a5,6
+> include "../mosgeom.h"
+> include "../mosim.h"
+12,14c13,14
+< procedure stf_measure (im, xc, yc, beta, level, radius, nit,
+< 	sbuffer, swidth, saturation, gp, logfd,
+< 	bkg, renclosed, dfwhm, gfwhm, mfwhm)
+---
+> procedure stf_measure (im, xc, yc, level, radius, nit, sbuffer, swidth,
+> 	saturation, gp, logfd, bkg, peak, dfwhm, efwhm)
+19d18
+< real	beta		#I Moffat beta
+21c20
+< real	radius		#U Profile radius
+---
+> real	radius		#I Profile radius
+29c28
+< real	renclosed	#O Enclosed flux radius
+---
+> real	peak		#O Peak used
+31,32c30
+< real	gfwhm		#O Gaussian FWHM
+< real	mfwhm		#O Moffat FWHM
+---
+> real	efwhm		#O Enclosed flux FWHM
+36c34
+< pointer	sp, str, sf, sfd, sfds
+---
+> pointer	sp, sf, sfd, sfds, mg
+38d35
+< int	strdic()
+40c37
+< errchk	stf_find, stf_bkgd, stf_profile, stf_widths, stf_fwhms, stf_organize
+---
+> errchk	stf_find, stf_bkgd, stf_profile, stf_fwhm, stf_radius, stf_organize
+44d40
+< 	call salloc (str, SZ_FNAME, TY_CHAR)
+54c50
+< 	SF_WCODE(sf) = strdic ("FWHM", SF_WTYPE(sf), SF_SZWTYPE, SF_WTYPES)
+---
+> 	call strcpy ("FWHM", SF_RTYPE(sf), SF_SZRTYPE)
+57d52
+< 	SF_BETA(sf) = beta
+64,67c59,63
+< 	SF_NCOLS(sf) = IM_LEN(im,1)
+< 	SF_NLINES(sf) = IM_LEN(im,2)
+< 	SF_XF(sf) = (IM_LEN(im,1) + 1) / 2.
+< 	SF_YF(sf) = (IM_LEN(im,2) + 1) / 2.
+---
+> 	mg = MI_CMG(im)
+> 	SF_NCOLS(sf) = NX(mg)
+> 	SF_NLINES(sf) = NY(mg)
+> 	SF_XF(sf) = (NX(mg) + 1) / 2.
+> 	SF_YF(sf) = (NY(mg) + 1) / 2.
+70c66,67
+< 	call imstats (im, IM_IMAGENAME, SFD_IMAGE(sfd), SF_SZFNAME)
+---
+> #	call imstats (im, IM_IMAGENAME, SFD_IMAGE(sfd), SF_SZFNAME)
+> 	call strcpy (Memc[MI_RNAME(im)], SFD_IMAGE(sfd), SF_SZFNAME)
+90c87,88
+< 		    SFD_RADIUS(sfd) = 3. * SFD_DFWHM(sfd)
+---
+> 		    SFD_RADIUS(sfd) = SFD_R(sfd) *
+> 			sqrt (log (200.) / log (1/(1-SF_LEVEL(sf))))
+104,105c102,103
+< 		call stf_widths (sf, sfd)
+< 		call stf_fwhms (sf, sfd)
+---
+> 		call stf_fwhm (sf, sfd)
+> 		call stf_radius (sf, sfd, SF_LEVEL(sf), SFD_R(sfd))
+106a105,107
+> 	    if (SF_RTYPE(sf) == 'F')
+> 		SFD_R(sfd) = 2 * SFD_R(sfd) *
+> 		    sqrt (log (2.) / log (1/(1-SF_LEVEL(sf))))
+109d109
+< 	    radius = SFD_RADIUS(sfd)
+111c111,112
+< 	    renclosed = SFD_R(sfd)
+---
+> 	    peak = SFD_PEAK(sfd)
+> 	    efwhm = SFD_R(sfd)
+113,114d113
+< 	    mfwhm = SFD_MFWHM(sfd)
+< 	    gfwhm = SFD_GFWHM(sfd)
+120a120,122
+> 	# Free data buffer
+> 	if (SFD_DATA(sfd) != NULL)
+> 	    call mfree (SFD_DATA(sfd), TY_REAL)
+133a136
+> 
+153d155
+< include	<math/nlfit.h>
+157,173c159,167
+< # STF_FIND      -- Find the object and return the data raster and object center.
+< # STF_BKGD      -- Compute the background.
+< # STF_PROFILE   -- Compute enclosed flux profile, derivative, and moments.
+< # STF_NORM      -- Renormalized enclosed flux profile
+< # STF_WIDTHS    -- Set widths.
+< # STF_I2R       -- Radius from sample index.
+< # STF_R2I       -- Sample index from radius.
+< # STF_R2N       -- Number of subsamples from radius.
+< # STF_MODEL     -- Return model values.
+< # STF_DFWHM     -- Direct FWHM from profile.
+< # STF_FWHMS     -- Measure FWHM vs level.
+< # STF_RADIUS    -- Measure the radius at the specified level.
+< # STF_FIT       -- Fit model.
+< # STF_GAUSS1    -- Gaussian function used in NLFIT.
+< # STF_GAUSS2    -- Gaussian function and derivatives used in NLFIT.
+< # STF_MOFFAT1   -- Moffat function used in NLFIT.
+< # STF_MOFFAT2   -- Moffat function and derivatives used in NLFIT.
+---
+> # STF_FIND    -- Find the object and return the data raster and object center.
+> # STF_BKGD    -- Compute the background.
+> # STF_PROFILE -- Compute enclosed flux profile, derivative, and moments.
+> # STF_NORM    -- Renormalized enclosed flux profile
+> # STF_I2R     -- Radius from sample index.
+> # STF_R2I     -- Sample index from radius.
+> # STF_R2N     -- Number of subsamples from radius.
+> # STF_FWHM    -- Measure FWHM vs level.
+> # STF_RADIUS  -- Measure the radius at the specified level.
+189,190c183
+< pointer	data, ptr, imgs2r()
+< errchk	imgs2r
+---
+> pointer	mg, buff, data, ptr
+191a185,187
+> pointer	migs2r()
+> errchk	migs2r
+> 
+195a192
+> 	mg = MI_CMG(im)
+199a197,198
+> 	#r2 = max (SF_RMIN, r1)
+> 	#r2 = r1
+210c209
+< 	    x2 = min (IM_LEN(im,1), nint (xc + r2))
+---
+> 	    x2 = min (NX(mg), nint (xc + r2))
+213c212
+< 	    y2 = min (IM_LEN(im,2), nint (yc + r2))
+---
+> 	    y2 = min (NY(mg), nint (yc + r2))
+216d214
+< 	    data = imgs2r (im, x1, x2, y1, y2)
+217a216,217
+> 	    buff = migs2r (im, x1, x2, y1, y2)
+> 
+220c220
+< 	    sum = asumr (Memr[data], npts)
+---
+> 	    sum = asumr (Memr[buff], npts)
+226c226
+< 		ptr = data + i - x1
+---
+> 		ptr = buff + i - x1
+244c244
+< 	    ptr = data
+---
+> 	    ptr = buff
+273c273
+< 	    x2 = min (IM_LEN(im,1), nint (xc + r1))
+---
+> 	    x2 = min (NX(mg), nint (xc + r1))
+276c276
+< 	    y2 = min (IM_LEN(im,2), nint (yc + r1))
+---
+> 	    y2 = min (NY(mg), nint (yc + r1))
+279c279
+< 	    data = imgs2r (im, x1, x2, y1, y2)
+---
+> 	    buff = migs2r (im, x1, x2, y1, y2)
+281a282,288
+> 
+> 	# We make a copy of the data in the mosim buffer since we will be
+> 	# modifying its content. This should realy be done internal to 
+> 	# mosim!
+> 
+> 	call malloc (data, npts, TY_REAL)
+> 
+289c296,298
+< 		Memr[data+i] = Memr[data+i] + urand(lseed) - 0.5
+---
+> 		Memr[data+i] = Memr[buff+i] + urand(lseed) - 0.5
+> 	} else {
+> 	    call amovr (Memr[buff], Memr[data], npts)
+398a408
+> real	fwhm, hm, hmr1, hmr2, hmi1, hmi2, fwhmr, fwhmi
+430c440
+< 	# Compute the enclosed flux profile, its derivative, and moments.
+---
+> 	# Compute the direct FWHM, enclosed flux profile and moments.
+434a445,482
+> 	# Find the peak value for the direct FWHM calculation.  First find
+> 	# the highest pixel.  Then subsample the pixel using the image
+> 	# interpolation function to find the highest subpixel and the
+> 	# integral over the pixel defined by the interpolation function.
+> 	# Use the ratio of the interpolator integral to the pixel value
+> 	# as a correction to the peak subpixel value of the interpolator.
+> 	# The peak value is critical to the direct FWHM measurement.
+> 
+> 	k = x1
+> 	l = y1
+> 	ptr = data
+> 	peak = Memr[ptr]
+> 	do j = y1, y2 {
+> 	    do i = x1, x2 {
+> 		if (Memr[ptr] > peak) {
+> 		    peak = Memr[ptr]
+> 		    k = i
+> 		    l = j
+> 		}
+> 		ptr = ptr + 1
+> 	    }
+> 	}
+> 	r1 = 0.
+> 	hm = peak
+> 	do j = -5, 4 {
+> 	    do i = -5, 4 {
+> 		r = msieval (msi, k+(i+0.5)/10.-x1+1, l+(j+0.5)/10.-y1+1)
+> 		if (r > hm)
+> 		    hm = r
+> 		r1 = r1 + r
+> 	    }
+> 	}
+> 	hm = 0.5 * (hm * peak / (r1 / 100.) - bkgd)
+> 	hmi1 = -MAX_REAL
+> 	hmi2 = MAX_REAL
+> 	fwhmr = 0.
+> 	fwhmi = 0.
+> 
+497a546,570
+> 			    # Accumulate points near the half-max for a
+> 			    # weighted average estimate of the FWHM.  Save
+> 			    # the nearest points above and below the half-max
+> 			    # in case there are no points within the
+> 			    # accumulation window.
+> 
+> 			    r = r + ds / 2
+> 			    r3 = r1 / da - hm
+> 			    if (r3 < 0.) {
+> 				if (r3 > hmi1) {
+> 				    hmi1 = r3
+> 				    hmr1 = r
+> 				}
+> 			    } else {
+> 				if (r3 < hmi2) {
+> 				    hmi2 = r3
+> 				    hmr2 = r
+> 				}
+> 			    }
+> 			    r3 = max (0., 0.2 - abs (r3 / hm)) / ns
+> 			    if (r3 > 0.) {
+> 				fwhmi = fwhmi + r3
+> 				fwhmr = fwhmr + r3 * r
+> 			    }
+> 
+511a585,596
+> 	# Compute the direct FWHM.
+> 	if (fwhmi > 0.)
+> 	    fwhm = 2 * fwhmr / fwhmi
+> 	else {
+> 	    if (hmi1 == hmi2)
+> 		fwhm = hmr1 + hmr2
+> 	    else
+> 		fwhm = 2 * (hmr1 * hmi2 - hmr2 * hmi1) / (hmi2 - hmi1)
+> 	}
+> 	SFD_PEAK(sfd) = 2 * hm
+> 	SFD_DFWHM(sfd) = fwhm
+> 
+542d626
+< 	r = r / SF_SCALE(sf)
+560d643
+< 		call gsfree (gs)
+629c712
+< 	    # Recompute the enclosed flux profile and moments
+---
+> 	    # Recompute the direct FWHM, enclosed flux profile and moments
+633a717,722
+> 	    hm = 0.5 * (max (hm, peak+msieval (msi, xc-x1+1, yc-y1+1)) - bkgd)
+> 	    hmi1 = -MAX_REAL
+> 	    hmi2 = MAX_REAL
+> 	    fwhmr = 0.
+> 	    fwhmi = 0.
+> 
+693a783,807
+> 				# Accumulate points near the half-max for a
+> 				# weighted average estimate of the FWHM.
+> 				# Save the nearest points above and below the
+> 				# half-max in case there are no points within
+> 				# the accumulation window.
+> 
+> 				r = r + ds / 2
+> 				r3 = r1 / da - hm
+> 				if (r3 < 0.) {
+> 				    if (r3 > hmi1) {
+> 					hmi1 = r3
+> 					hmr1 = r
+> 				    }
+> 				} else {
+> 				    if (r3 < hmi2) {
+> 					hmi2 = r3
+> 					hmr2 = r
+> 				    }
+> 				}
+> 				r3 = max (0., 0.2 - abs (r3 / hm)) / ns
+> 				if (r3 > 0.) {
+> 				    fwhmi = fwhmi + r3
+> 				    fwhmr = fwhmr + r3 * r
+> 				}
+> 
+706a821,832
+> 	    # Recompute the direct FWHM.
+> 	    if (fwhmi > 0.)
+> 		fwhm = 2 * fwhmr / fwhmi
+> 	    else {
+> 		if (hmi1 == hmi2)
+> 		    fwhm = hmr1 + hmr2
+> 		else
+> 		    fwhm = 2 * (hmr1 * hmi2 - hmr2 * hmi1) / (hmi2 - hmi1)
+> 	    }
+> 	    SFD_PEAK(sfd) = 2 * hm
+> 	    SFD_DFWHM(sfd) = fwhm
+> 
+728,729c854,855
+< 	# Compute derivative of enclosed flux profile and fit an image
+< 	# interpolator.
+---
+> 	# Compute derivative of enclosed flux profile with a one pixel
+> 	# width and fit an image interpolator.
+731,733d856
+< 	dx = 0.25
+< 	Memr[profile] = 0.
+< 	ns = 0
+736c859,864
+< 	    r2 = stf_r2i (r + dx)
+---
+> 	    r1 = stf_r2i (r - 0.5)
+> 	    if (r1 < 1.) {
+> 		j = i
+> 		next
+> 	    }
+> 	    r2 = stf_r2i (r + 0.5)
+741,753c869,871
+< 	    r1 = stf_r2i (r - dx)
+< 	    if (r1 < 1) {
+< 		if (i > 1) {
+< 		    dy = asieval (asi, real(i)) / (r * SF_SCALE(sf))**2
+< 		    Memr[profile] = (ns * Memr[profile] + dy) / (ns + 1)
+< 		    ns = ns + 1
+< 		}
+< 		j = i
+< 	    } else {
+< 		dy = (asieval (asi, r2) - asieval (asi, r1)) /
+< 		    (4 * r * dx * SF_SCALE(sf)**2)
+< 		Memr[profile+i-1] = dy
+< 	    }
+---
+> 
+> 	    dy = asieval (asi, r2) - asieval (asi, r1)
+> 	    Memr[profile+i-1] = dy / r
+755,757c873,874
+< 	do i = 2, j
+< 	    Memr[profile+i-1] = (Memr[profile+j] - Memr[profile]) / j *
+< 		(i - 1) + Memr[profile]
+---
+> 	do i = 1, j
+> 	    Memr[profile+i-1] = Memr[profile+j]
+765,766c882
+< 	#SF_XP1(sf) = j+1
+< 	SF_XP1(sf) = 1
+---
+> 	SF_XP1(sf) = j+1
+786c902
+< real	r, r1, r2, dx, dy
+---
+> real	r, r1, r2, dy
+829,830c945,946
+< 	# Compute derivative of enclosed flux profile and fit an image
+< 	# interpolator.
+---
+> 	# Recompute derivative of enclosed flux profile with a one pixel
+> 	# width and fit an image interpolator.
+832d947
+< 	dx = 0.25
+835c950,955
+< 	    r2 = stf_r2i (r + dx)
+---
+> 	    r1 = stf_r2i (r - 0.5)
+> 	    if (r1 < 1.) {
+> 		j = i
+> 		next
+> 	    }
+> 	    r2 = stf_r2i (r + 0.5)
+840,851c960,962
+< 	    r1 = stf_r2i (r - dx)
+< 	    if (r1 < 1) {
+< 		if (i > 1) {
+< 		    dy = asieval (asi, real(i)) / (r * SF_SCALE(sf))**2
+< 		    Memr[profile] = dy
+< 		}
+< 		j = i
+< 	    } else {
+< 		dy = (asieval (asi, r2) - asieval (asi, r1)) /
+< 		    (4 * r * dx * SF_SCALE(sf)**2)
+< 		Memr[profile+i-1] = dy
+< 	    }
+---
+> 
+> 	    dy = asieval (asi, r2) - asieval (asi, r1)
+> 	    Memr[profile+i-1] = dy / r
+853,855c964,965
+< 	do i = 2, j
+< 	    Memr[profile+i-1] = (Memr[profile+j] - Memr[profile]) / j *
+< 		(i - 1) + Memr[profile]
+---
+> 	do i = 1, j
+> 	    Memr[profile+i-1] = Memr[profile+j]
+863,864c973
+< 	#SF_XP1(sf) = min (j+1, np)
+< 	SF_XP1(sf) = 1
+---
+> 	SF_XP1(sf) = min (j+1, np)
+871,895d979
+< # STF_WIDTHS -- Set the widhts.
+< 
+< procedure stf_widths (sf, sfd)
+< 
+< pointer	sf			#I Main data structure
+< pointer	sfd			#I Star data structure
+< 
+< begin
+< 	call stf_radius (sf, sfd, SF_LEVEL(sf), SFD_R(sfd))
+< 	call stf_dfwhm (sf, sfd)
+< 	call stf_fit (sf, sfd)
+< 
+< 	switch (SF_WCODE(sf)) {
+< 	case 1:
+< 	    SFD_W(sfd) = SFD_R(sfd)
+< 	case 2:
+< 	    SFD_W(sfd) = SFD_DFWHM(sfd)
+< 	case 3:
+< 	    SFD_W(sfd) = SFD_GFWHM(sfd)
+< 	case 4:
+< 	    SFD_W(sfd) = SFD_MFWHM(sfd)
+< 	}
+< end
+< 
+< 
+962c1046
+< # STF_MODEL -- Return model value.
+---
+> # STF_FWHM -- Measure FWHM vs level.
+964c1048
+< procedure stf_model (sf, sfd, r, profile, flux)
+---
+> procedure stf_fwhm (sf, sfd)
+968,970d1051
+< real	r			#I Radius at level
+< real	profile			#I Profile value
+< real	flux			#I Enclosed flux value
+972,1065d1052
+< real	x, x1, x2, r1, r2, dr
+< 
+< begin
+< 	dr = 0.25 * SF_SCALE(sf)
+< 	r1 = r - dr
+< 	r2 = r + dr
+< 	if (r1 < 0.) {
+< 	    r1 = dr
+< 	    r2 = r1 + dr
+< 	}
+< 
+< 	switch (SF_WCODE(sf)) {
+< 	case 3:
+< 	    x = r**2 / (2. * SFD_SIGMA(sfd)**2)
+< 	    if (x < 20.)
+< 		flux = 1 - exp (-x)
+< 	    else
+< 		flux = 0.
+< 
+< 	    x1 = r1**2 / (2. * SFD_SIGMA(sfd)**2)
+< 	    x2 = r2**2 / (2. * SFD_SIGMA(sfd)**2)
+< 	    if (x2 < 20.) {
+< 		x1 = 1 - exp (-x1)
+< 		x2 = 1 - exp (-x2)
+< 	    } else {
+< 		x1 = 1.
+< 		x2 = 1.
+< 	    }
+< 	    if (r <= dr) {
+< 		x1 = x1 / dr ** 2
+< 		x2 = x2 / (4 * dr ** 2)
+< 		profile = (x2 - x1) / dr * r + x1
+< 	    } else {
+< 		profile = (x2 - x1) / (4 * r * dr)
+< 	    }
+< 	default:
+< 	    x = 1 + (r / SFD_ALPHA(sfd)) ** 2
+< 	    flux = 1 - x ** (1 - SFD_BETA(sfd))
+< 
+< 	    x1 = 1 + (r1 / SFD_ALPHA(sfd)) ** 2
+< 	    x2 = 1 + (r2 / SFD_ALPHA(sfd)) ** 2
+< 	    x1 = 1 - x1 ** (1 - SFD_BETA(sfd))
+< 	    x2 = 1 - x2 ** (1 - SFD_BETA(sfd))
+< 	    if (r <= dr) {
+< 		x1 = x1 / dr ** 2
+< 		x2 = x2 / (4 * dr ** 2)
+< 		profile = (x2 - x1) / dr * r + x1
+< 	    } else {
+< 		profile = (x2 - x1) / (4 * r * dr)
+< 	    }
+< 	}
+< end
+< 
+< 
+< # STF_DFWHM -- Direct FWHM from profile.
+< 
+< procedure stf_dfwhm (sf, sfd)
+< 
+< pointer	sf			#I Main data structure
+< pointer	sfd			#I Star data structure
+< 
+< int	np
+< real	r, rpeak, profile, peak, asieval(), stf_i2r()
+< pointer	asi
+< 
+< begin
+< 	asi = SFD_ASI2(sfd)
+< 	np = SFD_NP(sfd)
+< 
+< 	rpeak = 1.
+< 	peak = 0.
+< 	for (r=1.; r <= np; r = r + 0.01) {
+< 	    profile = asieval (asi, r)
+< 	    if (profile > peak) {
+< 		rpeak = r
+< 		peak = profile
+< 	    }
+< 	}
+< 	
+< 	peak = peak / 2.
+< 	for (r=rpeak; r <= np && asieval (asi, r) > peak; r = r + 0.01)
+< 	    ;
+< 
+< 	SFD_DFWHM(sfd) = 2 * stf_i2r (r) * SF_SCALE(sf)
+< end
+< 
+< 
+< # STF_FWHMS -- Measure FWHM vs level.
+< 
+< procedure stf_fwhms (sf, sfd)
+< 
+< pointer	sf			#I Main data structure
+< pointer	sfd			#I Star data structure
+< 
+1073,1079c1060
+< 	    switch (SF_WCODE(sf)) {
+< 	    case 3:
+< 		SFD_FWHM(sfd,i) = 2 * r * sqrt (log (2.) / log (1/(1-level)))
+< 	    default:
+< 		r = r / sqrt ((1.-level)**(1./(1.-SFD_BETA(sfd))) - 1.)
+< 		SFD_FWHM(sfd,i) = 2 * r * sqrt (2.**(1./SFD_BETA(sfd))-1.)
+< 	    }
+---
+> 	    SFD_FWHM(sfd,i) = 2 * r * sqrt (log (2.) / log (1/(1-level)))
+1116,1309d1096
+< end
+< 
+< 
+< # STF_FIT -- Fit models to enclosed flux.
+< 
+< procedure stf_fit (sf, sfd)
+< 
+< pointer	sf			#I Main data structure
+< pointer	sfd			#I Star data structure
+< 
+< int	i, j, n, np, pfit[2]
+< real	beta, z, params[3]
+< pointer	asi, nl
+< pointer	sp, x, y, w
+< 
+< int	locpr()
+< real	asieval(), stf_i2r()
+< extern	stf_gauss1(), stf_gauss2(), stf_moffat1(), stf_moffat2()
+< errchk	nlinitr, nlfitr
+< 
+< data	pfit/2,3/
+< 
+< begin
+< 	np = SFD_NP(sfd)
+< 	asi = SFD_ASI1(sfd)
+< 
+< 	call smark (sp)
+< 	call salloc (x, np, TY_REAL)
+< 	call salloc (y, np, TY_REAL)
+< 	call salloc (w, np, TY_REAL)
+< 
+< 	n = 0
+< 	j = 0
+< 	do i = 1, np {
+< 	    z = 1. - max (0., asieval (asi, real(i)))
+< 	    if (z < 0.8)
+< 		break
+< 	    if (z > 0.5)
+< 		j = n
+< 
+< 	    Memr[x+n] = stf_i2r (real(i)) * SF_SCALE(sf)
+< 	    Memr[y+n] = z
+< 	    Memr[w+n] = 1.
+< 	    n = n + 1
+< 	}
+< 
+< 	# Gaussian.
+< 	np = 1
+< 	params[2] = Memr[x+j] / sqrt (2. * log (1./Memr[y+j]))
+< 	params[1] = 1
+< 	call nlinitr (nl, locpr (stf_gauss1), locpr (stf_gauss2),
+< 	    params, params, 2, pfit, np, .001, 100)
+< 	call nlfitr (nl, Memr[x], Memr[y], Memr[w], n, 1, WTS_USER, i)
+< 	if (i != SINGULAR && i != NO_DEG_FREEDOM) {
+< 	    call nlpgetr (nl, params, i)
+< 	    if (params[2] < 0.)
+< 		params[2] = Memr[x+j] / sqrt (2. * log (1./Memr[y+j]))
+< 	}
+< 	SFD_SIGMA(sfd) = params[2]
+< 	SFD_GFWHM(sfd) = 2 * SFD_SIGMA(sfd) * sqrt (2. * log (2.))
+< 
+< 	# Moffat.
+< 	beta = SF_BETA(sf)
+< 	if (IS_INDEFR(beta)) {
+< 	    beta = 2.5
+< 	    np = 2
+< 	} else {
+< 	    np = 1
+< 	}
+< 	params[3] = 1 - beta
+< 	params[2] = Memr[x+j] / sqrt (Memr[y+j]**(1./params[3]) - 1.)
+< 	params[1] = 1
+< 	call nlinitr (nl, locpr (stf_moffat1), locpr (stf_moffat2),
+< 	    params, params, 3, pfit, np, .001, 100)
+< 	call nlfitr (nl, Memr[x], Memr[y], Memr[w], n, 1, WTS_USER, i)
+< 	if (i != SINGULAR && i != NO_DEG_FREEDOM) {
+< 	    call nlpgetr (nl, params, i)
+< 	    if (params[2] < 0.) {
+< 		params[3] = 1. - beta
+< 		params[2] = Memr[x+j] /
+< 		    sqrt (Memr[y+j]**(1./params[3]) - 1.)
+< 	    }
+< 	}
+< 	SFD_ALPHA(sfd) = params[2]
+< 	SFD_BETA(sfd) = 1 - params[3]
+< 	SFD_MFWHM(sfd) = 2 * SFD_ALPHA(sfd) * sqrt (2.**(1./SFD_BETA(sfd))-1.)
+< 
+< 	call nlfreer (nl)
+< 	call sfree (sp)
+< end
+< 
+< 
+< # STF_GAUSS1 -- Gaussian function used in NLFIT.  The parameters are the
+< # amplitude and sigma and the input variable is the radius.
+< 
+< procedure stf_gauss1 (x, nvars, p, np, z)
+< 
+< real	x[nvars]		#I Input variables
+< int	nvars			#I Number of variables
+< real	p[np]			#I Parameter vector
+< int	np			#I Number of parameters
+< real	z			#O Function return
+< 
+< real	r2
+< 
+< begin
+< 	r2 = x[1]**2 / (2 * p[2]**2)
+< 	if (abs (r2) > 20.)
+< 	    z = 0.
+< 	else
+< 	    z = p[1] * exp (-r2)
+< end
+< 
+< 
+< # STF_GAUSS2 -- Gaussian function and derivatives used in NLFIT.  The parameters
+< # are the amplitude and sigma and the input variable is the radius.
+< 
+< procedure stf_gauss2 (x, nvars, p, dp, np, z, der)
+< 
+< real	x[nvars]		#I Input variables
+< int	nvars			#I Number of variables
+< real	p[np]			#I Parameter vector
+< real	dp[np]			#I Dummy array of parameters increments
+< int	np			#I Number of parameters
+< real	z			#O Function return
+< real	der[np]			#O Derivatives
+< 
+< real	r2
+< 
+< begin
+< 	r2 = x[1]**2 / (2 * p[2]**2)
+< 	if (abs (r2) > 20.) {
+< 	    z = 0.
+< 	    der[1] = 0.
+< 	    der[2] = 0.
+< 	} else {
+< 	    der[1] = exp (-r2)
+< 	    z = p[1] * der[1]
+< 	    der[2] = z * 2 * r2 / p[2]
+< 	}
+< end
+< 
+< 
+< # STF_MOFFAT1 -- Moffat function used in NLFIT.  The parameters are the
+< # amplitude, alpha squared, and beta and the input variable is the radius.
+< 
+< procedure stf_moffat1 (x, nvars, p, np, z)
+< 
+< real	x[nvars]		#I Input variables
+< int	nvars			#I Number of variables
+< real	p[np]			#I Parameter vector
+< int	np			#I Number of parameters
+< real	z			#O Function return
+< 
+< real	y
+< 
+< begin
+< 	y = 1 + (x[1] / p[2]) ** 2
+< 	if (abs (y) > 20.)
+< 	    z = 0.
+< 	else
+< 	    z = p[1] * y ** p[3]
+< end
+< 
+< 
+< # STF_MOFFAT2 -- Moffat function and derivatives used in NLFIT.  The
+< # parameters are the amplitude, alpha squared, and beta and the input
+< # variable is the radius.
+< 
+< procedure stf_moffat2 (x, nvars, p, dp, np, z, der)
+< 
+< real	x[nvars]		#I Input variables
+< int	nvars			#I Number of variables
+< real	p[np]			#I Parameter vector
+< real	dp[np]			#I Dummy array of parameters increments
+< int	np			#I Number of parameters
+< real	z			#O Function return
+< real	der[np]			#O Derivatives
+< 
+< real	y
+< 
+< begin
+< 	y = 1 + (x[1] / p[2]) ** 2
+< 	if (abs (y) > 20.) {
+< 	    z = 0.
+< 	    der[1] = 0.
+< 	    der[2] = 0.
+< 	    der[3] = 0.
+< 	} else {
+< 	    der[1] = y ** p[3]
+< 	    z = p[1] * der[1]
+< 	    der[2] = -2 * z / y * p[3] / p[2] * (x[1] / p[2]) ** 2
+< 	    der[3] = z * log (y)
+< 	}
+diff /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam//t_imexam.x /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam/t_imexam.x
+8c8
+< define	HELP		"iraf$lib/scr/imexamine.key"
+---
+> define	HELP		"mosexam$imexamine.key"
+13c13
+< # T_IMEXAMINE -- Examine images using image display, graphics, and text output. 
+---
+> # T_MOSEXAMINE -- Examine images using image display, graphics, and text output.
+15c15
+< procedure t_imexamine ()
+---
+> procedure t_mosexamine ()
+18c18
+< pointer	sp, cmd, imname, imlist, gp, ie, im
+---
+> pointer	sp, cmd, imname, imlist, gp, ie, im, instrument
+23,24c23,24
+< int	imtopen(), ie_gcur(), ie_getnframes()
+< int	btoi(), clgeti(), imtlen()
+---
+> int	mitopen(), ie_gcur(), ie_getnframes()
+> int	btoi(), clgeti(), mitlen()
+31a32
+> 	call salloc (instrument, SZ_FNAME, TY_CHAR)
+32a34,44
+> 	# Initalise mosaic stuff
+>         # Open instrument file
+>         call clgstr    ("instrument",  Memc[instrument],  SZ_FNAME)
+>         call hdmopen   (Memc[instrument])
+> 
+>         # Set up amplifier information
+>         call ampset()
+> 
+>         # Set processing flags etc.
+>         call procset()
+> 
+53,54c65,66
+< 	    IE_LIST(ie) = imtopen (Memc[imlist])
+< 	    IE_LISTLEN(ie) = imtlen (IE_LIST(ie))
+---
+> 	    IE_LIST(ie) = mitopen (Memc[imlist])
+> 	    IE_LISTLEN(ie) = mitlen (IE_LIST(ie))
+79c91
+<  
+---
+> 
+283c295
+< 	    call imunmap (IE_IM(ie))
+---
+> 	    call miunmap (IE_IM(ie))
+293c305,307
+< 	    call imtclose (IE_LIST(ie))
+---
+> 	    call mitclose (IE_LIST(ie))
+>         call hdmclose ()
+>         call ampfree()
+294a309
+> 
+310,311c325,326
+< pointer	ie_gimage(), imtopen()
+< int	imtrgetim(), imtlen()
+---
+> pointer	ie_gimage(), mitopen()
+> int	mitrgetim(), mitlen()
+321c336
+< 	    if (imtrgetim (IE_LIST(ie), i, Memc[lname], SZ_FNAME) > 0)
+---
+> 	    if (mitrgetim (IE_LIST(ie), i, Memc[lname], SZ_FNAME) > 0)
+333,335c348,350
+< 	    call imtclose (IE_LIST(ie))
+< 	    IE_LIST(ie) = imtopen (Memc[imlist])
+< 	    IE_LISTLEN(ie) = imtlen (IE_LIST(ie))
+---
+> 	    call mitclose (IE_LIST(ie))
+> 	    IE_LIST(ie) = mitopen (Memc[imlist])
+> 	    IE_LISTLEN(ie) = mitlen (IE_LIST(ie))
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: Changes
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: cimexam2.par
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/newimexam/: diff
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: eimexam2.par
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: himexam2.par
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: imexamine.key
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: jimexam2.par
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: libpkg.a
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: limexam2.par
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: mos.log
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: mosexamine.par
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: mscexamine.par
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: newimexamine.par
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: rimexam2.par
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: simexam2.par
+Only in /u2/valdes/iraf/mscred/src/mscdisplay/src/imexam: vimexam2.par

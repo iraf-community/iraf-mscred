@@ -1,0 +1,14 @@
+list1,s,a,"",,,List
+list2,s,a,"",,,List
+list3,s,a,"",,,List
+list4,s,a,"",,,List
+list5,s,a,"",,,List
+list6,s,a,"",,,List
+list7,s,a,"",,,List
+list8,s,a,"",,,List
+list9,s,a,"",,,List
+output,s,h,"STDOUT",,,Output file
+delim,s,h," ",,,Delimiter between list elements
+shortest,b,h,no,,,Quit at end of shortest list
+missing,s,h,"-",,,Marker for missing element
+type,s,h,"file","file|image",,Type of lists

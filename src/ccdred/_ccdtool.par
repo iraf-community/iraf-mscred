@@ -1,0 +1,51 @@
+input,s,a,"",,,List of input CCD images to process
+output,s,a,"",,,List of output processed CCD images
+nointerp,s,a,"",,,List of output uninterpolated images
+bpmasks,s,a,"",,,List of output bad pixel masks
+calproc,f,h,"",,,List of calibration images to be processed (output file)
+ccdtype,s,h,"object",,,CCD image type to select (if not null)
+proctype,s,h,"",,,CCD processing type (if not null)
+max_cache,i,h,0,0,,Maximum image caching memory (in Mbytes)
+noproc,b,h,no,,,"List processing steps only?"
+onerror,s,h,"original","abort|warn|exit|original",,"Action on error
+"
+fixpix,b,h,yes,,,Apply bad pixel interpolation?
+overscan,b,h,yes,,,Apply overscan strip correction?
+trim,b,h,yes,,,Trim the image?
+zerocor,b,h,yes,,,Apply zero level correction?
+darkcor,b,h,yes,,,Apply dark count correction?
+flatcor,b,h,yes,,,Apply flat field correction?
+sflatcor,b,h,no,,,Apply sky flat field correction?
+illumcor,b,h,no,,,Apply illumination correction?
+fringecor,b,h,no,,,Apply fringe correction?
+readcor,b,h,no,,,Convert zero level image to readout correction?
+scancor,b,h,no,,,"Convert flat field image to scan correction?
+"
+fixfile,s,h,"",,,List of input bad pixel masks
+saturation,s,h,INDEF,,,Saturated pixel threshold
+sgrow,i,h,0,0,,Saturated pixel grow radius
+bleed,s,h,INDEF,,,Bleed pixel threshold
+btrail,i,h,20,0,,Bleed trail minimum length
+bgrow,i,h,0,0,,Bleed pixel grow radius
+biassec,s,h,"",,,Overscan strip image section
+trimsec,s,h,"",,,Trim data section
+zero,s,h,"",,,List of zero level calibration images
+dark,s,h,"",,,List of dark count calibration images
+flat,s,h,"",,,List of primary flat field images
+sflat,s,h,"",,,List of sky flat field images
+illum,s,h,"",,,List of illumination correction images
+fringe,s,h,"",,,List of fringe correction images
+minreplace,r,h,1.,,,Minimum flat field value
+readaxis,s,h,"line","column|line",, Read out axis (column|line)
+scantype,s,h,"shortscan","shortscan|longscan",,Scan type (shortscan|longscan)
+nscan,i,h,1,1,,"Number of short scan lines
+"
+interactive,b,h,no,,,Fit overscan interactively?
+function,s,h,"legendre",,,Fitting function
+order,i,h,1,1,,Number of polynomial terms or spline pieces
+sample,s,h,"*",,,Sample points to fit
+naverage,i,h,1,,,Number of sample points to combine
+niterate,i,h,1,0,,Number of rejection iterations
+low_reject,r,h,3.,0.,,Low sigma rejection factor
+high_reject,r,h,3.,0.,,High sigma rejection factor
+grow,r,h,0.,0.,,Rejection growing radius

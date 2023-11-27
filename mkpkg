@@ -1,0 +1,139 @@
+# Make the package.
+
+update:
+	$call lmscred@src
+	$call lccdred@src
+	$call lcombine@src
+	$call lmscdisp@src
+	$call limexam@src
+	$call lsf@src
+	$call lfinder@src
+	$call update@src
+	;
+
+# STRIP -- Strip the package directories of all sources and other files
+# not required to run the system, or for user programming.
+
+strip:
+	!rmfiles -f lib/strip
+	;
+
+
+# SUMMARY -- [UNIX] mkpkg summary: output a summary of the spooled mkpkg
+# output, omitting most of the mundane chatter.	 Used to scan large spool
+# files for errors.
+
+summary:
+	$ifeq (HOSTID, unix)
+	    $ifndef (spool)
+		$set spool = spool
+	    $endif
+	    ! grep -v ':$$' spool | grep -v '^xc' | grep -v '^ar'\
+	    | grep -v '^check file'
+	$else
+	    $echo "mkpkg summary only available on a UNIX system"
+	$endif
+	;
+
+
+
+# IRAF multiple architecture support.
+# ----------------------------------------
+
+arch:					# show current float option
+showfloat:
+	$verbose off
+	!$(hlib)/mkfloat.csh
+	;
+generic:				# generic installation (no bin)
+	$ifnfile (bin.generic)
+	    !mkdir bin.generic
+	$endif
+	$verbose off
+	$set DIRS = "lib src"
+	!$(hlib)/mkfloat.csh generic -d $(DIRS)
+	;
+
+freebsd:				# install FreeBSD binaries
+	$ifnfile (bin.freebsd)
+	    !mkdir bin.freebsd
+	$endif
+	$verbose off
+	$set DIRS = "lib src"
+	!$(hlib)/mkfloat.csh freebsd -d $(DIRS)
+	;
+linux:					# install Linux 32-bit binaries
+	$ifnfile (bin.linux)
+	    !mkdir bin.linux
+	$endif
+	$verbose off
+	$set DIRS = "lib src"
+	!$(hlib)/mkfloat.csh linux -d $(DIRS)
+	;
+linux64:				# install Linux 64-bit binaries
+	$ifnfile (bin.linux64)
+	    !mkdir bin.linux64
+	$endif
+	$verbose off
+	$set DIRS = "lib src"
+	!$(hlib)/mkfloat.csh linux64 -d $(DIRS)
+	;
+macosx:					# install Mac OS X (PPC) binaries
+	$ifnfile (bin.macosx)
+	    !mkdir bin.macosx
+	$endif
+	$verbose off
+	$set DIRS = "lib src"
+	!$(hlib)/mkfloat.csh macosx -d $(DIRS)
+	;
+macintel:				# install Mac OS X (Intel) binaries
+	$ifnfile (bin.macintel)
+	    !mkdir bin.macintel
+	$endif
+	$verbose off
+	$set DIRS = "lib src"
+	!$(hlib)/mkfloat.csh macintel -d $(DIRS)
+	;
+cygwin:					# install Cygwin binaries
+	$ifnfile (bin.macintel)
+	    !mkdir bin.macintel
+	$endif
+	$verbose off
+	$set DIRS = "lib src"
+	!$(hlib)/mkfloat.csh macintel -d $(DIRS)
+	;
+redhat:					# install Redhat Linux binaries
+	$ifnfile (bin.redhat)
+	    !mkdir bin.redhat
+	$endif
+	$verbose off
+	$set DIRS = "lib src"
+	!$(hlib)/mkfloat.csh redhat -d $(DIRS)
+	;
+sparc:					# install sparc binaries
+	$ifnfile (bin.sparc)
+	    !mkdir bin.sparc
+	$endif
+	$verbose off
+	$set DIRS = "lib src"
+	!$(hlib)/mkfloat.csh sparc -d $(DIRS)
+	;
+ssun:					# install Sun/Solaris binaries
+	$ifnfile (bin.ssun)
+	    !mkdir bin.ssun
+	$endif
+	$verbose off
+	$set DIRS = "lib src"
+	!$(hlib)/mkfloat.csh ssun -d $(DIRS)
+	;
+sunos:					# install SunOS (Solaris x86) binaries
+	$ifnfile (bin.sunos)
+	    !mkdir bin.sunos
+	$endif
+	$verbose off
+	$set DIRS = "lib src"
+	!$(hlib)/mkfloat.csh sunos -d $(DIRS)
+	;
+noP2R:
+	!find . -type f -name '*[xh]' -exec grep -q P2R {} \; -exec sed -i -e 's+P2R++g' {} \;
+	;

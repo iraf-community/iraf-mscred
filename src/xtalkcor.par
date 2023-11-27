@@ -1,0 +1,9 @@
+input,s,a,,,,List of input files
+output,s,a,,,,List of output files
+bpmasks,s,a,,,,List of output bad pixel mask rootnames
+xtalkfiles,s,a,,,,List of crosstalk files
+section,s,h,"!datasec",,,Section value or keyword (optional)
+bpmthreshold,r,h,-10.,,,Corrections threshold for bad pixels
+split,b,h,no,,,Split extensions on output?
+fextn,s,h,"fits",,,File extension
+noproc,b,h,no,,,List operations only?

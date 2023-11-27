@@ -1,0 +1,23 @@
+cat_epoch,r,h,"2000.",,,"Epoch of the catalog\n"
+
+ra_col,s,h,"RA_DEG",,,"Column for the Right Ascension (in degrees)"
+dec_col,s,h,"DEC_DEG",,,"Column for the Declination (in degrees)\n"
+
+region_col,s,h,"REGION",,,"Column for the GSC region number\n"
+
+xpred_col,s,h,"X_PRED",,,"Column for the predicted X coordinates"
+ypred_col,s,h,"Y_PRED",,,"Column for the predicted Y coordinates\n"
+
+xcen_col,s,h,"X_CENTER",,,"Column for the centered X coordinates"
+ycen_col,s,h,"Y_CENTER",,,"Column for the centered Y coordinates"
+cerr_col,s,h,"CEN_ERR",,,"Column for the centering error\n"
+
+datatype,s,h,"real","real|double|int",,"Data type for X,Y columns"
+format,s,h,"%8.2f",,,"Print format for X and Y"
+units,s,h,"pixels",,,"Units for X and Y\n"
+
+sub_col,s,h,"SUB_FLAG",,,"Subset selection flag"
+cen_col,s,h,"CEN_FLAG",,,"Good centering flag"
+obj_col,s,h,"OBJ_FLAG",,,"Program object flag\n"
+
+id_col,s,h,"GSC_ID",,,"Column for the ID number\n"

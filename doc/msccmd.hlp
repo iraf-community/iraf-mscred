@@ -1,0 +1,75 @@
+.help msccmd Oct97 mscred
+.ih
+NAME
+msccmd -- execute general command with image extension expansion
+.ih
+SYNOPSIS
+This tasks executes a command where any input and output image list
+arguments specified by $input, $in2, and $output are replaced by an
+expanded list of image extensions.  If there are no command line
+arguments the task runs as an interpreter with prompts until the
+command 'q' or 'quit' is entered.
+.ih
+USAGE	
+msccmd [command input output]
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+1. Do image statistics.
+
+.nf
+    cl> msccmd "imstat $input" obj*fits
+.fi
+
+Since this is a common operation see \fBmscstat\fR instead.
+
+2. Do image arithmetic.
+
+.nf
+    cl> msccmd "imarith $input + $in2 $output"
+    List of input files: obj001
+    Second list of input files: obj002
+    List of output files: sum
+.fi
+
+Since this is a common operation see \fBmscarith\fR instead.
+
+3. Do HSELECT on the command line with no prompts.
+
+.nf
+    cl> msccmd "hselect $input $I,filter yes" obj001,obj002
+    [output]
+.fi
+
+4. Use in interpretive mode.
+
+.nf
+    cl> msccmd
+    msccmd> Command: imhead $input l-
+    [output]
+    msccmd> Command: hselect $input $I,filter
+    msccmd> Input files: obj001,obj002
+    [output]
+    msccmd> Command: hedit $input filter B verify-
+    msccmd> Input files (obj001,obj002):
+    msccmd> Command: print "This command has not input or output files."
+    This command has not input or output files.
+    msccmd> Command: q
+    cl>
+.fi
+
+.ih
+RESTRICTION
+Image sections are not allowed in the mosaic filenames.
+.ih
+REVISIONS
+.ls MSCSTAT - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+mscarith, mscstat
+.endhelp

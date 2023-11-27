@@ -1,0 +1,84 @@
+.help ffpupilcor Apr98 mscred
+.ih
+NAME
+ffpupilcor -- correct a broad band flat field for the pupil ghost
+.ih
+SYNOPSIS
+The pupil ghost image in a broad band flat field mosaic exposure is
+removed using a narrow band flat field as a calibration exposure.
+.ih
+USAGE	
+ffpupilcor input output template
+.ih
+PARAMETERS
+.ls input
+Input broad band flat field mosaic exposure to be corrected.
+.le
+.ls output
+Output corrected flat field mosaic exposure.
+.le
+.ls template
+Template narrow band flat field calibration mosaic exposure.
+.le
+.ls extname = "[2367]"
+Selection pattern for the extensions to correct.  All other extensions
+will be left unchanged in the output.
+.le
+.ls statsec = "mscdb$noao/mosaic1/ffpupilcor.dat"
+File of image sections to use for determining the normalizations outside
+the pupil ghost image.  There must be one section for each extension
+in the exposure in the order of the extensions in the file.
+.le
+.ls blkavg = 8
+Block averaging factor for doing the display and interative removal.
+This can be used to make the interative display and removal faster and
+also to enhance the visibility of the pupil ghost image.
+.le
+.ls radius = INDEF
+Radius of circular region to be corrected specified in pixels.  If INDEF then
+the entire image is corrected.
+.le
+.ls xcenter = 0., ycenter =0.
+Center of correction circle relative to the tangent point of the coordinate
+system.  The tangent point should be close to the optical axis of the
+system.  This is only used if limiting the correction to a circular regions
+defined by the \fIradius\fR parameter.
+.le
+.ls mscexam = no
+Run \fBmscexamine\fR during each iteration of the interactive correction.
+One must type 'q' to exit the examination and go on to the next step.
+.le
+.ls scale = 1.
+This is a query parameter that will be prompted for by the program.
+.le
+.ih
+DESCRIPTION
+\fBFfpupilcor\fR is an interactive iterative task to remove a pupil ghost
+image from a broad band flat field using a narrow band flat field as a
+template for the ghost image.  Regions, given by the \fIstatsec\fR parameter,
+are used to measure the background outside the pupil image in the template
+exposure for each image extension to be corrected.  The extension is
+normalized by the background and then one is subtracted to leave an
+image of the pupil ghost from the template.  This residual image is
+scaled by a user supplied scale factor.  One is then added and the
+result divided into the target flat field exposure.  The original
+flat field exposure and the corrected exposure are displayed.  The
+user may then interact with the display using \fBmscexamine\fR and
+try a new scale factor.  When the scale factor which best removes the
+pupil image is found exit by specifying zero (0) for the scale factor.
+The final correction is then applied to create the output corrected
+flat field exposure.  If a scale of -1 is given then the task
+does not create a final output but just cleans up temporary files.
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls FFPUPILCOR - MSCRED V1.2
+First release.
+.le
+.ih
+BUGS AND LIMITATIONS
+.ih
+SEE ALSO
+mscexamine
+.endhelp

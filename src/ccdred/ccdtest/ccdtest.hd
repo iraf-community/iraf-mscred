@@ -1,0 +1,4 @@
+# Help directory for the CCDTEST package.
+
+artobs		hlp=artobs.hlp,		src=artobs.cl
+subsection	hlp=subsection.hlp,	src=subsection.cl

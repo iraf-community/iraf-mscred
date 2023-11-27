@@ -1,0 +1,28 @@
+.help mscexamine Aug97 mscred
+.ih
+NAME
+mscexamine -- examine Mosaic exposures displayed as single frames
+.ih
+SYNOPSIS
+A multiextension Mosaic image is displayed, if needed, and then the image
+cursor is used to select operations and a data regions.
+The operations are performed on the full Mosaic image.
+Operations include data examination and PSF fitting.
+.ih
+USAGE	
+mscexamine input frame
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls MSCEXAMINE - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+imexamine msczero
+.endhelp

@@ -1,0 +1,10 @@
+input,s,a,,,,List of input images
+output,f,a,,,,Output WCS template image
+wcssource,s,h,"image","|image|parameters|",,Output WCS source (image|parameters)
+reference,f,h,"",,,Reference image
+ra,r,h,INDEF,0,24,RA of tangent point (hours)
+dec,r,h,INDEF,-90,90,DEC of tangent point (degrees)
+scale,r,h,INDEF,,,Scale (arcsec/pixel)
+rotation,r,h,INDEF,-360,360,Rotation of DEC from N to E (degrees)
+projection,s,h,"",,,WCS projection
+verbose,b,h,no,,,Verbose?

@@ -1,0 +1,11 @@
+images,s,a,,,,CCD images to group
+output,s,a,,,,Output root group filename
+list,f,h,"",,,File for list of filenames (optional)
+group,s,h,"ccdtype","keyword|ccdtype|subset|amplifier|ccdname|ampsubset|position|",,Group type
+cluster,b,h,no,,,Output cluster name only?
+sequence,b,h,no,,,Break into sequences?
+keywords,s,h,"",,,List of keywords to group
+radius,r,h,"60",,,Group position radius (arc sec)
+ccdtype,s,h,"",,,CCD image types to select
+mingroup,i,h,1,1,,Minumum number per group
+verbose,b,h,no,,,Verbose?

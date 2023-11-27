@@ -1,0 +1,27 @@
+input,s,a,,,,List of input images
+output,s,a,,,,List of output images
+masks,s,h,"BPM",,,List of masks
+type,s,h,"difference","data|fit|difference|ratio|mask",,Output type
+lmedian,b,h,no,,,Subtract line-by-line median?
+xc,r,h,0.,,,Pattern center offset (pixels)
+yc,r,h,0.,,,Pattern center offset (pixels)
+rin,r,h,300.,0.,,Radius of inner background ring (pixels)
+drin,r,h,20.,1.,,Width of inner background ring (pixels)
+rout,r,h,1500.,0.,,Radius of outer background ring (pixels)
+drout,r,h,20.,1.,,Width of outer background ring (pixels)
+funcin,s,h,"chebyshev","chebyshev|legendre|spline1|spline3",,Inner azimuthal background fitting function
+orderin,i,h,2,1,,Inner azimuthal background fitting order
+funcout,s,h,"spline3","chebyshev|legendre|spline1|spline3",,Outer azimuthal background fitting function
+orderout,i,h,2,1,,Outer azimuthal background fitting order
+rfunction,s,h,"spline3","chebyshev|legendre|spline1|spline3",,Radial profile fitting function
+rorder,i,h,50,1,,Radial profile fitting order
+sfunction,s,h,"spline3","chebyshev|legendre|spline1|spline3",,Radial profile fitting function
+sorder,i,h,1,1,,Radial profile fitting order
+abin,r,h,0.,0.,,Azimuthal bin (deg)
+astep,r,h,0.,0.,,Azimuthal step (deg)
+niterate,i,h,3,0,,Number of rejection iterations
+lreject,r,h,3.,0.,,Low rejection rms factor
+hreject,r,h,3.,0.,,High rejection rms factor
+datamin,r,h,INDEF,,,Minimum good data value
+datamax,r,h,INDEF,,,Maximum good data value
+verbose,b,h,yes,,,Print information?

@@ -1,0 +1,15 @@
+input,s,a,,,,List of images
+coords,f,a,,,,File of coordinates
+bpm,s,h,"BPM",,,List of bad pixel masks
+measured,f,h,"",,,Measurment file
+scale,b,h,yes,,,Determine scale?
+zero,b,h,no,,,Determine zero offset?
+box1,i,h,21,1,,Inner box size for statistics
+box2,i,h,51,1,,Outer box size for statistics
+lower,r,h,1.,,,Lower limit for good data
+upper,r,h,INDEF,,,Upper limit for good data
+niterate,i,h,3,0,,Number of sigma clipping iterations
+sigma,r,h,3.,0.,,Sigma clipping factor
+interactive,b,h,no,,,Interactive?
+verbose,b,h,yes,,,Verbose?
+accept,b,q,yes,,,Accept scaling and update images?

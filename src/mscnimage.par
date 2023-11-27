@@ -1,0 +1,42 @@
+input,s,a,,,,"List of input mosaic exposures"
+output,s,a,,,,"List of output images"
+format,s,h,"image","|image|mef|",,"Output format (image|mef)"
+pixmask,b,h,yes,,,"Create pixel mask?"
+verbose,b,h,)_.verbose,,,"Verbose output?
+
+# Output WCS parameters"
+wcssource,s,h,"image","|image|parameters|",,"Output WCS source (image|parameters)"
+reference,f,h,"",,,"Reference image"
+ra,r,h,INDEF,0,24,"RA of tangent point (hours)"
+dec,r,h,INDEF,-90,90,"DEC of tangent point (degrees)"
+scale,r,h,INDEF,,,"Scale (arcsec/pixel)"
+rotation,r,h,INDEF,-360,360,"Rotation of DEC from N to E (degrees)
+
+# Resampling parmeters"
+blank,r,h,0,,,Blank value
+interpolant,s,h,"linear",,,"Interpolant for data"
+minterpolant,s,h,"linear",,,"Interpolant for mask"
+boundary,s,h,"reflect","nearest|constant|reflect|wrap",,"Boundary extension"
+constant,r,h,0,,,"Constant boundary extension value"
+fluxconserve,b,h,no,,,"Preserve flux per unit area?"
+ntrim,i,h,8,0,,"Edge trim in each extension"
+nxblock,i,h,INDEF,,,"X dimension of working block size in pixels"
+nyblock,i,h,INDEF,,,"Y dimension of working block size in pixels
+
+# Geometric mapping parameters"
+interactive,b,h,no,,,"Fit mapping interactively?"
+nx,i,h,10,,,"Number of x grid points"
+ny,i,h,20,,,"Number of y grid points"
+fitgeometry,s,h,"general",|shift|xyscale|rotate|rscale|rxyscale|general,,"Fitting geometry"
+xxorder,i,h,4,2,,"Order of x fit in x"
+xyorder,i,h,4,2,,"Order of x fit in y"
+xxterms,s,h,"half",,,"X fit cross terms type"
+yxorder,i,h,4,2,,"Order of y fit in x"
+yyorder,i,h,4,2,,"Order of y fit in y"
+yxterms,s,h,"half",,,"Y fit cross terms type
+
+"
+fd_in,*struct,h,"",,,
+fd_ext,*struct,h,"",,,
+fd_coord,*struct,h,"",,,
+mode,s,h,"ql",,,

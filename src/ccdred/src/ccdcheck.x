@@ -1,0 +1,128 @@
+include	<imhdr.h>
+include	"ccdtypes.h"
+
+# CCDCHECK -- Check processing status.
+
+bool procedure ccdcheck (im, ccdtype, bpmask)
+
+pointer	im			# IMIO pointer
+int	ccdtype			# CCD type
+char	bpmask[ARB]		# Output bad pixel mask
+
+int	imaccess()
+bool	clgetb(), ccdflag()
+errchk	ccdflag
+
+begin
+	switch (ccdtype) {
+	case MASK:
+	case ZERO:
+	    if (bpmask[1] != EOS  && imaccess (bpmask, READ_ONLY) == NO)
+		return (true)
+	    if (clgetb ("trim") && !ccdflag (im, "trim"))
+		return (true)
+	    if (clgetb ("fixpix") && !ccdflag (im, "fixpix"))
+		return (true)
+	    if (clgetb ("overscan") && !ccdflag (im, "overscan"))
+		return (true)
+	    if (clgetb ("readcor") && !ccdflag (im, "readcor"))
+	        return (true)
+	case DARK:
+	    if (bpmask[1] != EOS  && imaccess (bpmask, READ_ONLY) == NO)
+		return (true)
+	    if (clgetb ("trim") && !ccdflag (im, "trim"))
+		return (true)
+	    if (clgetb ("fixpix") && !ccdflag (im, "fixpix"))
+		return (true)
+	    if (clgetb ("overscan") && !ccdflag (im, "overscan"))
+		return (true)
+	    if (clgetb ("zerocor") && !ccdflag (im, "zerocor"))
+	        return (true)
+	case FLAT:
+	    if (bpmask[1] != EOS  && imaccess (bpmask, READ_ONLY) == NO)
+		return (true)
+	    if (clgetb ("trim") && !ccdflag (im, "trim"))
+		return (true)
+	    if (clgetb ("fixpix") && !ccdflag (im, "fixpix"))
+		return (true)
+	    if (clgetb ("overscan") && !ccdflag (im, "overscan"))
+		return (true)
+	    if (clgetb ("zerocor") && !ccdflag (im, "zerocor"))
+	        return (true)
+	    if (clgetb ("darkcor") && !ccdflag (im, "darkcor"))
+	        return (true)
+	    if (clgetb ("scancor") && !ccdflag (im, "scancor"))
+	        return (true)
+#	    iferr (ccdmean = hdmgetr (im, "ccdmean"))
+#		    return (true)
+#	    iferr (time = hdmgeti (im, "ccdmeant"))
+#		time = IM_MTIME(im)
+#	    if (time < IM_MTIME(im))
+#		return (true)
+	case SFLAT:
+	    if (bpmask[1] != EOS  && imaccess (bpmask, READ_ONLY) == NO)
+		return (true)
+	    if (clgetb ("trim") && !ccdflag (im, "trim"))
+		return (true)
+	    if (clgetb ("fixpix") && !ccdflag (im, "fixpix"))
+		return (true)
+	    if (clgetb ("overscan") && !ccdflag (im, "overscan"))
+		return (true)
+	    if (clgetb ("zerocor") && !ccdflag (im, "zerocor"))
+	        return (true)
+	    if (clgetb ("darkcor") && !ccdflag (im, "darkcor"))
+	        return (true)
+	    if (clgetb ("flatcor") && !ccdflag (im, "flatcor"))
+	        return (true)
+	    if (clgetb ("scancor") && !ccdflag (im, "scancor"))
+	        return (true)
+#	    iferr (ccdmean = hdmgetr (im, "ccdmean"))
+#		    return (true)
+#	    iferr (time = hdmgeti (im, "ccdmeant"))
+#		time = IM_MTIME(im)
+#	    if (time < IM_MTIME(im))
+#		return (true)
+	case ILLUM:
+	    if (bpmask[1] != EOS  && imaccess (bpmask, READ_ONLY) == NO)
+		return (true)
+	    if (clgetb ("trim") && !ccdflag (im, "trim"))
+		return (true)
+	    if (clgetb ("fixpix") && !ccdflag (im, "fixpix"))
+		return (true)
+	    if (clgetb ("overscan") && !ccdflag (im, "overscan"))
+		return (true)
+	    if (clgetb ("zerocor") && !ccdflag (im, "zerocor"))
+	        return (true)
+	    if (clgetb ("darkcor") && !ccdflag (im, "darkcor"))
+	        return (true)
+	    if (clgetb ("flatcor") && !ccdflag (im, "flatcor"))
+	        return (true)
+	    if (clgetb ("sflatcor") && !ccdflag (im, "sflatcor"))
+	        return (true)
+#	    iferr (ccdmean = hdmgetr (im, "ccdmean"))
+#		return (true)
+	default:
+	    if (bpmask[1] != EOS  && imaccess (bpmask, READ_ONLY) == NO)
+		return (true)
+	    if (clgetb ("trim") && !ccdflag (im, "trim"))
+		return (true)
+	    if (clgetb ("fixpix") && !ccdflag (im, "fixpix"))
+		return (true)
+	    if (clgetb ("overscan") && !ccdflag (im, "overscan"))
+		return (true)
+	    if (clgetb ("zerocor") && !ccdflag (im, "zerocor"))
+	        return (true)
+	    if (clgetb ("darkcor") && !ccdflag (im, "darkcor"))
+	        return (true)
+	    if (clgetb ("flatcor") && !ccdflag (im, "flatcor"))
+	        return (true)
+	    if (clgetb ("sflatcor") && !ccdflag (im, "sflatcor"))
+	        return (true)
+	    if (clgetb ("illumcor") && !ccdflag (im, "illumcor"))
+	        return (true)
+	    if (clgetb ("fringecor") && !ccdflag (im, "fringcor"))
+	        return (true)
+	}
+
+	return (false)
+end

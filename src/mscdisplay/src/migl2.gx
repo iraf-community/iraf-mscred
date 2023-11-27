@@ -1,0 +1,147 @@
+include <syserr.h>
+include "mosim.h"
+include "mosgeom.h"
+include "mosproc.h"
+
+$for (silrd)
+
+# MIGL2x -- Get and process line from sub-image of mosaic.
+
+pointer procedure migl2$t (mi, linein)
+
+pointer	mi		#I MOSIM Pointer for mosaic.
+int	linein		#I Line required.
+pointer	obuf		#O pointer to data values
+
+pointer	omg, sb, img, iim, ibuf, iptr, optr, ovr
+int	line
+int	onx, ony, ocx1, ocx2, ocy1, ocy2, icx1, icx2, icy1, icy2, idx1, idy1
+int	nimage, iline, nx, image, novr
+
+pointer	mscl2$t()
+
+errchk	mscl2$t, malloc, syserrs
+
+include	"mosproc.com"
+
+begin
+
+	nimage = MI_NIMS(mi)
+	omg    = MI_MG(mi, nimage+1)
+	onx    = NX(omg)
+	ony    = NY(omg)
+	ocx1   = CX1(omg)
+	ocx2   = CX2(omg)
+	ocy1   = CY1(omg)
+	ocy2   = CY2(omg)
+
+	line = linein + ocy1
+	if (line < ocy1 || line > ocy2) {
+	    call syserrs (SYS_IMREFOOB, Memc[MI_RNAME(mi)])
+	}
+
+	# First trip. Allocate data buffer
+	if (MI_SB(mi) == NULL) {
+	    call malloc (sb,   LEN_SECBUFF, TY_STRUCT) 
+	    call malloc (obuf, onx,         TY_PIXEL) 
+	    MI_SB(mi)      = sb
+	    SB_DATA(sb)    = obuf
+	    SB_X1(sb)      = ocx1
+	    SB_X2(sb)      = ocx2
+	    SB_Y1(sb)      = line
+	    SB_Y2(sb)      = line
+	    SB_PIXTYPE(sb) = TY_PIXEL
+	} else {
+	    sb = MI_SB(mi)
+
+	    # The required data is already in the buffer
+	    if ((SB_Y1(sb) == line) && (SB_Y2(sb) == line) &&
+		(SB_X1(sb) == ocx1) && (SB_X2(sb) == ocx2)) { 
+
+		# and is the correct data type. We are done!
+		if (SB_PIXTYPE(sb) == TY_PIXEL) {
+		    return (SB_DATA(sb))
+
+		# Change data type and return
+		} else {
+		    call malloc (obuf, onx, TY_PIXEL)
+		    switch (SB_PIXTYPE(sb)) {
+		    case TY_SHORT:
+			call achts$t (Mems[SB_DATA(sb)], Mem$t[obuf], onx)
+#		    case TY_USHORT:
+#			call achtu$t (Memu[SB_DATA(sb)], Mem$t[obuf], onx)
+		    case TY_INT:
+			call achti$t (Memi[SB_DATA(sb)], Mem$t[obuf], onx)
+		    case TY_LONG:
+			call achtl$t (Meml[SB_DATA(sb)], Mem$t[obuf], onx)
+		    case TY_REAL:
+			call achtr$t (Memr[SB_DATA(sb)], Mem$t[obuf], onx)
+		    case TY_DOUBLE:
+			call achtd$t (Memd[SB_DATA(sb)], Mem$t[obuf], onx)
+		    }
+
+		    # Free old buffer
+		    call mfree (SB_DATA(sb), SB_PIXTYPE(sb))
+
+		    # Return new buffer
+		    SB_DATA(sb)    = obuf
+		    SB_PIXTYPE(sb) = TY_PIXEL
+		    call pargi (SB_DATA(sb))
+		    return (SB_DATA(sb))
+		}
+
+	    } else {
+
+		# Free old and allocate new data buffer.
+		call mfree (SB_DATA(sb), SB_PIXTYPE(sb))
+
+		call malloc (obuf, onx, TY_PIXEL) 
+		SB_DATA(sb)    = obuf
+		SB_X1(sb)      = ocx1
+		SB_X2(sb)      = ocx2
+		SB_Y1(sb)      = line
+		SB_Y2(sb)      = line
+		SB_PIXTYPE(sb) = TY_PIXEL
+	    }
+	}
+
+	# Fill output buffer from input images.
+	#
+	# Initialise  buffer with blank value
+	call amovk$t (PIXEL(blank), Mem$t[obuf], onx)
+
+	# Loop over input images, skipping those which have no data in
+	# current line.
+	do image = 1, nimage {
+	    img = MI_MG(mi, image)
+	    icy1 = CY1(img)
+	    icy2 = CY2(img)
+	    if (line < icy1 || line > icy2)
+		next
+	    icx1 = CX1(img)
+	    icx2 = CX2(img)
+	    idx1 = DX1(img)
+	    idy1 = DY1(img)
+
+	    # Get corresponding line of input image
+	    iim   = MI_IM(mi, image)
+	    iline = line - (icy1 - ocy1) + idy1 - 1
+	    ibuf  = mscl2$t (img, iline)
+
+	    # Process input image line  writing to output buffer
+	    iptr = ibuf + idx1 - 1
+	    optr = obuf + icx1 - ocx1
+	    nx   = icx2 - icx1 + 1
+	    iline = line - CY1(img) + 1
+	    ovr   = ibuf + BX1(img) - 1
+	    novr  = BX2(img) - BX1(img) + 1
+
+            call miproc$t (img, Mem$t[iptr], Mem$t[optr], nx, iline,
+	    Mem$t[ovr], novr)
+
+	}
+
+	return (SB_DATA(sb))
+end
+
+$endfor

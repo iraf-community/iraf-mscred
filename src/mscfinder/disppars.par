@@ -1,0 +1,14 @@
+subsample,i,h,1,1,,"Sampling factor, for display marking only"
+frame,i,h,1,1,4,"Display frame number"
+imcur,*imcur,h,"",,,"Image cursor\n"
+
+marker,s,h,"circle","point|circle|rectangle|plus|cross",,"Marker type"
+omarker,s,h,"plus","point|circle|rectangle|plus|cross",,"Overlay marker type\n"
+
+goodcolor,s,h,"blue","black|white|red|green|blue|yellow",,"Color of good marker"
+badcolor,s,h,"red","black|white|red|green|blue|yellow",,"Color of bad marker"
+objcolor,s,h,"green","black|white|red|green|blue|yellow",,"Color of program object marker\n"
+centcolor,s,h,"yellow","black|white|red|green|blue|yellow",,"Color of centered
+program object marker\n"
+
+mode,s,h,"ql"

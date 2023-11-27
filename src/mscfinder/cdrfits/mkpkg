@@ -1,0 +1,25 @@
+$checkout libfinder.a mscbin$
+$update   libfinder.a
+$checkin  libfinder.a mscbin$
+$exit
+
+libfinder.a:
+	esc_dash.x	
+	find_simple.x	
+	fits_read.x	<error.h> <fio.h> <imhdr.h> <imio.h> <imset.h>\
+			rfits.com rfits.com rfits.h <tbset.h>
+	fits_rheader.x	<imhdr.h> <mach.h> rfits.com rfits.com rfits.h
+	fits_rimage.x	<fset.h> <imhdr.h> <imio.h> <mach.h> rfits.com rfits.h
+	fits_rpixels.x	<fset.h> <mach.h> <mii.h> rfits.com
+	fits_rtable.x	<fset.h> <imhdr.h> <mach.h> rfits.com rfits.h\
+			tab.com <tbset.h>
+	ftb_gfsub.x	<fset.h> <imhdr.h> <mach.h> rfits.com rfits.h\
+			tab.com <tbset.h>
+	ftb_putrow.x	rfits.h tab.com <tbset.h>
+	ftb_rheader.x	<imhdr.h> <imio.h> <mach.h> rfits.com rfits.com\
+			rfits.h tab.com <tbset.h>
+	rft_subs.x	<fio.h> <imhdr.h> <imio.h> <imset.h> <mach.h>\
+			<math.h> rfits.h
+	t_rfits.x	<error.h> <fset.h> rfits.com rfits.h
+	wft_encodec.x	wfits.h
+	;

@@ -1,0 +1,7 @@
+input,s,a,,,,List of input images
+output,s,a,,,,List of output images
+bpmasks,s,h,"",,,List of bad pixel masks
+datamin,r,h,INDEF,,,Minimum data value in scaling
+datamax,r,h,INDEF,,,Maximum data value in scaling
+maxbscale,r,h,INDEF,,,Maximum bscale allowed
+logfile,s,h,"",,,Logfile

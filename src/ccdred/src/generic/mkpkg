@@ -1,0 +1,12 @@
+# Make CCDRED Package.
+
+$checkout libccdred.a mscbin$
+$update   libccdred.a
+$checkin  libccdred.a mscbin$
+$exit
+
+libccdred.a:
+	cor.x		../ccdred.h <mach.h>
+	proc.x		../ccdred.h <imhdr.h>
+	xtfp.x		<imhdr.h> <pmset.h> ../xtfixpix.h
+	;

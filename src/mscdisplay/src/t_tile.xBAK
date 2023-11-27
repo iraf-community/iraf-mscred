@@ -1,0 +1,44 @@
+include <error.h>
+
+# T_TILE -- task main for mosaic tileing task
+
+procedure t_tile ()
+
+pointer	input		#T Rootname for input images.
+pointer	output		#T Rootname for output image.
+bool	trimmed		#T Tile TRIM section rather than DATA section.
+real	blank		#T Fill value for empty regions of mosaic.
+pointer	instrument	#P Instrument file.
+
+pointer sp
+
+real	clgetr()
+bool	clgetb()
+
+begin
+
+	call smark (sp)
+	call salloc (input,      SZ_LINE, TY_CHAR)
+	call salloc (output,     SZ_LINE, TY_CHAR)
+	call salloc (instrument, SZ_LINE, TY_CHAR)
+
+	call ampnull ()
+
+	# Open instrument file
+	call clgstr    ("instrument",  Memc[instrument],  SZ_FNAME)
+	call hdmopen   (Memc[instrument])
+
+	# Get input and output image lists
+	call clgstr ("input",  Memc[input],  SZ_LINE)
+	call clgstr ("output", Memc[output], SZ_LINE)
+
+	trimmed = clgetb ("trim")
+	blank   = clgetr ("blank")
+
+	iferr (call tile (Memc[input], Memc[output], blank, trimmed)) {
+	    call sfree(sp)
+	    call erract (EA_ERROR)
+	}
+
+	call sfree (sp)
+end

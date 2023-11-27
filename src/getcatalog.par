@@ -1,0 +1,11 @@
+images,s,a,,,,List of images with common tangent point
+ra,r,a,,0.,24.,Field RA (hours)
+dec,r,a,,-90.,90,Field DEC (degrees)
+radius,r,a,,0.,,Field radius (arcmin)
+magmin,r,h,0.,,,Minimum magnitude
+magmax,r,h,25.,,,Maximum magnitude
+rmin,r,h,0.,0.,,Minimum radius (arcmin)
+catalog,s,h,"usnob1@noao",,,Catalog
+output,s,h,"STDOUT",,,Output file
+radecsys,s,h,"FK5","|FK5|",,RA/DEC system for output
+equinox,r,h,2000.,2000.,2000.,Equinox  for output

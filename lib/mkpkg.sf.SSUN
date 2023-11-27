@@ -1,0 +1,7 @@
+# Mkpkg special file list for SUN/IRAF, Solaris
+
+# The following need to be linked nonshared to avoid the 268 MB memory limit
+# in the shared Sun/IRAF library implementation.
+
+$set NONSHARE = '& "LFLAGS = -z -/Bstatic -p mscred"'
+$special "mscred$src/ccdred/src/combine/":      xx_combine.e  $(NONSHARE) ;

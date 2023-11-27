@@ -1,0 +1,29 @@
+.help mscxcor Aug97 mscred
+.ih
+NAME
+mscxcor -- register multiple overlapping Mosaic exposures
+.ih
+SYNOPSIS
+Multiple overlapping Mosaic exposures which have fairly accurate
+WCS have their WCS adjusted to register them to a common
+system.  This is done by selecting regions of each extension based
+on the WCS and using cross-correlation to find shifts.  The average
+of the shifts defines the WCS correction.
+.ih
+USAGE	
+mscxcor input reference
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls MSCXCOR - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+xregister
+.endhelp

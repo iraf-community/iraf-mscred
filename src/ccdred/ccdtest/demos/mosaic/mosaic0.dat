@@ -1,0 +1,119 @@
+OBSID   = 'kpno.4m.961225.257752' / Observation identification
+OBJECT  = 'M51     '           / Observation title
+OBSTYPE = 'OBJECT  '           / Observation type
+EXPREQ  =                 600. / Requested exposure time (sec)
+
+RADECSYS= 'FK5     '           / Default coordinate system
+EQUINOX =               2000.0 / Default coordinate equinox
+OBJNAME = 'M51     '           / Target object
+OBJTYPE = 'galaxy  '           / Type of object
+OBJRA   = '13:29:24.00'        / Right ascension of object (hours)
+OBJDEC  = '47:15:34.00'        / Declination of object (deg)
+OBJEPOCH=               1950.0 / Epoch of object coordinates
+
+TIMESYS = 'UTC     '           / Default time system
+MJDHDR  =         46890.393982 / MJD of header creation
+MJD-OBS =         46890.394063 / MJD of observation
+DATE-OBS= '05/04/87'           / UTC date of observation
+UTC     = '09:27:27.00'        / UTC of observation
+LST     = '14:53:42.00'        / LST of observation
+
+OBSERVAT= 'KPNO    '           / Observatory
+WEATHER = 'clear   '           / Weather conditions
+PHOTOMET= 'photometric'        / Photometric conditions
+SEEING  =                 0.90 / FWHM (arc sec)
+ENVTEM  =                61.10 / Site temperature (deg C)
+ENVPRE  =                972.1 / Air pressure (mbars)
+ENVHUM  =                 22.2 / Relative humidity
+ENVDIR  =                 84.1 / Average wind direction (deg)
+ENVWIN  =                10.21 / Average wind speed (km/s)
+ENVGUS  =                18.20 / Maximum gust speed (km/s)
+ENVPER  =                 60.0 / Wind sampling period (sec)
+DMETEM  =                 63.4 / Dome temperature (deg C)
+DMEWIN  =                 3.22 / Average dome wind speed (km/s)
+DMEGUS  =                 8.20 / Maximum dome wind speed (km/s)
+DMEPER  =                 60.0 / Dome wind sampling (sec)
+DOMSTAT = 'open tracking'      / Dome status
+
+TELESCOP= '4m      '           / Telescope
+TELCONF = 'prime   '           / Telescope configuration
+TELTCS  = 'TCS V1.0'           / Telescope control system
+TELRA   = '13:29:24.00'        / Telescope right ascension (hours)
+TELDEC  = '47:15:34.00'        / Telescope declination (hours)
+TELEPOCH=          1987.123456 / Telescope coordinate epoch
+TELFOCUS=                 1430 / Telescope focus
+TELTEM  =                 63.2 / Telescope temperature
+TELSTAT = 'tracking'           / Telescope status
+ZD      =               42.359 / Zenith distance (deg)
+HA      = '-01:33:55.21'       / Hour angle (hours)
+CORRECT = 'doublet '           / Corrector
+ADC     = '4m ADC  '           / ADC
+ADCPAN  =                130.0 / ADC position angle (deg)
+ADAPTER = 'prime   '           / Adapter
+ADAPAN  =                  0.0 / Adpater position angle (deg)
+
+TV      = 'Mosaic TV #1'       / TV
+TVFILT  = 'V       '           / Filter name
+TVFTYP  = 'KP1408 2x2 6mm DDO Set' / Filter type
+TVFPOS  =                   5. / Filter system position
+TVFILT02= 'ND3     '           / Insert filter name
+
+GUIDER  = '4m guider'           / Guider name
+GUIRA   = '13:29:24.00'        / Guider right ascension (hours)
+GUIDEC  = '47:15:34.00'        / Guider declination (deg)
+GUIPOS  =        12.312 -3.121 / Guide probe position
+GUIRATE =                 10.0 / Guider rate (hz)
+
+CAMERA  = 'Mosaic V1'          / Camera name
+CAMFOCUS=               -0.054 / Camera focus
+CAMPAN  =                  0.0 / Camera position angle (deg)
+DEWAR   = 'Mosaic dewar V1'    / Dewar hardware
+DEWTEM  =                 -91. / Dewar temperature (deg C)
+DEWSTAT = 'ok     '            / Dewar status
+SHUTSTAT= 'ccd open, tv open'  / Shutter status
+SHUTOPEN=                  2.0 / Shutter open time (ms)
+SHUTCLOS=                  2.0 / Shutter close time (ms)
+FILTER  = 'V       '           / Filter name
+FILTYP  = 'KP1408 2x2 6mm DDO Set' / Filter type
+FILPOS  =                   5. / Filter system position
+
+DETECTOR= 'Mosaic V1'          / Detector name
+DETRA   = '13:29:24.00'        / Detector right ascension (hours)
+DETDEC  = '47:15:34.00'        / Detector declination (deg)
+RAPANGL =                -90.0 / Position angle of RA axis (deg)
+DECPANGL=                  0.0 / Position angle of Dec axis (deg)
+PIXSCAL1=                 15.9 / Pixel scale (arcsec/pixel)
+PIXSCAL2=                 15.9 / Pixel scale (arcsec/pixel)
+
+CONTROLR= 'Arcon V1.0'         / Detector controller
+CONSWV  = 'Arcon V1.0'         / Controller software version
+AMPINTEG=               15000. / Amplifier integration time (ns)
+AMPREAD =               39480. / Unbinned pixel read time (ns)
+AMPSAMPL= 'fast mode - dual correlated sampling' / Amplifier sampling method
+ARCONWM = 'OverlapXmit EarlyReset' / Arcon waveform options enabled
+ARCONWF = 'Obs Fri Nov 10 22:50:17 1995' / Arcon Wavefile
+
+DETSIZE = '[1:400,1:400]'      / Detector size
+NCCDS   =                    8 / Number of CCDs
+PREFLASH=                  2.0 / Preflash time (sec)
+EXPTIME =               600.15 / Exposure time (sec)
+DARKTIME=               600.21 / Dark time (sec)
+
+OBSERVER= 'G. Jacoby, D. Tody, F. Valdes' / Observers
+PROPOSER= 'G. Jacoby, D. Tody, F. Valdes' / Proposers
+PROPOSAL= 'Search for primeval galaxies' / Proposal title
+PROPID  = 'KPNO 12345'         / Proposal identification
+
+FILENAME= 'obs001.fit'         / Original filename
+DATAHWV = 'Solaris Telescope System V1' / Data system hardware version
+DATAACQ = 'ICE Version 3.1'    / Data system software version
+PROCSTAT= 'unprocessed'        / Processing status
+PHOTCAL =                    F / Data proportional to photons?
+ARCHIVE = 'KPNO STB'           / Archive
+ARCHSTAT= 'archived'           / Archive status
+ARCHSWV = 'STB Version 2'      / Archive software version
+ARCHHWV = 'Exabyte EXB8500'    / Archive hardware
+CHECKSUM= '0WDA3T940TA90T99'   / Header checksum
+DATASUM = 'aMmjbMkhaMkhaMkh'   / Data checksum
+CHECKVER= 'complement'         / Checksum version
+KWDICT  = 'NOAO FITS Keyword Dictionary: V0.0' / Keyword dictionary

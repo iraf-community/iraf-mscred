@@ -1,0 +1,14 @@
+# Mosaic image parameters
+
+extname,s,h,"",,,"extension name pattern"
+exttmplt,s,h,"_![1-9]*.*",,,"extension template for separate images
+"
+xgap,i,h,72,0,,"minimum X gap between images"
+ygap,i,h,36,0,,"minimum Y gap between images
+"
+process,b,h,no,,,"do calibration processing?"
+overscan,b,h,yes,,,"do line-by-line overscan subtraction?"
+zerosub,b,h,yes,,,"do zero subtraction?"
+flatfield,b,h,yes,,,"do flat field correction?"
+caldir,s,h,"",,,"calibration directory"
+filter,s,h,"",,,"filter"

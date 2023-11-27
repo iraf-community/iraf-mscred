@@ -1,0 +1,20 @@
+# Make the modified curfit task from UTILITIES
+
+$checkout libmscred.a mscbin$
+$update   libmscred.a
+$checkin  libmscred.a .mscbin$
+$exit
+
+generic:
+	$set	GEN = "$$generic -k"
+	$ifolder (curfit.x, curfit.gx) $(GEN) curfit.gx -o curfit.x $endif
+	;
+
+libmscred.a:
+	$ifeq (USE_GENERIC, yes) $call generic $endif
+
+	curfit.x	curfit.h <fset.h> <imhdr.h> <math/curfit.h>\
+			<pkg/gtools.h> <ttyset.h>
+	t_curfit.x	<ctype.h> <error.h> <fset.h> <imhdr.h> <pkg/gtools.h>\
+			<pkg/xtanswer.h>
+	;

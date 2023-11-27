@@ -1,0 +1,27 @@
+.help mscdisplay Aug97 mscred
+.ih
+NAME
+mscdisplay -- display Mosaic exposures as a single frames
+.ih
+SYNOPSIS
+Display multiextension Mosaic exposures in single display frames.  The
+extensions are filled into a region of the display as defined by the DETSEC
+keyword.
+.ih
+USAGE	
+mscdisplay image frame
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+REVISIONS
+.ls MSCDISPLAY - V2.11 external package
+First release.
+.le
+.ih
+SEE ALSO
+display
+.endhelp

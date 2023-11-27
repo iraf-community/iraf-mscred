@@ -1,0 +1,28 @@
+input,s,a,,,,"Input list of GSC tables"
+output,s,a,,,,"Output table with predicted X's & Y's"
+image,s,h,"",,,"Optional image header for field information"
+catpars,pset,h,"",,,"Catalog keyword description pset\n"
+
+ra,r,h,INDEF,0.,24.,"RA  of the reference point (hours)"
+dec,r,h,INDEF,-90.,90.,"Dec of the reference point (degrees)"
+epoch,r,h,INDEF,,,"Reference coordinate epoch"
+date_obs,s,h,"",,,"Date of the observation (DD/MM/YY)"
+width,r,h,,0.,180.,"Field width (degrees)\n"
+
+xref,r,h,INDEF,,,"X coordinate of the reference point"
+yref,r,h,INDEF,,,"Y coordinate of the reference point\n"
+
+opaxis,b,h,no,,,"Is the reference point on the optical axis?"
+del_ra,r,h,0.,,,"RA offset of field center from the OA (degrees)"
+del_dec,r,h,0.,,,"Dec offset of field center from the OA (degrees)\n"
+
+north,s,h,"top",top|left|bottom|right,,"Direction of North in the field"
+east,s,h,"left",top|left|bottom|right,,"Direction of East in the field"
+pangle,r,h,0.,,,"Position angle of the field (CCW positive)\n"
+
+scale,r,h,,0.,,"Plate or image scale (\"/user)"
+edge,r,h,0.,0.,,"Edge buffer width (user units)\n"
+
+#relative,b,h,no,,,"Report relative X,Y coordinates?"
+#xorigin,r,h,500.,,,"X coordinate of the first table entry"
+#yorigin,r,h,500.,,,"Y coordinate of the first table entry"

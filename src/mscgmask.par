@@ -1,0 +1,5 @@
+input,s,a,,,,List of input images
+output,s,a,,,,List of output masks
+masks,s,a,,,,List of parent masks
+mval,i,h,1,1,,Mask value
+empty,b,h,,,,All masks empty?

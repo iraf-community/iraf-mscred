@@ -1,0 +1,6 @@
+replace,b,q,yes,,,"replace the file?"
+reopen,b,q,yes,,,"reopen the file?"
+recenter,b,q,yes,,,"Automatically recenter the catalog sources?"
+rewrite,s,q,"append","append|replace|cancel",,","
+go_ahead,b,q,no,,,"(yes/no)"
+mode,s,h,"ql"

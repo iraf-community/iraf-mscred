@@ -1,0 +1,19 @@
+# Parameters for the MSCTMP1 task
+
+input,f,a,,,,Input images to be filtered
+output,f,a,,,,Output images
+xwindow,i,h,,,,X window size of median filter
+ywindow,i,h,,,,Y window size of median filter
+zloreject,r,h,INDEF,,,Lowside pixel value cutoff
+zhireject,r,h,INDEF,,,High side pixel value cutoff
+boundary,s,h,'nearest',,,'Boundary (constant,nearest,reflect,wrap)'
+constant,r,h,0,,,Constant for boundary extension
+verbose,b,h,yes,,,Print messages about actions taken by the task
+
+fmedian,b,h,yes,,,Use fast median algorithm?
+hmin,i,h,-32768,,,Minimum histogram bin
+hmax,i,h,32767,,,Maximum histogram bin
+zmin,r,h,INDEF,,,Pixel value corresponding to hmin
+zmax,r,h,INDEF,,,Pixel value corresponding to hmax
+unmap,b,h,yes,,,Unmap the digitized values ?
+mode,s,h,'ql'

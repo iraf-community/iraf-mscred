@@ -1,0 +1,17 @@
+input,s,a,,,,List of input mosaic exposures
+reference,s,a,,,,Reference image
+coords,f,a,"",,,Region coordinates (world)
+bootstrap,b,h,yes,,,Bootstrap registrations?
+extnames,s,h,"",,,Extensions names to use for registration
+override,b,h,no,,,Override previous registration
+region,i,h,50,10,,Size of correlation region (pixels)
+window,i,h,21,5,,Size of correlation window (pixels)
+nregions,i,h,3,1,,Number of regions per overlap
+cortype,s,h,"discrete","discrete|fourier|difference",,Correlation type
+center,s,h,"centroid","none|centroid|sawtooth|parabolic",,Correlation peak centering type
+box,i,h,7,3,,Correlation peak centering box size (pixels)
+maxsigma,r,h,0.5,0.,,Maximum sigma in correlation shift sample (pixels)
+verbose,b,h,)_.verbose,,,Print verbose information?
+interactive,b,h,no,,,Interactive review of correlations?
+graph,b,h,no,,,Graph correlation contours?
+display,b,h,no,,,Display correlation regions?
