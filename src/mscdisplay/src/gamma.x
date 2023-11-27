@@ -92,10 +92,10 @@ double	result
 double	gln, ap, sum, del
 int	n
 
-double	gammln()
+double	dgammln()
 
 begin	
-	gln = gammln (a)
+	gln = dgammln (a)
 	if (x <= 0.0d0) {
 	    if (x < 0.0d0)
 		call error (0, "GSER -- X must be non-negative")
@@ -135,11 +135,11 @@ double	result
 double	gln, gold, g, an, ana, a0, a1, b0, b1, fac, anf
 int	n
 
-double	gammln()
+double	dgammln()
 
 begin
 
-	gln = gammln (a)
+	gln = dgammln (a)
 	gold = 0.0d0
 	a0   = 1.0d0
 	a1   = x
@@ -173,31 +173,4 @@ begin
 
 	result = g * exp (-x + a * log(x) - gln)
 	return (result)
-end
-
-# GAMMLN -- Return natural log of gamma function.
-# Argument must greater than 0.  Full accuracy is obtained for values
-# greater than 1.  For 0<xx<1, the reflection formula can be used first.
-#
-#
-
-double procedure gammln (xx)
-
-double  xx              # Value to be evaluated
-
-int     j
-double  cof[6], stp, x, tmp, ser
-data    cof, stp / 76.18009173D0, -86.50532033D0, 24.01409822D0,
-                -1.231739516D0,.120858003D-2,-.536382D-5,2.50662827465D0/
-
-begin
-        x = xx - 1.0D0
-        tmp = x + 5.5D0
-        tmp = (x + 0.5D0) * log (tmp) - tmp
-        ser = 1.0D0
-        do j = 1, 6 {
-            x = x + 1.0D0
-            ser = ser + cof[j] / x
-        }
-        return (tmp + log (stp * ser))
 end
