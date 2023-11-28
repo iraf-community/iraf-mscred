@@ -1,8 +1,6 @@
 #{ MSCFINDER.CL -- Script to set up tasks in the MSCFINDER package
 
 proto
-tables
-ttools
 immatch
 
 package	mscfinder
