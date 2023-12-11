@@ -19,8 +19,7 @@ begin
 	    error (1, "No input list of coordinates to make TPEAK table")
 
 	# Load table tools.
-	tables
-	ttools
+	nttools
 
 	temp1 = mktemp ("tmp$iraf")
 	temp2 = mktemp ("tmp$iraf")
