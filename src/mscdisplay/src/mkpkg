@@ -36,6 +36,7 @@ libmscdisp.a:
 	akavg.x		<mach.h>
 	ampset.x	ampinfo.com <ctotok.h> <error.h>
 	gamma.x		<mach.h>
+	gammln.c
 	linebias.x	lbias.com mosgeom.h
 	maskcolor.x	ace.h <ctotok.h> <evvexpr.h>
 	maxmin.x	<imhdr.h> <mach.h> mosgeom.h
