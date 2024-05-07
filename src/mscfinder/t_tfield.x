@@ -177,7 +177,7 @@ real	xref, yref, xref1, yref1
 real	plt_epoch, plt_epoch1, width, edge, pos_angle
 double	obs_epoch, ut, dra, ddec
 long	xsize, ysize
-int	north, east, day, month, year, token1, token2
+int	north, east, day, month, year
 char	tokstr[SZ_TOKEN]
 
 real	clgetr(), imgetr()
@@ -185,9 +185,6 @@ double	imgetd()
 int	clgwrd(), strmatch(), btoi(), nscan()
 bool	clgetb()
 pointer	immap()
-
-data	token1	/NULL/
-data	token2	/NULL/
 
 begin
 	call smark (sp)
