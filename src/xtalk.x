@@ -30,8 +30,6 @@ real	val
 
 pointer	imgl2s(), impl2s(), imgs2s(), imps2s(), sthead(), stnext()
 
-pointer	stname()
-
 begin
 	# Loop through each line and correct all dependent output images
 	# at the same line.
@@ -666,8 +664,6 @@ pointer	sym, inbuf, outbuf, outbufs[2]
 real	val
 
 pointer	imgl2r(), impl2r(), imgs2r(), imps2r(), sthead(), stnext()
-
-pointer	stname()
 
 begin
 	# Loop through each line and correct all dependent output images
