@@ -179,6 +179,10 @@ double	obs_epoch, ut, dra, ddec
 long	xsize, ysize
 int	north, east, day, month, year
 char	tokstr[SZ_TOKEN]
+int     token1, token2
+
+data    token1  /NULL/
+data    token2  /NULL/
 
 real	clgetr(), imgetr()
 double	imgetd()
