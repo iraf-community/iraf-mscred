@@ -13,7 +13,7 @@ file	coords		{prompt="List of coordinates", mode="q"}
 string	fields = "1,2,3" {prompt="Fields for RA, DEC, and ID"}
 string	wcs = "world"	{prompt="Coordinate type (logical|physical|world)",
 			 enum="logical|physical|world"}
-string	catalog = "usnob1@noao"	{prompt="Catalog", mode="q"}
+string	catalog = "usnob1@noirlab"	{prompt="Catalog", mode="q"}
 string	mtype = "circle" {prompt="Mark type",
 			 enum="point|circle|rectangle|line|plus|cross|none"}
 string	radii = "20"	{prompt="Radii of concentric circles", mode="q"}
@@ -166,7 +166,8 @@ begin
 		    tl3 = tl1 - 1
 		sections (im1, option="root") | scan (imroot)
 		printf ("[%d:%d,%d:%d]\n", tc1, tc3, tl1, tl3) | scan (trimsec)
-		imcopy (imroot//trimsec, wcsim1, verbose-)
+		#imcopy (imroot//trimsec, wcsim1, verbose-)
+		imcopy (imroot//trimsec, wcsim, verbose-)
 
 		# Apply merged flip and trim to image name.
 		if (tc1 != 1 || tc2 != nc || tl1 != 1 || tl2 != nl) {

@@ -2,12 +2,12 @@
 
 procedure mscgetcatalog (input, output)
 
-string	input			{prompt="List of Mosaic files"}
-file	output			{prompt="Output file of sources"}
-real	magmin = 0.		{prompt="Minimum magnitude"}
-real	magmax = 25.		{prompt="Maximum magnitude"}
-string	catalog="usnob1@noao"	{prompt="Catalog"}
-real	rmin = 21.		{prompt="Minimum radius (arcmin)"}
+string	input			 {prompt="List of Mosaic files"}
+file	output			 {prompt="Output file of sources"}
+real	magmin = 0.		 {prompt="Minimum magnitude"}
+real	magmax = 25.		 {prompt="Maximum magnitude"}
+string	catalog="usnob1@noirlab" {prompt="Catalog"}
+real	rmin = 21.		 {prompt="Minimum radius (arcmin)"}
 
 begin
 	file	inlist
