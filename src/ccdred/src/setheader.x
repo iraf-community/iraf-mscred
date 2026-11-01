@@ -43,7 +43,9 @@ begin
 		    call pargi (OUT_L2(ccd))
 		call hdmpstr (im, "datasec", Memc[str])
 	    } else {
-		iferr (call hdmdelf (im, "datasec"))
+        # "datasec" is necessary while trim+, because there is
+        # autoreferecne in ccdproc
+		# iferr (call hdmdelf (im, "datasec"))
 		    ;
 	    }
 
