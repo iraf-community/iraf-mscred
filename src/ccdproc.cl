@@ -482,7 +482,7 @@ begin
 		    }
 		    hedit ("@"//extlist, "tmpfname", add-, del+, verify-,
 			show-, update+)
-		} else
+		} else if (merge && mef)
         hedit(outname, "datasec", add-, del+, verify-, show-, update+)
 
 		if (!splt && outname == outtemp) {
