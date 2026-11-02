@@ -12,12 +12,17 @@ different in the image header using the image header translation
 feature of the package.
 
 .ls DATASEC
-The section of the image containing the CCD data.  If absent the
-entire image is assumed to be data.  Only the pixels within the
-data section are modified during processing.  Therefore, there may be
-additional calibration or observation information in the image.
-If after processing, the data section is the entire image it is
-not recorded in the image header.
+The DATASEC keyword defines the data section for each amplifier image.
+It is required for processing unmerged multi-amplifier data, since
+different ccdproc operations need to identify the data section
+in each amplifier image. Only pixels within the data section are
+modified during processing. Additional calibration or observation
+information may therefore be present outside the data section.
+
+When amplifier images are merged into a single image, the individual
+DATASEC keywords are no longer applicable and are removed. The
+absence of DATASEC in a merged image indicates that the entire image
+contains the CCD data.
 .le
 .ls CCDSEC
 The section of the CCD to corresponding to the data section.  This

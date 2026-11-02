@@ -2,11 +2,14 @@
 
 $doc = "./doc/"
 $mscsrc = "./src/"
+$ccdreddoc = "./src/ccdred/doc/"
 
 revisions	sys=Revisions
 
 ccdproc		hlp=doc$ccdproc.hlp
 ccdlist		hlp=doc$ccdlist.hlp
+
+ccdgeometry hlp=ccdreddoc$ccdgeometry.hlp
 
 mkmsc		hlp=doc$mkmsc.hlp,		src=mscsrc$t_mkmsc.x
 mscarith	hlp=doc$mscarith.hlp,		src=mscsrc$mscarith.cl

@@ -482,7 +482,8 @@ begin
 		    }
 		    hedit ("@"//extlist, "tmpfname", add-, del+, verify-,
 			show-, update+)
-		}
+		} else if (merge && mef)
+        hedit(outname, "datasec", add-, del+, verify-, show-, update+)
 
 		if (!splt && outname == outtemp) {
 		    ccddelete (input)

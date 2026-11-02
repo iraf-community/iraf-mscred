@@ -43,8 +43,14 @@ begin
 		    call pargi (OUT_L2(ccd))
 		call hdmpstr (im, "datasec", Memc[str])
 	    } else {
-		iferr (call hdmdelf (im, "datasec"))
-		    ;
+            # Keep a datasec header on whole-image outputs. Its value must
+            # match the output size, not the input section.
+            call sprintf (Memc[str], SZ_LINE, "[%d:%d,%d:%d]")
+            call pargi (1)
+            call pargi (nc)
+            call pargi (1)
+            call pargi (nl)
+            call hdmpstr (im, "datasec", Memc[str])
 	    }
 
 	    # Set the CCD section.
